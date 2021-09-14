@@ -9,7 +9,7 @@
     "lint": "yarn run eslint --ignore-path .gitignore app",
     "lint:fix": "yarn run eslint --ignore-path .gitignore --fix app",
     "prepare": "husky install",
-    "pre-commit-lint": "yarn lint"
+    "pre-commit-lint": "lint-staged"
   },
   "devDependencies": {
     "@types/three": "^0.131.1",
@@ -28,8 +28,7 @@
   },
   "lint-staged": {
     "app/**/*.ts": [
-      "yarn run lint:fix",
-      "git add"
+      "yarn run lint"
     ]
   }
 }
