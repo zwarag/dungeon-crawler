@@ -29,7 +29,7 @@
     }
   },
   "lint-staged": {
-    "*.ts": [
+    "app/**/*.ts": [
       "yarn run lint:fix",
       "git add"
     ]
