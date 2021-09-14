@@ -13,6 +13,9 @@
 1. `yarn start`
 2. open http://localhost:3000
 
+## Auto Fix linting Errors
+
+To fix linting errors, run `yarn lint:fix`.  
 # Build for production
 
 `yarn build`
