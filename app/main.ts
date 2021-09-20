@@ -11,8 +11,7 @@ button?.addEventListener("click", () => {
   app?.classList.remove("d-none");
   highscore?.classList.add("d-none");
   button?.classList.add("d-none");
+  if (element) {
+    createScene(element);
+  }
 });
-
-if (element) {
-  createScene(element);
-}
