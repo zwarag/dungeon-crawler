@@ -16,6 +16,7 @@
 ## Auto Fix linting Errors
 
 To fix linting errors, run `yarn lint:fix`.  
+
 # Build for production
 
 `yarn build`
