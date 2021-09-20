@@ -1,6 +1,7 @@
 import { createScene } from "./src/scene";
 
-const app = document.querySelector<HTMLDivElement>("#app");
-const el = document.getElementById("el") as HTMLCanvasElement;
+const element = document.querySelector<HTMLCanvasElement>("element");
 
-createScene(el);
+if (element) {
+  createScene(element);
+}

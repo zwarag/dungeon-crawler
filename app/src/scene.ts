@@ -27,8 +27,8 @@ const resize = (): void => {
   camera.updateProjectionMatrix();
 };
 
-export const createScene = (el: HTMLCanvasElement): void => {
-  renderer = new THREE.WebGLRenderer({ antialias: true, canvas: el });
+export const createScene = (element: HTMLCanvasElement): void => {
+  renderer = new THREE.WebGLRenderer({ antialias: true, canvas: element });
   resize();
   animate();
 };
