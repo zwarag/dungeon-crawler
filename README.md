@@ -22,3 +22,9 @@ To fix linting errors, run `yarn lint:fix`.
 `yarn build`
 
 Creates the **dist** folder where the bundled, minified project can be found.
+
+# Attributions
+
+## Skyboxes
+created by Zachery "skiingpenguins" Slocum
+http://www.freezurbern.com
