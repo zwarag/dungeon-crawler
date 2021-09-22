@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { Character } from "./character";
 import { millisecondsToSeconds } from "./helper/time";
 
 export class Game {
@@ -7,6 +8,7 @@ export class Game {
   private _camera: THREE.PerspectiveCamera;
   private _scene: THREE.Scene;
   private _previousRAF: number | null;
+  private _player: Character;
 
   constructor(element: HTMLCanvasElement) {
     this._threejs = new THREE.WebGLRenderer({
@@ -58,10 +60,13 @@ export class Game {
     const ambientLight = new THREE.AmbientLight(0xffffff, 4);
     this._scene.add(ambientLight);
 
+    // Camera
+    // TODO: this is only temporary and should be swaped out for the actual implementaiton of the camera
     const controls = new OrbitControls(this._camera, this._threejs.domElement);
     controls.target.set(0, 20, 0);
     controls.update();
 
+    // Skybox
     const loader = new THREE.CubeTextureLoader();
     const texture = loader.load([
       "./img/cocoa_ft.jpg",
@@ -73,19 +78,21 @@ export class Game {
     ]);
     this._scene.background = texture;
 
-    const plane = new THREE.Mesh(
+    const ground = new THREE.Mesh(
       new THREE.PlaneGeometry(100, 100, 10, 10),
       new THREE.MeshStandardMaterial({
         color: 0x202020,
       })
     );
-    plane.castShadow = false;
-    plane.receiveShadow = true;
-    plane.rotation.x = -Math.PI / 2;
-    this._scene.add(plane);
+    ground.castShadow = false;
+    ground.receiveShadow = true;
+    ground.rotation.x = -Math.PI / 2;
+    this._scene.add(ground);
 
     // eslint-disable-next-line unicorn/no-null
     this._previousRAF = null;
+
+    this._player = new Character();
 
     this._requestAnimationFrame();
   }

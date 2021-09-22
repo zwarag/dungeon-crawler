@@ -1,5 +1,5 @@
 import "./style.scss";
-import { Game } from "./src/scene";
+import { Game } from "./src/game";
 
 const highscore = document.querySelector<HTMLDivElement>("#highscore");
 const app = document.querySelector<HTMLDivElement>("#app");
