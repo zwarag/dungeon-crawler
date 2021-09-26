@@ -37,6 +37,9 @@ export class StateMachine {
   }
 }
 
+/**
+ * A Character is just stading around.
+ */
 class IdleState extends State {
   get name(): string {
     return "idle";
@@ -44,7 +47,80 @@ class IdleState extends State {
   constructor(parent: StateMachine) {
     super(parent);
   }
-  enter(): void {
+  enter(state: State): void {
+    throw new Error("Method not implemented.");
+  }
+  exit(): void {
+    throw new Error("Method not implemented.");
+  }
+  update(): void {
+    throw new Error("Method not implemented.");
+  }
+}
+
+/**
+ * A Character is walking towards something.
+ */
+class WalkState extends State {
+  get name(): string {
+    throw new Error("Method not implemented.");
+  }
+  enter(state: State): void {
+    throw new Error("Method not implemented.");
+  }
+  exit(): void {
+    throw new Error("Method not implemented.");
+  }
+  update(): void {
+    throw new Error("Method not implemented.");
+  }
+}
+
+/**
+ * A Character is turning towards something.
+ * AKA is changing direction.
+ */
+class TurningState extends State {
+  get name(): string {
+    throw new Error("Method not implemented.");
+  }
+  enter(state: State): void {
+    throw new Error("Method not implemented.");
+  }
+  exit(): void {
+    throw new Error("Method not implemented.");
+  }
+  update(): void {
+    throw new Error("Method not implemented.");
+  }
+}
+
+/**
+ * A Character is attacking something.
+ */
+class AttackState extends State {
+  get name(): string {
+    throw new Error("Method not implemented.");
+  }
+  enter(state: State): void {
+    throw new Error("Method not implemented.");
+  }
+  exit(): void {
+    throw new Error("Method not implemented.");
+  }
+  update(): void {
+    throw new Error("Method not implemented.");
+  }
+}
+
+/**
+ * A Character is hit by something.
+ */
+class HitState extends State {
+  get name(): string {
+    throw new Error("Method not implemented.");
+  }
+  enter(state: State): void {
     throw new Error("Method not implemented.");
   }
   exit(): void {
