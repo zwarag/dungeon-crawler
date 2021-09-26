@@ -1,4 +1,13 @@
 export enum KEYBOARDMAP {
+  w = "w",
+  a = "a",
+  s = "s",
+  d = "d",
+  space = " ",
+  shift = "Shift",
+}
+
+export enum KEYBOARDMAPLEGACY {
   w = 87,
   a = 65,
   s = 83,

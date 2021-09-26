@@ -1,3 +1,5 @@
+import { InputController } from "./input-controller";
+
 type StateConstructor = new (parent: StateMachine) => State;
 export abstract class State {
   parent: StateMachine;
@@ -9,7 +11,7 @@ export abstract class State {
 
   abstract enter(state: State): void;
   abstract exit(): void;
-  abstract update(): void;
+  abstract update(timeDelta?: number, input?: unknown): void;
 }
 
 export class StateMachine {
@@ -34,6 +36,10 @@ export class StateMachine {
     const state = new this._states[key](this);
     this._currentState = state;
     state.enter(previousState);
+  }
+
+  update(timeDelta?: number, input?: unknown): void {
+    this._currentState.update(timeDelta, input);
   }
 }
 
