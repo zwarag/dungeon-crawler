@@ -15,15 +15,24 @@ export class Character {
   constructor() {
     this._input = new InputController();
     this._state = new StateMachine();
-    this._position = new THREE.Vector3(0, GLOBAL_Y, 3);
+    this._position = new THREE.Vector3(-4.5, GLOBAL_Y, -4.5);
     this._velocity = 0;
     this._direction = DIRECTION.NORTH;
     const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshBasicMaterial({
-      color: 0x00ff00,
-      wireframe: true,
-      wireframeLinewidth: 2,
-    });
+    // const material = new THREE.MeshBasicMaterial({
+    //   color: 0x00ff00,
+    //   wireframe: true,
+    //   wireframeLinewidth: 2,
+    // });
+    const loader = new THREE.TextureLoader();
+    const material = [
+      new THREE.MeshBasicMaterial({ map: loader.load("./img/player_ft.jpg") }),
+      new THREE.MeshBasicMaterial({ map: loader.load("./img/player_bk.jpg") }),
+      new THREE.MeshBasicMaterial({ map: loader.load("./img/player_up.jpg") }),
+      new THREE.MeshBasicMaterial({ map: loader.load("./img/player_dn.jpg") }),
+      new THREE.MeshBasicMaterial({ map: loader.load("./img/player_rt.jpg") }),
+      new THREE.MeshBasicMaterial({ map: loader.load("./img/player_lf.jpg") }),
+    ];
     this._3DElement = new THREE.Mesh(geometry, material);
     this._3DElement.position.set(...this._position.toArray());
   }
