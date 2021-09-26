@@ -1,4 +1,4 @@
-import { InputController } from "./input-controller";
+import { KeyBoardInputController } from "./input-controller";
 
 type StateConstructor = new (parent: StateMachine) => State;
 export abstract class State {

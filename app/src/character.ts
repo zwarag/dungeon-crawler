@@ -2,7 +2,7 @@ import { GLOBAL_Y } from "./helper/const";
 import { DIRECTION } from "./helper/direction";
 import { TimeInSeconds } from "./helper/time";
 import * as THREE from "three";
-import { InputController } from "./input-controller";
+import { InputController, KeyBoardInputController } from "./input-controller";
 import { StateMachine } from "./state-machine";
 
 export class Character {
@@ -13,7 +13,7 @@ export class Character {
   private _direction: DIRECTION;
   private _3DElement: THREE.Mesh;
   constructor() {
-    this._input = new InputController();
+    this._input = new KeyBoardInputController();
     this._state = new StateMachine();
     this._position = new THREE.Vector3(-4.5, GLOBAL_Y, -4.5);
     this._velocity = 0;
@@ -42,34 +42,61 @@ export class Character {
   }
 
   update(delta: TimeInSeconds): void {
+    //console.log(this);
     // this._state.update(delta, this._input)
-    console.log(this._position);
+    // console.log(this._position);
     const position = this._position;
 
     if (this._input.keys.forward) {
       this._velocity = 1;
     } else if (this._input.keys.backward) {
-      this._velocity = -1;
+      this._velocity = 1;
     } else if (this._input.keys.left) {
       this._direction = (this._direction - 1) % 4;
+      this.Element.rotateY(Math.PI / 2);
     } else if (this._input.keys.right) {
       this._direction = (this._direction + 1) % 4;
+      this.Element.rotateY(-Math.PI / 2);
+    } else {
+      this._velocity = 0;
     }
 
-    if (this._velocity != 0)
+    if (this._velocity != 0) {
+      console.log("direction", this._direction, "velocity", this._velocity);
       switch (this._direction) {
         case DIRECTION.NORTH:
-          this._position.setZ(this._position.z + this._velocity);
+          console.log("north");
+          this.Element.position.setX(this.Element.position.x + this._velocity);
+          //this.Element.translateOnAxis(
+          //  new THREE.Vector3(1, 0, 0),
+          //  this._velocity
+          //);
           break;
         case DIRECTION.EAST:
-          this._position.setX(this._position.x - this._velocity);
+          console.log("east");
+          this.Element.position.setZ(this.Element.position.z - this._velocity);
+          //this.Element.translateOnAxis(
+          //  new THREE.Vector3(0, 0, 1),
+          //  this._velocity
+          //);
           break;
         case DIRECTION.SOUTH:
-          this._position.setZ(this._position.z - this._velocity);
+          console.log("south");
+          this.Element.position.setX(this.Element.position.x - this._velocity);
+          //this.Element.translateOnAxis(
+          //  new THREE.Vector3(-1, 0, 0),
+          //  this._velocity
+          //);
           break;
         case DIRECTION.WEST:
-          this._position.setX(this._position.x + this._velocity);
+          console.log("west");
+          this.Element.position.setZ(this.Element.position.z + this._velocity);
+          //this.Element.translateOnAxis(
+          //  new THREE.Vector3(0, 0, -1),
+          //  this._velocity
+          //);
           break;
       }
+    }
   }
 }
