@@ -115,9 +115,7 @@ export class Game {
         this._previousRAF = timeElapsedMS;
       }
 
-      setTimeout(() => {
-        this._requestAnimationFrame();
-      }, 400);
+      this._requestAnimationFrame();
 
       this._threejs.render(this._scene, this._camera);
       this._calculateNextState(timeElapsedMS - this._previousRAF);
