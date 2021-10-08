@@ -1,6 +1,7 @@
 {
   "name": "dungeon-crawler",
   "version": "0.0.0",
+  "license": "UNLICENSED",
   "scripts": {
     "dev": "vite",
     "start": "vite",
@@ -22,9 +23,11 @@
     "lint-staged": "^11.1.2",
     "sass": "^1.41.1",
     "typescript": "^4.3.2",
-    "vite": "^2.5.4"
+    "vite": "^2.5.4",
+    "@types/lodash-es": "^4.17.5"
   },
   "dependencies": {
+    "lodash-es": "^4.17.21",
     "three": "^0.132.2"
   },
   "lint-staged": {
