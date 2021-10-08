@@ -1,9 +1,8 @@
-import {GLOBAL_GROUND_Y, GLOBAL_Y} from "./helper/const";
+import {GLOBAL_GROUND_Y, GLOBAL_Y, PROPERTIES} from "./helper/const";
 import * as THREE from "three";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";
 import {Character} from "./character";
 import {millisecondsToSeconds} from "./helper/time";
-import {PROPERTIES} from "./helper/const";
 import {Dungeon} from "./dungeon";
 import {floor} from "lodash-es";
 
@@ -14,6 +13,7 @@ export class Game {
     private _previousRAF: number | null;
     private _objects: Array<any>;
     private _player: Character;
+    private _dungeon: Dungeon;
 
     constructor(element: HTMLCanvasElement) {
         this._threejs = new THREE.WebGLRenderer({
@@ -73,7 +73,7 @@ export class Game {
 
         // Skybox
         const loader = new THREE.CubeTextureLoader();
-        const texture = loader.load([
+        this._scene.background = loader.load([
             "./img/cocoa_ft_.jpg",
             "./img/cocoa_bk_.jpg",
             "./img/cocoa_up_.jpg",
@@ -81,7 +81,6 @@ export class Game {
             "./img/cocoa_rt_.jpg",
             "./img/cocoa_lf_.jpg",
         ]);
-        this._scene.background = texture;
 
         // Create the ground
         const ground = new THREE.Mesh(
@@ -98,29 +97,11 @@ export class Game {
         this._scene.add(ground);
 
         // create the walls of the dungeon
-        const dungeon = new Dungeon()
-        for (let height = 0; height < dungeon.grid.length; height++) {
-            for (let width = 0; width < dungeon.grid[height].length; width++) {
-                if (dungeon.grid[height][width] == 'W') {
-                    const geometry = new THREE.BoxGeometry(1, 1, 1);
-                    const material = new THREE.MeshStandardMaterial({color: 0x808080});
-                    const cube = new THREE.Mesh(geometry, material);
-                    // offset by half the size of the grid, since 0,0,0 is in the center of it. Furthermore offset by 0.5, as otherwise the center of each box is used and not the corner.
-                    cube.position.set(width - (PROPERTIES.GRID_WIDTH / 2 - 0.5), GLOBAL_Y, height - (PROPERTIES.GRID_HEIGHT / 2 - 0.5))
-                    this._scene.add(cube);
-                }
-            }
-        }
+        this._dungeon = new Dungeon()
+        this._addDungeonToScene()
 
         // place an object as placeholder in the end room (symbolizing a ladder or such)
-        const endRoomX = dungeon.rooms[dungeon.rooms.length - 1].x + floor(dungeon.rooms[dungeon.rooms.length - 1].width / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
-        const endRoomZ = dungeon.rooms[dungeon.rooms.length - 1].z + floor(dungeon.rooms[dungeon.rooms.length - 1].height / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
-        const endGeometry = new THREE.ConeGeometry( 0.5, 1,32 );
-        const endMaterial = new THREE.MeshBasicMaterial( {color: 0xffff00} );
-        const cone = new THREE.Mesh( endGeometry, endMaterial );
-        cone.position.set(endRoomX, GLOBAL_Y, endRoomZ)
-        this._scene.add( cone );
-
+        this._placeEndRoomObject()
 
         // eslint-disable-next-line unicorn/no-null
         this._previousRAF = null;
@@ -130,8 +111,8 @@ export class Game {
         this._player = new Character();
 
         // set the character into the first room
-        const playerX = dungeon.firstRoom.x + floor(dungeon.firstRoom.width / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
-        const playerZ = dungeon.firstRoom.z + floor(dungeon.firstRoom.height / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
+        const playerX = this._dungeon.firstRoom.x + floor(this._dungeon.firstRoom.width / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
+        const playerZ = this._dungeon.firstRoom.z + floor(this._dungeon.firstRoom.height / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
         this._player.Element.position.set(playerX, GLOBAL_Y, playerZ)
 
         this._scene.add(this._player.Element);
@@ -164,5 +145,38 @@ export class Game {
         this._objects.map((object) => object.update(timeDeltaS));
         this._player.update(timeDeltaS);
     }
+
+    private _addDungeonToScene() {
+
+        const textureLoader = new THREE.TextureLoader();
+        const wallTexture = textureLoader.load("./img/wall.jpg")
+        const wallGeometry = new THREE.BoxGeometry(1, 1, 1);
+        const wallMaterial = new THREE.MeshBasicMaterial({map: wallTexture}) // img source: https://www.pinterest.at/pin/376402481328234967/
+        for (let height = 0; height < this._dungeon.grid.length; height++) {
+            for (let width = 0; width < this._dungeon.grid[height].length; width++) {
+                if (this._dungeon.grid[height][width] == 'W') {
+                    const cube = new THREE.Mesh(wallGeometry, wallMaterial);
+                    // offset by half the size of the grid, since 0,0,0 is in the center of it. Furthermore offset by 0.5, as otherwise the center of each box is used and not the corner.
+                    cube.position.set(width - (PROPERTIES.GRID_WIDTH / 2 - 0.5), GLOBAL_Y, height - (PROPERTIES.GRID_HEIGHT / 2 - 0.5))
+                    this._scene.add(cube);
+                }
+            }
+        }
+
+    }
+
+    private _placeEndRoomObject() {
+
+        const endRoomX = this._dungeon.rooms[this._dungeon.rooms.length - 1].x + floor(this._dungeon.rooms[this._dungeon.rooms.length - 1].width / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
+        const endRoomZ = this._dungeon.rooms[this._dungeon.rooms.length - 1].z + floor(this._dungeon.rooms[this._dungeon.rooms.length - 1].height / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
+        const endObjectGeometry = new THREE.ConeGeometry(0.5, 1, 32);
+        const endObjectMaterial = new THREE.MeshBasicMaterial({color: 0xffff00});
+        const cone = new THREE.Mesh(endObjectGeometry, endObjectMaterial);
+        cone.position.set(endRoomX, GLOBAL_Y, endRoomZ)
+        this._scene.add(cone);
+    }
+
 }
+
+
 
