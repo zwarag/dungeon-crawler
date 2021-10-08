@@ -23,15 +23,15 @@ class Dungeon {
 
     placeRoom(grid: Grid, room: Room): void {
 
-        for (let index = room.z; index < room.z + room.height; index++) {
-            for (let index_ = room.x; index_ < room.x + room.width; index_++) {
+        for (let index_z = room.z; index_z < room.z + room.height; index_z++) {
+            for (let index_x = room.x; index_x < room.x + room.width; index_x++) {
 
                 // check if the selected cell is a border cell, if so, place the wall
-                if (index == room.z || index == room.z + room.height - 1 || index_ == room.x || index_ == room.x + room.width - 1) {
-                    grid[index][index_] = room.id;
+                if (index_z == room.z || index_z == room.z + room.height - 1 || index_x == room.x || index_x == room.x + room.width - 1) {
+                    grid[index_z][index_x] = room.id;
                 }
 
-                if (room.doorx != undefined && room.doorz != undefined) {
+                if (room.doorx && room.doorz) {
                     grid[room.doorz][room.doorx] = ELEMENTS.DOOR
                 }
 
@@ -42,7 +42,7 @@ class Dungeon {
     createRoomsFromSeed(
         grid: Grid,
         room: Room
-    ) : void {
+    ): void {
 
         // generate room values for each edge of the seed room
         const roomValues: Room[] = [];
@@ -125,9 +125,9 @@ class Dungeon {
         }
 
         // here you go from y-1 to y+height+1 and check id they are any floors
-        for (let index = room.z - 1; index < room.z + room.height + 1; index++) {
-            for (let index_ = room.x - 1; index_ < room.x + room.width + 1; index_++) {
-                if (grid[index][index_] !== ELEMENTS.AIR) {
+        for (let index_z = room.z - 1; index_z < room.z + room.height + 1; index_z++) {
+            for (let index_x = room.x - 1; index_x < room.x + room.width + 1; index_x++) {
+                if (grid[index_z][index_x] !== ELEMENTS.AIR) {
                     return false;
                 }
             }
@@ -136,7 +136,7 @@ class Dungeon {
         return true;
     }
 
-    createGrid() : Grid {
+    createGrid(): Grid {
         // 1. make a grid of 'empty' cells
         const grid: Grid = [];
         for (let index = 0; index < PROPERTIES.GRID_HEIGHT; index++) {

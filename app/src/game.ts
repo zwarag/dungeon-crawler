@@ -5,6 +5,7 @@ import {Character} from "./character";
 import {millisecondsToSeconds} from "./helper/time";
 import {Dungeon} from "./dungeon";
 import {floor} from "lodash-es";
+import {ELEMENTS} from "./helper/grid-elements";
 
 export class Game {
     private _threejs: THREE.WebGLRenderer;
@@ -154,7 +155,7 @@ export class Game {
         const wallMaterial = new THREE.MeshBasicMaterial({map: wallTexture}) // img source: https://www.pinterest.at/pin/376402481328234967/
         for (let height = 0; height < this._dungeon.grid.length; height++) {
             for (let width = 0; width < this._dungeon.grid[height].length; width++) {
-                if (this._dungeon.grid[height][width] == 'W') {
+                if (this._dungeon.grid[height][width] == ELEMENTS.WALL) {
                     const cube = new THREE.Mesh(wallGeometry, wallMaterial);
                     // offset by half the size of the grid, since 0,0,0 is in the center of it. Furthermore offset by 0.5, as otherwise the center of each box is used and not the corner.
                     cube.position.set(width - (PROPERTIES.GRID_WIDTH / 2 - 0.5), GLOBAL_Y, height - (PROPERTIES.GRID_HEIGHT / 2 - 0.5))
@@ -177,6 +178,3 @@ export class Game {
     }
 
 }
-
-
-
