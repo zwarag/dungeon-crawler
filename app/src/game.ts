@@ -83,6 +83,7 @@ export class Game {
         ]);
         this._scene.background = texture;
 
+        // Create the ground
         const ground = new THREE.Mesh(
             new THREE.PlaneGeometry(PROPERTIES.GRID_WIDTH, PROPERTIES.GRID_HEIGHT, PROPERTIES.GRID_WIDTH, PROPERTIES.GRID_HEIGHT),
             new THREE.MeshStandardMaterial({
@@ -110,6 +111,15 @@ export class Game {
                 }
             }
         }
+
+        // place an object as placeholder in the end room (symbolizing a ladder or such)
+        const endRoomX = dungeon.rooms[dungeon.rooms.length - 1].x + floor(dungeon.rooms[dungeon.rooms.length - 1].width / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
+        const endRoomZ = dungeon.rooms[dungeon.rooms.length - 1].z + floor(dungeon.rooms[dungeon.rooms.length - 1].height / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
+        const endGeometry = new THREE.ConeGeometry( 0.5, 1,32 );
+        const endMaterial = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+        const cone = new THREE.Mesh( endGeometry, endMaterial );
+        cone.position.set(endRoomX, GLOBAL_Y, endRoomZ)
+        this._scene.add( cone );
 
 
         // eslint-disable-next-line unicorn/no-null

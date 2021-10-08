@@ -115,7 +115,6 @@ class Dungeon {
 
     }
 
-
     isValidRoomPlacement(grid: Grid, room: Room): boolean {
         // check if on the edge of or outside of the grid
         if (room.z < 1 || room.z + room.height > grid.length - 1) {
