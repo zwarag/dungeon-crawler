@@ -1,4 +1,4 @@
-import {random} from "lodash-es";
+import {randomRange} from "./helper/random";
 import {ELEMENTS} from "./helper/grid-elements";
 import {PROPERTIES} from "./helper/const";
 import {Grid} from './helper/type'
@@ -52,34 +52,34 @@ class Dungeon {
 
         //the x,y,height and width we use from now on are the ones
         //we pass in the initial function declaration createRoomsFromSeed()
-        north.x = random(room.x, room.x + room.width - 3);
+        north.x = randomRange(room.x, room.x + room.width - 3);
         north.z = room.z - north.height - 1;
-        north.doorx = random(north.x + 1, (Math.min(north.x + north.width, room.x + room.width)) - 2);
+        north.doorx = randomRange(north.x + 1, (Math.min(north.x + north.width, room.x + room.width)) - 2);
         north.doorz = room.z - 1;
         north.id = ELEMENTS.WALL;
         roomValues.push(north);
 
         const east = new Room();
         east.x = room.x + room.width + 1;
-        east.z = random(room.z, room.height + room.z - 3);
+        east.z = randomRange(room.z, room.height + room.z - 3);
         east.doorx = east.x - 1;
-        east.doorz = random(east.z + 1, (Math.min(east.z + east.height, room.z + room.height)) - 2);
+        east.doorz = randomRange(east.z + 1, (Math.min(east.z + east.height, room.z + room.height)) - 2);
         east.id = ELEMENTS.WALL;
         roomValues.push(east);
 
         const south = new Room();
-        south.x = random(room.x, room.width + room.x - 3);
+        south.x = randomRange(room.x, room.width + room.x - 3);
         south.z = room.z + room.height + 1;
-        south.doorx = random(south.x + 1, (Math.min(south.x + south.width, room.x + room.width)) - 2);
+        south.doorx = randomRange(south.x + 1, (Math.min(south.x + south.width, room.x + room.width)) - 2);
         south.doorz = room.z + room.height;
         south.id = ELEMENTS.WALL;
         roomValues.push(south);
 
         const west = new Room();
         west.x = room.x - west.width - 1;
-        west.z = random(room.z, room.height + room.z - 3);
+        west.z = randomRange(room.z, room.height + room.z - 3);
         west.doorx = room.x - 1;
-        west.doorz = random(west.z + 1, (Math.min(west.z + west.height, room.z + room.height)) - 2);
+        west.doorz = randomRange(west.z + 1, (Math.min(west.z + west.height, room.z + room.height)) - 2);
         west.id = ELEMENTS.WALL;
         roomValues.push(west);
 
@@ -171,10 +171,10 @@ class Room {
     end = false;
 
     constructor() {
-        this.height = random(PROPERTIES.MIN, PROPERTIES.MAX);
-        this.width = random(PROPERTIES.MIN, PROPERTIES.MAX);
-        this.x = random(1, PROPERTIES.GRID_WIDTH - this.width);
-        this.z = random(1, PROPERTIES.GRID_HEIGHT - this.height);
+        this.height = randomRange(PROPERTIES.MIN, PROPERTIES.MAX);
+        this.width = randomRange(PROPERTIES.MIN, PROPERTIES.MAX);
+        this.x = randomRange(1, PROPERTIES.GRID_WIDTH - this.width);
+        this.z = randomRange(1, PROPERTIES.GRID_HEIGHT - this.height);
     }
 }
 

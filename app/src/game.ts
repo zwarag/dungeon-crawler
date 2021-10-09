@@ -4,7 +4,6 @@ import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";
 import {Character} from "./character";
 import {millisecondsToSeconds} from "./helper/time";
 import {Dungeon} from "./dungeon";
-import {floor} from "lodash-es";
 import {ELEMENTS} from "./helper/grid-elements";
 
 export class Game {
@@ -112,8 +111,8 @@ export class Game {
         this._player = new Character();
 
         // set the character into the first room
-        const playerX = this._dungeon.firstRoom.x + floor(this._dungeon.firstRoom.width / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
-        const playerZ = this._dungeon.firstRoom.z + floor(this._dungeon.firstRoom.height / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
+        const playerX = this._dungeon.firstRoom.x + Math.floor(this._dungeon.firstRoom.width / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
+        const playerZ = this._dungeon.firstRoom.z + Math.floor(this._dungeon.firstRoom.height / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
         this._player.Element.position.set(playerX, GLOBAL_Y, playerZ)
 
         this._scene.add(this._player.Element);
@@ -169,8 +168,8 @@ export class Game {
     }
 
     private _placeEndRoomObject() {
-        const endRoomX = this._dungeon.rooms[this._dungeon.rooms.length - 1].x + floor(this._dungeon.rooms[this._dungeon.rooms.length - 1].width / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
-        const endRoomZ = this._dungeon.rooms[this._dungeon.rooms.length - 1].z + floor(this._dungeon.rooms[this._dungeon.rooms.length - 1].height / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
+        const endRoomX = this._dungeon.rooms[this._dungeon.rooms.length - 1].x + Math.floor(this._dungeon.rooms[this._dungeon.rooms.length - 1].width / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
+        const endRoomZ = this._dungeon.rooms[this._dungeon.rooms.length - 1].z + Math.floor(this._dungeon.rooms[this._dungeon.rooms.length - 1].height / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
         const endObjectGeometry = new THREE.ConeGeometry(0.5, 1, 32);
         const endObjectMaterial = new THREE.MeshBasicMaterial({color: 0xffff00});
         const cone = new THREE.Mesh(endObjectGeometry, endObjectMaterial);
