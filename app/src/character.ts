@@ -51,7 +51,7 @@ export class Character {
     }
 
     /** This function shall be called after every drawn AnimationFrame. */
-    update(delta: TimeInSeconds, grid: Grid, scene: Scene): void {
+    update(delta: TimeInSeconds): void {
         // this._state.update(delta, this._input)
 
         const keys = {...this._input.keys};
@@ -68,7 +68,9 @@ export class Character {
         } else {
             this._velocity = 0;
         }
+    }
 
+    moveCharacter(scene: Scene): void {
         if (this._velocity != 0) {
             let newPosition: number
             switch (this._direction) {
@@ -106,5 +108,4 @@ export class Character {
         )
         return intersections.length === 0
     }
-
 }

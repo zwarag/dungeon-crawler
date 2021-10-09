@@ -144,7 +144,8 @@ export class Game {
     private _calculateNextState(timeDeltaMS: number) {
         const timeDeltaS = millisecondsToSeconds(timeDeltaMS);
         this._objects.map((object) => object.update(timeDeltaS));
-        this._player.update(timeDeltaS, this._dungeon.grid, this._scene);
+        this._player.update(timeDeltaS);
+        this._player.moveCharacter(this._scene)
     }
 
     private _addDungeonToScene() {
