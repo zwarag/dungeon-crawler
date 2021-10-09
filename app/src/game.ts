@@ -97,7 +97,7 @@ export class Game {
         ground.position.setY(GLOBAL_GROUND_Y);
         this._scene.add(ground);
 
-        // create the walls of the dungeon
+        // initialize the first dungeon
         this._dungeon = new Dungeon()
         this._addDungeonToScene()
 
@@ -144,7 +144,7 @@ export class Game {
     private _calculateNextState(timeDeltaMS: number) {
         const timeDeltaS = millisecondsToSeconds(timeDeltaMS);
         this._objects.map((object) => object.update(timeDeltaS));
-        this._player.update(timeDeltaS);
+        this._player.update(timeDeltaS, this._dungeon.grid, this._scene);
     }
 
     private _addDungeonToScene() {
@@ -157,6 +157,7 @@ export class Game {
             for (let width = 0; width < this._dungeon.grid[height].length; width++) {
                 if (this._dungeon.grid[height][width] == ELEMENTS.WALL) {
                     const cube = new THREE.Mesh(wallGeometry, wallMaterial);
+                    cube.name = ELEMENTS.WALL
                     // offset by half the size of the grid, since 0,0,0 is in the center of it. Furthermore offset by 0.5, as otherwise the center of each box is used and not the corner.
                     cube.position.set(width - (PROPERTIES.GRID_WIDTH / 2 - 0.5), GLOBAL_Y, height - (PROPERTIES.GRID_HEIGHT / 2 - 0.5))
                     this._scene.add(cube);
@@ -167,7 +168,6 @@ export class Game {
     }
 
     private _placeEndRoomObject() {
-
         const endRoomX = this._dungeon.rooms[this._dungeon.rooms.length - 1].x + floor(this._dungeon.rooms[this._dungeon.rooms.length - 1].width / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
         const endRoomZ = this._dungeon.rooms[this._dungeon.rooms.length - 1].z + floor(this._dungeon.rooms[this._dungeon.rooms.length - 1].height / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
         const endObjectGeometry = new THREE.ConeGeometry(0.5, 1, 32);

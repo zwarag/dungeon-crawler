@@ -1,8 +1,8 @@
 import {random} from "lodash-es";
 import {ELEMENTS} from "./helper/grid-elements";
 import {PROPERTIES} from "./helper/const";
+import {Grid} from './helper/type'
 
-type Grid = string[][];
 
 class Dungeon {
 
