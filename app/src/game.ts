@@ -1,10 +1,12 @@
 import {GLOBAL_GROUND_Y, GLOBAL_Y, PROPERTIES} from "./helper/const";
 import * as THREE from "three";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";
+import {FirstPersonControls} from "three/examples/jsm/controls/FirstPersonControls";
 import {Character} from "./character";
 import {millisecondsToSeconds} from "./helper/time";
 import {Dungeon} from "./dungeon";
 import {ELEMENTS} from "./helper/grid-elements";
+import {Vector3} from "three";
 
 export class Game {
     private _threejs: THREE.WebGLRenderer;
@@ -14,6 +16,7 @@ export class Game {
     private _objects: Array<any>;
     private _player: Character;
     private _dungeon: Dungeon;
+    private _camControls: FirstPersonControls;
 
     constructor(element: HTMLCanvasElement) {
         this._threejs = new THREE.WebGLRenderer({
@@ -36,12 +39,12 @@ export class Game {
             false
         );
 
-        const fov = 75;
-        const aspect = window.innerWidth / window.innerHeight;
-        const near = 0.1;
-        const far = 1000;
-        this._camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-        this._camera.position.set(0, 20, 0);
+        // const fov = 75;
+        // const aspect = window.innerWidth / window.innerHeight;
+        // const near = 0.1;
+        // const far = 1000;
+        // this._camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+        // this._camera.position.set(0, 20, 0);
 
         this._scene = new THREE.Scene();
 
@@ -64,12 +67,6 @@ export class Game {
 
         const ambientLight = new THREE.AmbientLight(0xffffff, 4);
         this._scene.add(ambientLight);
-
-        // Camera
-        // TODO: this is only temporary and should be swaped out for the actual implementaiton of the camera
-        const controls = new OrbitControls(this._camera, this._threejs.domElement);
-        controls.target.set(0, 0, 0);
-        controls.update();
 
         // Skybox
         const loader = new THREE.CubeTextureLoader();
@@ -106,14 +103,44 @@ export class Game {
         // eslint-disable-next-line unicorn/no-null
         this._previousRAF = null;
 
+        // create a camera, which defines where we're looking at.
+        this._camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1000);
+
         // create the character
         this._objects = [];
-        this._player = new Character();
+        this._player = new Character(this._camera);
+
+
 
         // set the character into the first room
         const playerX = this._dungeon.firstRoom.x + Math.floor(this._dungeon.firstRoom.width / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
         const playerZ = this._dungeon.firstRoom.z + Math.floor(this._dungeon.firstRoom.height / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
         this._player.Element.position.set(playerX, GLOBAL_Y, playerZ)
+        this._player.Element.lookAt(playerX, GLOBAL_Y, playerZ)
+
+
+        // position and point the camera to the center of the scene
+        this._camera.position.x = this._player.Element.position.x;
+        this._camera.position.y = this._player.Element.position.y;
+        this._camera.position.z = this._player.Element.position.z;
+        this._camera.lookAt(playerX, GLOBAL_Y, playerZ)
+        this._camera.updateProjectionMatrix();
+        console.log(this._camera.rotation)
+
+        // this._camera.rotation.x = this._player.Element.rotation.x;
+        // this._camera.rotation.y = this._player.Element.rotation.y;
+        // this._camera.rotation.z = this._player.Element.rotation.z;
+        // console.log(this._camera.rotation)
+        // this._camControls = new FirstPersonControls(this._camera, this._threejs.domElement);
+        // this._camControls.activeLook = false
+
+        // Camera
+        // TODO: this is only temporary and should be swaped out for the actual implementaiton of the camera
+        // const controls = new OrbitControls(this._camera, this._threejs.domElement);
+        // controls.target.set(0, 0, 0);
+        // controls.update();
+
+
 
         this._scene.add(this._player.Element);
 
@@ -178,3 +205,4 @@ export class Game {
     }
 
 }
+
