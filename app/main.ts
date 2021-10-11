@@ -1,4 +1,4 @@
-import "./style.scss";
+import "./styles/style.scss";
 import { Game } from "./src/game";
 
 const app = document.querySelector<HTMLDivElement>("#app");
@@ -12,9 +12,9 @@ const backButton = document.querySelector<HTMLButtonElement>("#backbutton");
 
 function startGame() {
   app?.classList.remove("d-none");
+  startScreen?.classList.add("d-none");
   highscore?.classList.add("d-none");
-  startButton?.classList.add("d-none");
-  highscoreButton?.classList.add("d-none");
+  backButton?.classList.remove("d-none");
   if (element) {
     new Game(element);
   }
@@ -23,11 +23,14 @@ function startGame() {
 function displayHighscore() {
   startScreen?.classList.add("d-none");
   highscore?.classList.remove("d-none");
+  backButton?.classList.remove("d-none");
 }
 
 function backToStartScreen() {
   startScreen?.classList.remove("d-none");
+  app?.classList.add("d-none");
   highscore?.classList.add("d-none");
+  backButton?.classList.add("d-none");
 }
 
 startButton?.addEventListener("click", startGame);
