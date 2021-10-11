@@ -17,4 +17,4 @@ function startGame() {
 
 button?.addEventListener("click", startGame);
 
-startGame();
+// startGame();
