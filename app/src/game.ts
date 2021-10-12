@@ -39,13 +39,6 @@ export class Game {
             false
         );
 
-        // const fov = 75;
-        // const aspect = window.innerWidth / window.innerHeight;
-        // const near = 0.1;
-        // const far = 1000;
-        // this._camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-        // this._camera.position.set(0, 20, 0);
-
         this._scene = new THREE.Scene();
 
         const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
@@ -116,7 +109,7 @@ export class Game {
         this._player.Element.position.set(playerX, GLOBAL_Y, playerZ)
 
         // axes helper
-        const axesHelper = new THREE.AxesHelper( 5 );
+        const axesHelper = new THREE.AxesHelper( 10 );
         this._scene.add( axesHelper );
 
         // position and point the camera to the center of the scene
@@ -126,16 +119,13 @@ export class Game {
         this._camera.rotateY(-Math.PI / 2) // the camera needs to be turned by 90 degrees initially
 
 
-
         // Camera
         // TODO: this is only temporary and should be swaped out for the actual implementaiton of the camera
-        // const controls = new OrbitControls(this._camera, this._threejs.domElement);
-        // controls.target.set(0, 0, 0);
-        // controls.update();
-
+        const controls = new OrbitControls(this._camera, this._threejs.domElement);
+        controls.target.set(0, 0, 0);
+        controls.update();
 
         this._scene.add(this._player.Element);
-
         this._requestAnimationFrame();
     }
 
@@ -170,7 +160,7 @@ export class Game {
 
         const textureLoader = new THREE.TextureLoader();
         const wallTexture = textureLoader.load("./img/wall.jpg")
-        const wallGeometry = new THREE.BoxGeometry(1, 1, 1);
+        const wallGeometry = new THREE.BoxGeometry(1, 1.5, 1);
         const wallMaterial = new THREE.MeshBasicMaterial({map: wallTexture}) // img source: https://www.pinterest.at/pin/376402481328234967/
         for (let height = 0; height < this._dungeon.grid.length; height++) {
             for (let width = 0; width < this._dungeon.grid[height].length; width++) {
@@ -178,7 +168,7 @@ export class Game {
                     const cube = new THREE.Mesh(wallGeometry, wallMaterial);
                     cube.name = ELEMENTS.WALL
                     // offset by half the size of the grid, since 0,0,0 is in the center of it. Furthermore offset by 0.5, as otherwise the center of each box is used and not the corner.
-                    cube.position.set(width - (PROPERTIES.GRID_WIDTH / 2 - 0.5), GLOBAL_Y, height - (PROPERTIES.GRID_HEIGHT / 2 - 0.5))
+                    cube.position.set(width - (PROPERTIES.GRID_WIDTH / 2 - 0.5), GLOBAL_Y+0.25, height - (PROPERTIES.GRID_HEIGHT / 2 - 0.5))
                     this._scene.add(cube);
                 }
             }
