@@ -1,12 +1,20 @@
 // start-screen
 .start-screen {
+  background-image: url(./img/fantasy_background.jpg);
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  background-attachment: fixed;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
   &__title {
-    margin-top: 0%;
+    margin-top: 0;
     text-align: center;
     letter-spacing: 2px;
     font-family: "Skranji", cursive;
     color: #ffc000;
-    font-size: 84px;
+    font-size: 4rem;
     font-weight: 400px;
     text-shadow: 0 1px 3px #000;
   }
