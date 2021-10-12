@@ -1,0 +1,20 @@
+{
+  "SKELETON": {
+    "health": {
+      "min": 50,
+      "max": 75
+    },
+    "damage": {
+      "min": 6,
+      "max": 14
+    },
+    "animations": {
+      "idle": "....",
+      "attack": "....",
+      "walking": "....",
+      "death": "...."
+    }
+  }
+
+
+}
