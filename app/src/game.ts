@@ -7,6 +7,7 @@ import {millisecondsToSeconds} from "./helper/time";
 import {Dungeon} from "./dungeon";
 import {ELEMENTS} from "./helper/grid-elements";
 import {Vector3} from "three";
+import {Enemy} from "./enemy";
 
 export class Game {
     private _threejs: THREE.WebGLRenderer;
@@ -107,10 +108,11 @@ export class Game {
         const playerX = this._dungeon.firstRoom.x + Math.floor(this._dungeon.firstRoom.width / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
         const playerZ = this._dungeon.firstRoom.z + Math.floor(this._dungeon.firstRoom.height / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
         this._player.Element.position.set(playerX, GLOBAL_Y, playerZ)
+        this._scene.add(this._player.Element);
 
         // axes helper
-        const axesHelper = new THREE.AxesHelper( 10 );
-        this._scene.add( axesHelper );
+        const axesHelper = new THREE.AxesHelper(10);
+        this._scene.add(axesHelper);
 
         // position and point the camera to the center of the scene
         this._camera.position.x = this._player.Element.position.x;
@@ -119,14 +121,32 @@ export class Game {
         this._camera.rotateY(-Math.PI / 2) // the camera needs to be turned by 90 degrees initially
 
 
+        // placing enemies
+        this._dungeon.rooms.forEach(room => {
+            if (!room.start) {
+                for (let height = 0; height < room.height - 1; height++) {
+                    for (let width = 0; width < room.width - 1; width++) {
+                        if (Math.random() <= room.enemyChance) {
+                            const z = (room.z + 1 + height) - (PROPERTIES.GRID_WIDTH / 2 - 0.5)
+                            const x = (room.x + 1 + width) - (PROPERTIES.GRID_WIDTH / 2 - 0.5)
+                            const enemy = new Enemy(x, z)
+                            this._scene.add(enemy.Element)
+                            // console.log(enemy)
+                        }
+                    }
+                }
+            }
+        })
+
+
         // Camera
         // TODO: this is only temporary and should be swaped out for the actual implementaiton of the camera
         // const controls = new OrbitControls(this._camera, this._threejs.domElement);
         // controls.target.set(0, 0, 0);
         // controls.update();
 
-        this._scene.add(this._player.Element);
         this._requestAnimationFrame();
+
     }
 
     private _onWindowResize() {
@@ -168,7 +188,7 @@ export class Game {
                     const cube = new THREE.Mesh(wallGeometry, wallMaterial);
                     cube.name = ELEMENTS.WALL
                     // offset by half the size of the grid, since 0,0,0 is in the center of it. Furthermore offset by 0.5, as otherwise the center of each box is used and not the corner.
-                    cube.position.set(width - (PROPERTIES.GRID_WIDTH / 2 - 0.5), GLOBAL_Y+0.25, height - (PROPERTIES.GRID_HEIGHT / 2 - 0.5))
+                    cube.position.set(width - (PROPERTIES.GRID_WIDTH / 2 - 0.5), GLOBAL_Y + 0.25, height - (PROPERTIES.GRID_HEIGHT / 2 - 0.5))
                     this._scene.add(cube);
                 }
             }

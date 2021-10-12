@@ -167,8 +167,9 @@ class Room {
     seeded = false;
     doorx?: number;
     doorz?: number;
-    start = false;
-    end = false;
+    enemyChance = 0.1
+    _start = false;
+    _end = false;
 
     constructor() {
         this.height = randomRange(PROPERTIES.MIN, PROPERTIES.MAX);
@@ -176,6 +177,17 @@ class Room {
         this.x = randomRange(1, PROPERTIES.GRID_WIDTH - this.width);
         this.z = randomRange(1, PROPERTIES.GRID_HEIGHT - this.height);
     }
+
+    set end(endBool: boolean) {
+        this._end = endBool
+        this.enemyChance = 0.2
+    }
+
+    set start(startBool: boolean) {
+        this._start = startBool
+        this.enemyChance = 0
+    }
+
 }
 
 export {Dungeon}

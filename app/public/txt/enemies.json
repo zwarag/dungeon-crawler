@@ -14,7 +14,37 @@
       "walking": "....",
       "death": "...."
     }
+  },
+  "HUMAN": {
+    "health": {
+      "min": 45,
+      "max": 80
+    },
+    "damage": {
+      "min": 5,
+      "max": 15
+    },
+    "animations": {
+      "idle": "....",
+      "attack": "....",
+      "walking": "....",
+      "death": "...."
+    }
+  },
+  "DEVIL": {
+    "health": {
+      "min": 65,
+      "max": 100
+    },
+    "damage": {
+      "min": 10,
+      "max": 18
+    },
+    "animations": {
+      "idle": "....",
+      "attack": "....",
+      "walking": "....",
+      "death": "...."
+    }
   }
-
-
 }
