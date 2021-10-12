@@ -110,36 +110,28 @@ export class Game {
         this._objects = [];
         this._player = new Character(this._camera);
 
-
-
         // set the character into the first room
         const playerX = this._dungeon.firstRoom.x + Math.floor(this._dungeon.firstRoom.width / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
         const playerZ = this._dungeon.firstRoom.z + Math.floor(this._dungeon.firstRoom.height / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
         this._player.Element.position.set(playerX, GLOBAL_Y, playerZ)
-        this._player.Element.lookAt(playerX, GLOBAL_Y, playerZ)
 
+        // axes helper
+        const axesHelper = new THREE.AxesHelper( 5 );
+        this._scene.add( axesHelper );
 
         // position and point the camera to the center of the scene
         this._camera.position.x = this._player.Element.position.x;
         this._camera.position.y = this._player.Element.position.y;
         this._camera.position.z = this._player.Element.position.z;
-        this._camera.lookAt(playerX, GLOBAL_Y, playerZ)
-        this._camera.updateProjectionMatrix();
-        console.log(this._camera.rotation)
+        this._camera.rotateY(-Math.PI / 2) // the camera needs to be turned by 90 degrees initially
 
-        // this._camera.rotation.x = this._player.Element.rotation.x;
-        // this._camera.rotation.y = this._player.Element.rotation.y;
-        // this._camera.rotation.z = this._player.Element.rotation.z;
-        // console.log(this._camera.rotation)
-        // this._camControls = new FirstPersonControls(this._camera, this._threejs.domElement);
-        // this._camControls.activeLook = false
+
 
         // Camera
         // TODO: this is only temporary and should be swaped out for the actual implementaiton of the camera
         // const controls = new OrbitControls(this._camera, this._threejs.domElement);
         // controls.target.set(0, 0, 0);
         // controls.update();
-
 
 
         this._scene.add(this._player.Element);

@@ -73,8 +73,6 @@ export class Character {
             this.Element.rotateY(Math.PI / 2);
             this._camera.rotateY(Math.PI / 2);
         } else if (keys.right) {
-            console.log(this)
-            console.log(this._camera)
             this._direction = (this._direction + 1) % 4;
             this.Element.rotateY(-Math.PI / 2);
             this._camera.rotateY(-Math.PI / 2);
@@ -101,7 +99,7 @@ export class Character {
                     newPosition = this.Element.position.z - this._velocity
                     if (this.checkFreeSpace(this.Element.position.x, newPosition, scene)) {
                         this.Element.position.setZ(newPosition);
-                        this._camera.position.setZ(newPosition)
+                        this._camera.position.setZ(newPosition);
                     } else {
                         this.speak("blocked")
                     }
@@ -153,7 +151,7 @@ export class Character {
             utterThis.voice = voices[this._gender]
             // window.speechSynthesis.speak(utterThis) // <-- commented for now, otherwise this might be annoying
         } catch (error) {
-            console.log("Browser not supported for voice output:" + error)
+            // console.log("Browser not supported for voice output:" + error)
         }
     }
 
