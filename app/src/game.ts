@@ -121,9 +121,9 @@ export class Game {
 
         // Camera
         // TODO: this is only temporary and should be swaped out for the actual implementaiton of the camera
-        const controls = new OrbitControls(this._camera, this._threejs.domElement);
-        controls.target.set(0, 0, 0);
-        controls.update();
+        // const controls = new OrbitControls(this._camera, this._threejs.domElement);
+        // controls.target.set(0, 0, 0);
+        // controls.update();
 
         this._scene.add(this._player.Element);
         this._requestAnimationFrame();
