@@ -1,0 +1,43 @@
+// start-screen
+.start-screen {
+  &__title {
+    margin-top: 0%;
+    text-align: center;
+    letter-spacing: 2px;
+    font-family: "Skranji", cursive;
+    color: #ffc000;
+    font-size: 84px;
+    font-weight: 400px;
+    text-shadow: 0 1px 3px #000;
+  }
+
+  &__button-bar {
+    justify-content: center;
+    display: grid;
+    gap: 10px;
+
+    &__button {
+      margin: 10px;
+      width: 400px;
+      letter-spacing: 2px;
+      border-radius: 8px;
+      font-family: "Skranji", cursive;
+      color: #ffc000;
+      font-size: 2rem;
+      font-weight: 400;
+      text-shadow: 0 1px 3px #000;
+      padding: 10px;
+      background: radial-gradient(circle, #8b0000, #8b0000);
+      border-top: 4px ridge #ffb000;
+      border-left: 4px groove #ffb000;
+      border-right: 4px ridge #ffb000;
+      border-bottom: 4px groove #ffb000;
+      box-shadow: inset 0px 0px 5px 3px rgba(1, 1, 1, 0.3);
+    }
+
+    &__button:hover {
+      background: radial-gradient(circle, #e52b2b, #8b0000);
+      box-shadow: 0px 0 5px 5px rgba(255, 255, 255, 0.2);
+    }
+  }
+}

@@ -1,0 +1,24 @@
+@import "./start-screen.scss", "./highscore.scss", "./exit-overlay.scss";
+
+body {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background: #000000;
+  margin: 0;
+  padding: 0;
+  color: white;
+  background-image: url(./img/fantasy_background.jpg);
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-size: 100%;
+  overflow: hidden;
+}
+
+.d-block {
+  display: block;
+}
+
+.d-none {
+  display: none;
+}

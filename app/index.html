@@ -7,21 +7,129 @@
     <title>Vite App</title>
   </head>
   <body>
+    <!-- canvas-element -->
     <div id="app" class="d-none">
       <canvas id="element" class="d-block"></canvas>
     </div>
-    <div id="highscore">
-      <h1>Hello welcome to this game</h1>
-      <div>
-        <h2>Highscore</h2>
-        <ul>
-          <li>100 Points Player 1</li>
-          <li>50 Points Player 2</li>
-          <li>10 Points Player 3</li>
-        </ul>
+
+    <!-- start-screen -->
+    <div id="start-screen" class="start-screen">
+      <div class="start-screen__title">
+        <h1>Dungeon Crawler</h1>
+      </div>
+      <div class="start-screen__button-bar">
+        <button class="start-screen__button-bar__button" id="startbutton">
+          Start Game
+        </button>
+        <button class="start-screen__button-bar__button" id="highscoreButton">
+          Highscore
+        </button>
       </div>
     </div>
-    <button id="startbutton">Start Game</button>
+
+    <!-- exit-overlay -->
+    <div class="exit-overlay d-none" id="overlay">
+      <div class="exit-overlay__button-bar">
+        <button class="exit-overlay__button-bar__button" id="continueButton">
+          CONTINUE
+        </button>
+        <button class="exit-overlay__button-bar__button" id="exitButton">
+          EXIT
+        </button>
+      </div>
+    </div>
+
+    <!-- highscore -->
+    <div id="highscore" class="highscore d-none">
+      <h1 class="highscore__title">Highscore</h1>
+      <div class="highscore__wrapper">
+        <div class="highscore__wrapper__name-box">
+          <div class="highscore__wrapper__name-box__place-number">Place</div>
+          <div class="highscore__wrapper__name-box__player-name">
+            Player Name
+          </div>
+          <div class="highscore__wrapper__name-box__floor-number">
+            Floor Number
+          </div>
+          <div class="highscore__wrapper__name-box__play-time">Play Time</div>
+        </div>
+        <div class="highscore__wrapper__name-box">
+          <div class="highscore__wrapper__name-box__place-number">1st</div>
+          <div class="highscore__wrapper__name-box__player-name">AAAAAAAAA</div>
+          <div class="highscore__wrapper__name-box__floor-number">20</div>
+          <div class="highscore__wrapper__name-box__play-time">00:42:00</div>
+        </div>
+        <div class="highscore__wrapper__name-box">
+          <div class="highscore__wrapper__name-box__place-number">2nd</div>
+          <div class="highscore__wrapper__name-box__player-name">
+            BBBBBBBBBB
+          </div>
+          <div class="highscore__wrapper__name-box__floor-number">20</div>
+          <div class="highscore__wrapper__name-box__play-time">00:42:00</div>
+        </div>
+        <div class="highscore__wrapper__name-box">
+          <div class="highscore__wrapper__name-box__place-number">3th</div>
+          <div class="highscore__wrapper__name-box__player-name">
+            CCCCCCCCCc
+          </div>
+          <div class="highscore__wrapper__name-box__floor-number">20</div>
+          <div class="highscore__wrapper__name-box__play-time">00:42:00</div>
+        </div>
+        <div class="highscore__wrapper__name-box">
+          <div class="highscore__wrapper__name-box__place-number">4th</div>
+          <div class="highscore__wrapper__name-box__player-name">DDDDDDD</div>
+          <div class="highscore__wrapper__name-box__floor-number">20</div>
+          <div class="highscore__wrapper__name-box__play-time">00:42:00</div>
+        </div>
+        <div class="highscore__wrapper__name-box">
+          <div class="highscore__wrapper__name-box__place-number">5th</div>
+          <div class="highscore__wrapper__name-box__player-name">EEEEEEE</div>
+          <div class="highscore__wrapper__name-box__floor-number">20</div>
+          <div class="highscore__wrapper__name-box__play-time">00:42:00</div>
+        </div>
+        <div class="highscore__wrapper__name-box">
+          <div class="highscore__wrapper__name-box__place-number">6th</div>
+          <div class="highscore__wrapper__name-box__player-name">FFFFFFF</div>
+          <div class="highscore__wrapper__name-box__floor-number">20</div>
+          <div class="highscore__wrapper__name-box__play-time">00:42:00</div>
+        </div>
+        <div class="highscore__wrapper__name-box">
+          <div class="highscore__wrapper__name-box__place-number">7th</div>
+          <div class="highscore__wrapper__name-box__player-name">
+            BBBBBBBBBB
+          </div>
+          <div class="highscore__wrapper__name-box__floor-number">20</div>
+          <div class="highscore__wrapper__name-box__play-time">00:42:00</div>
+        </div>
+        <div class="highscore__wrapper__name-box">
+          <div class="highscore__wrapper__name-box__place-number">8th</div>
+          <div class="highscore__wrapper__name-box__player-name">
+            BBBBBBBBBB
+          </div>
+          <div class="highscore__wrapper__name-box__floor-number">20</div>
+          <div class="highscore__wrapper__name-box__play-time">00:42:00</div>
+        </div>
+        <div class="highscore__wrapper__name-box">
+          <div class="highscore__wrapper__name-box__place-number">9th</div>
+          <div class="highscore__wrapper__name-box__player-name">
+            BBBBBBBBBB
+          </div>
+          <div class="highscore__wrapper__name-box__floor-number">423</div>
+          <div class="highscore__wrapper__name-box__play-time">00:42:00</div>
+        </div>
+        <div class="highscore__wrapper__name-box" style="margin-bottom: 50px">
+          <div class="highscore__wrapper__name-box__place-number">10th</div>
+          <div class="highscore__wrapper__name-box__player-name">
+            BBBBBBBBBB
+          </div>
+          <div class="highscore__wrapper__name-box__floor-number">20</div>
+          <div class="highscore__wrapper__name-box__play-time">00:42:00</div>
+        </div>
+        <button class="highscore__backbutton d-none" id="backbutton">
+          Go Back
+        </button>
+      </div>
+    </div>
     <script type="module" src="/main.ts"></script>
   </body>
 </html>
