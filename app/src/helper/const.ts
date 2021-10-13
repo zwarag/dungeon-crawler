@@ -3,7 +3,7 @@ export const GLOBAL_GROUND_Y = -0.5;
 
 // grid settings used for the dungeon generation
 const GRID_HEIGHT = 40;
-const GRID_WIDTH = 40;
+const GRID_WIDTH = GRID_HEIGHT;
 const MAX_ROOMS = 15;
 const ROOM_SIZE_RANGE = [6, 8];
 const [ROOM_SIZE_MIN, ROOM_SIZE_MAX] = ROOM_SIZE_RANGE;

@@ -25,24 +25,50 @@ export class Enemy {
      */
     private _health: number
 
+    /**
+     * The awareness range of the enemy
+     */
+    private _awarenessRange: number
+
+    /**
+     * Whether the enemy is activated
+     */
+    private _active: boolean
+
+
     constructor(x: number, z: number) {
-        this._state = new StateMachine()
         const enemyCount = Object.keys(ENEMY).length / 2
         this._type = randomRange(0, Math.max(enemyCount - 1))
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         const enemyObject = enemiesJson[ENEMY[this._type]]
         this._health = randomRange(enemyObject.health.min, enemyObject.health.max)
+        this._awarenessRange = enemyObject.awarenessRange
+        this._active = false
+        // replace by graphics
         const endObjectGeometry = new THREE.ConeGeometry(0.5, 1, 32);
         const endObjectMaterial = new THREE.MeshBasicMaterial({color: 0xFFFFFF});
         this._3DElement = new THREE.Mesh(endObjectGeometry, endObjectMaterial);
         this._3DElement.position.set(x, GLOBAL_Y, z)
         this._3DElement.name = "ENEMY"
+        // tbd
+        this._state = new StateMachine()
     }
 
     get Element(): THREE.Mesh {
         return this._3DElement;
     }
 
+    get awarenessRange(): number {
+        return this._awarenessRange
+    }
+
+    get active(): boolean {
+        return this._active
+    }
+
+    set active(value: boolean) {
+        this._active = value
+    }
 
 }

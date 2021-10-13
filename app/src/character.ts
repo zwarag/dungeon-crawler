@@ -127,7 +127,6 @@ export class Character {
     }
 
     checkFreeSpace(x: number, z: number, scene: Scene): boolean {
-        console.log(this._camera.position)
         const intersections = scene.children.filter(value =>
             value.position.z === z && value.position.x === x
         )

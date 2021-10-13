@@ -1,13 +1,14 @@
 import {GLOBAL_GROUND_Y, GLOBAL_Y, PROPERTIES} from "./helper/const";
 import * as THREE from "three";
+import {Mesh} from "three";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";
 import {FirstPersonControls} from "three/examples/jsm/controls/FirstPersonControls";
 import {Character} from "./character";
 import {millisecondsToSeconds} from "./helper/time";
 import {Dungeon} from "./dungeon";
 import {ELEMENTS} from "./helper/grid-elements";
-import {Vector3} from "three";
 import {Enemy} from "./enemy";
+import {AStarFinder} from "astar-typescript";
 
 export class Game {
     private _threejs: THREE.WebGLRenderer;
@@ -18,6 +19,8 @@ export class Game {
     private _player: Character;
     private _dungeon: Dungeon;
     private _camControls: FirstPersonControls;
+    private _goal: Mesh;
+    private _enemies: Array<Enemy> = []
 
     constructor(element: HTMLCanvasElement) {
         this._threejs = new THREE.WebGLRenderer({
@@ -122,28 +125,29 @@ export class Game {
 
 
         // placing enemies
-        this._dungeon.rooms.forEach(room => {
-            if (!room.start) {
-                for (let height = 0; height < room.height - 1; height++) {
-                    for (let width = 0; width < room.width - 1; width++) {
-                        if (Math.random() <= room.enemyChance) {
-                            const z = (room.z + 1 + height) - (PROPERTIES.GRID_WIDTH / 2 - 0.5)
-                            const x = (room.x + 1 + width) - (PROPERTIES.GRID_WIDTH / 2 - 0.5)
-                            const enemy = new Enemy(x, z)
-                            this._scene.add(enemy.Element)
-                            // console.log(enemy)
-                        }
-                    }
-                }
+        this._setEnemies()
+
+        // TODO move the following blocks to game loop
+        // activate and deactivate enemies
+        this._enemies.forEach(enemy => {
+            const distanceToPlayer = enemy.Element.position.manhattanDistanceTo(this._player.Element.position)
+            if (distanceToPlayer <= enemy.awarenessRange * 10) {
+                enemy.active = true
+            } else if (distanceToPlayer >= Math.floor(enemy.awarenessRange * 1.5)) {
+                enemy.active = false // allows the player to flee and for enemies to loose interest
             }
         })
 
+        this._constructAStarGrid()
+
+        // move enemy or attack player
+        this._moveOrAttack()
 
         // Camera
         // TODO: this is only temporary and should be swaped out for the actual implementaiton of the camera
-        // const controls = new OrbitControls(this._camera, this._threejs.domElement);
-        // controls.target.set(0, 0, 0);
-        // controls.update();
+        const controls = new OrbitControls(this._camera, this._threejs.domElement);
+        controls.target.set(0, 0, 0);
+        controls.update();
 
         this._requestAnimationFrame();
 
@@ -154,6 +158,7 @@ export class Game {
         this._camera.aspect = window.innerWidth / window.innerHeight;
         this._camera.updateProjectionMatrix();
     }
+
 
     private _requestAnimationFrame() {
         requestAnimationFrame((timeElapsedMS) => {
@@ -199,12 +204,95 @@ export class Game {
     private _placeEndRoomObject() {
         const endRoomX = this._dungeon.rooms[this._dungeon.rooms.length - 1].x + Math.floor(this._dungeon.rooms[this._dungeon.rooms.length - 1].width / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
         const endRoomZ = this._dungeon.rooms[this._dungeon.rooms.length - 1].z + Math.floor(this._dungeon.rooms[this._dungeon.rooms.length - 1].height / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
-        const endObjectGeometry = new THREE.ConeGeometry(0.5, 1, 32);
+        const endObjectGeometry = new THREE.ConeGeometry(0.5, 4, 32);
         const endObjectMaterial = new THREE.MeshBasicMaterial({color: 0xffff00});
         const cone = new THREE.Mesh(endObjectGeometry, endObjectMaterial);
         cone.position.set(endRoomX, GLOBAL_Y, endRoomZ)
+        cone.name = "GOAL"
+        this._goal = cone
         this._scene.add(cone);
     }
+
+
+    private _setEnemies() {
+        this._dungeon.rooms.forEach(room => {
+            if (!room.start) {
+                for (let height = 0; height < room.height - 1; height++) {
+                    for (let width = 0; width < room.width - 1; width++) {
+                        if (Math.random() <= room.enemyChance) {
+                            const x = (room.x + 1 + width) - (PROPERTIES.GRID_WIDTH / 2 + 0.5)
+                            const z = (room.z + 1 + height) - (PROPERTIES.GRID_HEIGHT / 2 + 0.5)
+                            if (!(this._goal.position.x === x && this._goal.position.z === z)) {
+                                const enemy = new Enemy(x, z)
+                                this._enemies.push(enemy)
+                                this._scene.add(enemy.Element)
+                            }
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+    private _constructAStarGrid(): number[][] {
+
+        const grid: number[][] = [];
+        for (let index = 0; index < PROPERTIES.GRID_HEIGHT; index++) {
+            grid.push(new Array(PROPERTIES.GRID_WIDTH).fill(0))
+        }
+
+        const relevantElements =  this._scene.children.filter(child => {
+            const items = [ELEMENTS.WALL.valueOf(), ELEMENTS.ENEMY.valueOf(), ELEMENTS.GOAL.valueOf()]
+            return items.includes(child.name)
+        })
+
+        relevantElements.forEach(child => {
+            const x = Game._sceneToGrid(child.position.x)
+            const z = Game._sceneToGrid(child.position.z)
+            grid[x][z] = 1
+        })
+        return grid
+    }
+
+    private static _sceneToGrid(number_: number) {
+        return Math.floor(number_) + Math.floor(PROPERTIES.GRID_HEIGHT / 2)
+    }
+
+    private static _gridToScene(number_: number) {
+        return number_ - (PROPERTIES.GRID_WIDTH / 2) - 0.5
+    }
+
+
+    private _moveOrAttack() {
+
+        this._enemies.filter(enemy => enemy.active).forEach(enemy => {
+            setTimeout(() => {
+                console.log("checking if enemy is in reach")
+                const grid = this._constructAStarGrid()
+                const aStarFinder = new AStarFinder({grid: {matrix: grid}, diagonalAllowed: false})
+                const enemyPosition = {
+                    x: Game._sceneToGrid(enemy.Element.position.x),
+                    y: Game._sceneToGrid(enemy.Element.position.z)
+                }
+                const playerPosition = {
+                    x: Game._sceneToGrid(this._player.Element.position.x),
+                    y: Game._sceneToGrid(this._player.Element.position.z)
+                }
+
+                const path: number[][] = aStarFinder.findPath(enemyPosition, playerPosition);
+                console.log(path)
+                if (path.length > 0) {
+                    const nextStep: number[] = path[0]
+                    console.log("nextstepgrid", nextStep)
+                    console.log("nextstepscene", Game._gridToScene(nextStep[0]), Game._gridToScene(nextStep[1]))
+                    enemy.Element.position.set(Game._gridToScene(nextStep[0]), GLOBAL_Y, Game._gridToScene(nextStep[1]))
+
+                }
+            }, 3000)
+        })
+
+    }
+
 
 }
 
