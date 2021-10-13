@@ -2,7 +2,6 @@ import {GLOBAL_GROUND_Y, GLOBAL_Y, PROPERTIES} from "./helper/const";
 import * as THREE from "three";
 import {Mesh} from "three";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";
-import {FirstPersonControls} from "three/examples/jsm/controls/FirstPersonControls";
 import {Character} from "./character";
 import {millisecondsToSeconds} from "./helper/time";
 import {Dungeon} from "./dungeon";
@@ -18,7 +17,6 @@ export class Game {
     private _objects: Array<any>;
     private _player: Character;
     private _dungeon: Dungeon;
-    private _camControls: FirstPersonControls;
     private _goal: Mesh;
     private _enemies: Array<Enemy> = []
 
@@ -129,19 +127,11 @@ export class Game {
 
         // TODO move the following blocks to game loop
         // activate and deactivate enemies
-        this._enemies.forEach(enemy => {
-            const distanceToPlayer = enemy.Element.position.manhattanDistanceTo(this._player.Element.position)
-            if (distanceToPlayer <= enemy.awarenessRange * 10) {
-                enemy.active = true
-            } else if (distanceToPlayer >= Math.floor(enemy.awarenessRange * 1.5)) {
-                enemy.active = false // allows the player to flee and for enemies to loose interest
-            }
-        })
+        // this._activateEnemies()
 
-        this._constructAStarGrid()
 
         // move enemy or attack player
-        this._moveOrAttack()
+        // this._moveOrAttack()
 
         // Camera
         // TODO: this is only temporary and should be swaped out for the actual implementaiton of the camera
@@ -171,6 +161,15 @@ export class Game {
             this._threejs.render(this._scene, this._camera);
             this._calculateNextState(timeElapsedMS - this._previousRAF);
             this._previousRAF = timeElapsedMS;
+
+            // console.log("Time elapsed: " + timeElapsedMS)
+            if (0 < timeElapsedMS % 2000 && timeElapsedMS % 2000 < 20) {
+                console.log("moving")
+                this._activateEnemies()
+                this._moveOrAttack()
+
+            }
+
         });
     }
 
@@ -186,7 +185,7 @@ export class Game {
         const textureLoader = new THREE.TextureLoader();
         const wallTexture = textureLoader.load("./img/wall.jpg")
         const wallGeometry = new THREE.BoxGeometry(1, 1.5, 1);
-        const wallMaterial = new THREE.MeshBasicMaterial({map: wallTexture}) // img source: https://www.pinterest.at/pin/376402481328234967/
+        const wallMaterial = new THREE.MeshBasicMaterial({map: wallTexture, opacity:0.8, transparent:true}) // img source: https://www.pinterest.at/pin/376402481328234967/
         for (let height = 0; height < this._dungeon.grid.length; height++) {
             for (let width = 0; width < this._dungeon.grid[height].length; width++) {
                 if (this._dungeon.grid[height][width] == ELEMENTS.WALL) {
@@ -217,8 +216,8 @@ export class Game {
     private _setEnemies() {
         this._dungeon.rooms.forEach(room => {
             if (!room.start) {
-                for (let height = 0; height < room.height - 1; height++) {
-                    for (let width = 0; width < room.width - 1; width++) {
+                for (let height = 1; height < room.height - 1; height++) {
+                    for (let width = 1; width < room.width - 1; width++) {
                         if (Math.random() <= room.enemyChance) {
                             const x = (room.x + 1 + width) - (PROPERTIES.GRID_WIDTH / 2 + 0.5)
                             const z = (room.z + 1 + height) - (PROPERTIES.GRID_HEIGHT / 2 + 0.5)
@@ -241,7 +240,7 @@ export class Game {
             grid.push(new Array(PROPERTIES.GRID_WIDTH).fill(0))
         }
 
-        const relevantElements =  this._scene.children.filter(child => {
+        const relevantElements = this._scene.children.filter(child => {
             const items = [ELEMENTS.WALL.valueOf(), ELEMENTS.ENEMY.valueOf(), ELEMENTS.GOAL.valueOf()]
             return items.includes(child.name)
         })
@@ -249,48 +248,102 @@ export class Game {
         relevantElements.forEach(child => {
             const x = Game._sceneToGrid(child.position.x)
             const z = Game._sceneToGrid(child.position.z)
-            grid[x][z] = 1
+            grid[z][x] = 1
         })
+
         return grid
     }
 
     private static _sceneToGrid(number_: number) {
-        return Math.floor(number_) + Math.floor(PROPERTIES.GRID_HEIGHT / 2)
+        return Math.floor(number_ + PROPERTIES.GRID_HEIGHT / 2 + 0.5)
     }
 
     private static _gridToScene(number_: number) {
-        return number_ - (PROPERTIES.GRID_WIDTH / 2) - 0.5
+        return number_ -  PROPERTIES.GRID_WIDTH / 2 - 0.5
+    }
+
+    private _activateEnemies() {
+
+        this._enemies.forEach(enemy => {
+            const distanceToPlayer = enemy.Element.position.manhattanDistanceTo(this._player.Element.position)
+            if (distanceToPlayer <= enemy.awarenessRange*10) {
+                enemy.active = true
+            } else if (distanceToPlayer >= enemy.awarenessRange * 1.5) {
+                enemy.active = false // allows the player to flee and for enemies to loose interest
+            }
+        })
+
     }
 
 
     private _moveOrAttack() {
 
-        this._enemies.filter(enemy => enemy.active).forEach(enemy => {
-            setTimeout(() => {
-                console.log("checking if enemy is in reach")
-                const grid = this._constructAStarGrid()
-                const aStarFinder = new AStarFinder({grid: {matrix: grid}, diagonalAllowed: false})
-                const enemyPosition = {
-                    x: Game._sceneToGrid(enemy.Element.position.x),
-                    y: Game._sceneToGrid(enemy.Element.position.z)
-                }
-                const playerPosition = {
-                    x: Game._sceneToGrid(this._player.Element.position.x),
-                    y: Game._sceneToGrid(this._player.Element.position.z)
-                }
+        const activeEnemies = this._enemies.filter(enemy => enemy.active)
 
-                const path: number[][] = aStarFinder.findPath(enemyPosition, playerPosition);
-                console.log(path)
-                if (path.length > 0) {
-                    const nextStep: number[] = path[0]
-                    console.log("nextstepgrid", nextStep)
-                    console.log("nextstepscene", Game._gridToScene(nextStep[0]), Game._gridToScene(nextStep[1]))
+        activeEnemies.forEach(enemy => {
+
+            const playerPosition = {
+                x: Game._sceneToGrid(this._player.Element.position.x),
+                y: Game._sceneToGrid(this._player.Element.position.z)
+            }
+            const enemyPosition = {
+                x: Game._sceneToGrid(enemy.Element.position.x),
+                y: Game._sceneToGrid(enemy.Element.position.z)
+            }
+            const grid = this._constructAStarGrid()
+
+            grid[enemyPosition.y][enemyPosition.x] = 0 // manipulates the grid to allow movement,
+
+            const aStarFinder = new AStarFinder({
+                grid: {matrix: grid},
+                diagonalAllowed: false,
+                heuristic: "Manhattan",
+                includeStartNode: false
+            })
+
+            const path: number[][] = aStarFinder.findPath(enemyPosition, playerPosition);
+            if (path.length > 0) {
+                // console.log("current enemy position", enemyPosition)
+                const nextStep: number[] = path[0]
+                // console.log("next enemy position", nextStep)
+                // console.log("player position", playerPosition)
+                if (!(nextStep[0] === playerPosition.x && nextStep[1] === playerPosition.y)) {
+                    console.log("moved", enemy.Element)
                     enemy.Element.position.set(Game._gridToScene(nextStep[0]), GLOBAL_Y, Game._gridToScene(nextStep[1]))
-
                 }
-            }, 3000)
+            }
         })
 
+    }
+
+    private _sceneToGridGridToSceneConversion() {
+
+        const grid = this._constructAStarGrid()
+
+        const geometry = new THREE.BoxGeometry(1, 3, 1);
+        const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
+
+        for (let i = 0; i < grid.length; i++) {
+            for (let j = 0; j < grid.length; j++) {
+                console.log(i, j)
+                if (grid[i][j] == 1) {
+                    const x = Game._gridToScene(j)
+                    const z = Game._gridToScene(i)
+
+                    const cube = new THREE.Mesh(geometry, material);
+                    cube.position.set(x, GLOBAL_Y, z)
+                    this._scene.add(cube);
+                }
+            }
+        }
+    }
+
+    private _positionConversionCheck() {
+
+        const scenePlayerPosition = this._player.Element.position.z
+        const gridPlayerPosition = Game._sceneToGrid(scenePlayerPosition)
+        console.log("scene to grid", scenePlayerPosition, gridPlayerPosition)
+        console.log("grid to scene", gridPlayerPosition, scenePlayerPosition)
     }
 
 
