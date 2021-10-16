@@ -1,76 +1,138 @@
-import "./styles/style.scss";
-import { Game } from "./src/game";
-
-const app = document.querySelector<HTMLDivElement>("#app");
-const highscore = document.querySelector<HTMLDivElement>("#highscore");
-const startScreen = document.querySelector<HTMLDivElement>("#start-screen");
-const element = document.querySelector<HTMLCanvasElement>("#element");
-const startButton = document.querySelector<HTMLButtonElement>("#startbutton");
-const highscoreButton =
-  document.querySelector<HTMLButtonElement>("#highscoreButton");
-const backButton = document.querySelector<HTMLButtonElement>("#backbutton");
-const overlay = document.querySelector<HTMLDivElement>("#overlay");
-const continueButton =
-  document.querySelector<HTMLButtonElement>("#continueButton");
-const exitButton = document.querySelector<HTMLButtonElement>("#exitButton");
+import './styles/style.scss';
+// import { Game } from "./src/game";
+// import { HTMLELEMENTS } from "./src/helper/const";
+import {highscoreItem} from './src/helper/type';
+import {highscoreElementFloors, highscoreElementNames, highscoreElementTimes, HTMLELEMENTS} from './src/helper/const';
+import highscoreJson from './public/highscore/highscore.json';
+import {Game} from './src/game';
 
 function startGame() {
-  app?.classList.remove("d-none");
-  startScreen?.classList.add("d-none");
-  highscore?.classList.add("d-none");
-  if (element) {
-    new Game(element);
-  }
+    HTMLELEMENTS.app?.classList.remove('d-none');
+    HTMLELEMENTS.startScreen?.classList.add('d-none');
+    HTMLELEMENTS.highscore?.classList.add('d-none');
+    HTMLELEMENTS.nameInput?.classList.add('d-none');
+    if (HTMLELEMENTS.element) {
+        new Game(HTMLELEMENTS.element);
+    }
+}
+
+function displayNameInput() {
+    HTMLELEMENTS.startScreen?.classList.add('d-none');
+    HTMLELEMENTS.highscore?.classList.add('d-none');
+    HTMLELEMENTS.nameInput?.classList.remove('d-none');
 }
 
 function displayHighscore() {
-  startScreen?.classList.add("d-none");
-  highscore?.classList.remove("d-none");
-  backButton?.classList.remove("d-none");
+    HTMLELEMENTS.startScreen?.classList.add('d-none');
+    HTMLELEMENTS.highscore?.classList.remove('d-none');
+    HTMLELEMENTS.highscoreBackButton?.classList.remove('d-none');
 }
 
 function backToStartScreen() {
-  if (!app?.classList.contains("d-none")) {
-    exitGame();
-    overlay?.classList.add("d-none");
-    app?.classList.add("d-none");
-  } else {
-    highscore?.classList.add("d-none");
-  }
-  startScreen?.classList.remove("d-none");
+    if (!HTMLELEMENTS.app?.classList.contains('d-none')) {
+        exitGame();
+        HTMLELEMENTS.overlay?.classList.add('d-none');
+        HTMLELEMENTS.app?.classList.add('d-none');
+        HTMLELEMENTS.highscore?.classList.remove('d-none');
+    } else if (!HTMLELEMENTS.highscore?.classList.contains('d-none')) {
+        HTMLELEMENTS.highscore?.classList.add('d-none');
+        HTMLELEMENTS.startScreen?.classList.remove('d-none');
+    } else if (!HTMLELEMENTS.nameInput?.classList.contains('d-none')) {
+        HTMLELEMENTS.nameInput?.classList.add('d-none');
+        HTMLELEMENTS.startScreen?.classList.remove('d-none');
+    }
 }
 
 function displayExitOverlay() {
-  //TODO: logic to freeze game
-  if (!app?.classList.contains("d-none")) {
-    if (element) {
-      element.style.opacity = "80%";
-      overlay?.classList.remove("d-none");
+    //TODO: logic to freeze game
+    if (!HTMLELEMENTS.app?.classList.contains('d-none')) {
+        if (HTMLELEMENTS.element) {
+            HTMLELEMENTS.element.style.opacity = '80%';
+            HTMLELEMENTS.overlay?.classList.remove('d-none');
+        }
     }
-  }
 }
 
 function exitGame() {
-  //TODO: some logic to end the game (i.e. destroy scene, create highscore, etc)
+    //TODO: some logic to end the game (i.e. destroy scene, create highscore, etc)
+    const highescoreName = document?.querySelector<HTMLDivElement>(
+        '#highscore-first-place'
+    );
+    console.log(highescoreName);
+
+    if (highescoreName) {
+        highescoreName.innerHTML += getPlayerName();
+    }
 }
 
 function continueGame() {
-  //TODO: logic to "unfreeze" game
-  overlay?.classList.add("d-none");
-  if (element) {
-    element.style.opacity = "100%";
-  }
+    //TODO: logic to "unfreeze" game
+    HTMLELEMENTS.overlay?.classList.add('d-none');
+    if (HTMLELEMENTS.element) {
+        HTMLELEMENTS.element.style.opacity = '100%';
+    }
 }
 
-startButton?.addEventListener("click", startGame);
-highscoreButton?.addEventListener("click", displayHighscore);
-backButton?.addEventListener("click", backToStartScreen);
-exitButton?.addEventListener("click", backToStartScreen);
-continueButton?.addEventListener("click", continueGame);
-document.addEventListener("keydown", function (event) {
-  if (event.key === "Escape") {
-    displayExitOverlay();
-  }
+function getPlayerName() {
+    console.log('inside getPlayerName', HTMLELEMENTS.formInput?.value);
+    return HTMLELEMENTS.formInput?.value;
+}
+
+function enableButton() {
+    if (
+        HTMLELEMENTS.nameInputOkButton &&
+        HTMLELEMENTS.formInput?.value !== undefined
+    ) {
+        if (HTMLELEMENTS.formInput?.value.length >= 1) {
+            HTMLELEMENTS.nameInputOkButton.disabled = false;
+        } else {
+            HTMLELEMENTS.nameInputOkButton.disabled = true;
+        }
+    }
+}
+
+HTMLELEMENTS.startButton?.addEventListener('click', displayNameInput);
+HTMLELEMENTS.highscoreButton?.addEventListener('click', displayHighscore);
+HTMLELEMENTS.highscoreBackButton?.addEventListener('click', backToStartScreen);
+HTMLELEMENTS.exitButton?.addEventListener('click', backToStartScreen);
+HTMLELEMENTS.continueButton?.addEventListener('click', continueGame);
+HTMLELEMENTS.nameInputBackButton?.addEventListener('click', backToStartScreen);
+HTMLELEMENTS.nameInputOkButton?.addEventListener('click', startGame);
+HTMLELEMENTS.formInput?.addEventListener('input', enableButton);
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        displayExitOverlay();
+    }
 });
 
-startGame();
+// startGame();
+
+function sortHighscore(highscoreData: highscoreItem[]) {
+    highscoreData.sort((a: highscoreItem, b: highscoreItem): number => {
+        if (a.floor === b.floor) {
+            return a.time > b.time ? -1 : 1;
+        }
+        return a.floor > b.floor ? -1 : 1;
+    });
+}
+
+function initHighscore(highscoreData: highscoreItem[]) {
+    const data: highscoreItem[] = [];
+    highscoreData.map((e) => data.push(e));
+    data.forEach((a, b) => {
+        highscoreElementNames[b]!.innerHTML = a.name;
+        highscoreElementFloors[b]!.innerHTML = a.floor;
+        highscoreElementTimes[b]!.innerHTML = a.time;
+    });
+}
+
+
+function updateHighscore() {
+    //
+
+}
+
+sortHighscore(highscoreJson);
+initHighscore(highscoreJson);
+
+// startGame();

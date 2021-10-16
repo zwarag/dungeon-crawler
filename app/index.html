@@ -30,12 +30,50 @@
     <!-- exit-overlay -->
     <div class="exit-overlay d-none" id="overlay">
       <div class="exit-overlay__button-bar">
-        <button class="exit-overlay__button-bar__button" id="continueButton">
+        <button
+          class="exit-overlay__button-bar__button"
+          id="exit-overlay-continueButton"
+        >
           CONTINUE
         </button>
-        <button class="exit-overlay__button-bar__button" id="exitButton">
+        <button
+          class="exit-overlay__button-bar__button"
+          id="exit-overlay-exitButton"
+        >
           EXIT
         </button>
+      </div>
+    </div>
+
+    <!-- player name input -->
+    <div id="name-input" class="name-input d-none">
+      <div class="name-input__container">
+        <div class="name-input__container__label">
+          <label for="playerName">Player Name</label>
+        </div>
+        <input
+          class="name-input__container__input"
+          type="text"
+          id="player-name-input"
+          maxlength="10"
+          placeholder="Enter your Heros name"
+        />
+        <p class="name-input__container__hint">1 to 10 characters</p>
+        <div class="name-input__container__button-bar">
+          <button
+            id="name-input-backButton"
+            class="name-input__container__button-bar__button"
+          >
+            Back
+          </button>
+          <button
+            id="name-input-okButton"
+            class="name-input__container__button-bar__button"
+            disabled
+          >
+            OK
+          </button>
+        </div>
       </div>
     </div>
 
@@ -55,77 +93,155 @@
         </div>
         <div class="highscore__wrapper__name-box">
           <div class="highscore__wrapper__name-box__place-number">1st</div>
-          <div class="highscore__wrapper__name-box__player-name">AAAAAAAAA</div>
-          <div class="highscore__wrapper__name-box__floor-number">20</div>
-          <div class="highscore__wrapper__name-box__play-time">00:42:00</div>
+          <div
+            id="highscore-first-place-player-name"
+            class="highscore__wrapper__name-box__player-name"
+          ></div>
+          <div
+            id="highscore-first-place-floor-number"
+            class="highscore__wrapper__name-box__floor-number"
+          ></div>
+          <div
+            id="highscore-first-place-play-time"
+            class="highscore__wrapper__name-box__play-time"
+          ></div>
         </div>
         <div class="highscore__wrapper__name-box">
           <div class="highscore__wrapper__name-box__place-number">2nd</div>
-          <div class="highscore__wrapper__name-box__player-name">
-            BBBBBBBBBB
-          </div>
-          <div class="highscore__wrapper__name-box__floor-number">20</div>
-          <div class="highscore__wrapper__name-box__play-time">00:42:00</div>
+          <div
+            id="highscore-second-place-player-name"
+            class="highscore__wrapper__name-box__player-name"
+          ></div>
+          <div
+            id="highscore-second-place-floor-number"
+            class="highscore__wrapper__name-box__floor-number"
+          ></div>
+          <div
+            id="highscore-second-place-play-time"
+            class="highscore__wrapper__name-box__play-time"
+          ></div>
         </div>
         <div class="highscore__wrapper__name-box">
-          <div class="highscore__wrapper__name-box__place-number">3th</div>
-          <div class="highscore__wrapper__name-box__player-name">
-            CCCCCCCCCc
-          </div>
-          <div class="highscore__wrapper__name-box__floor-number">20</div>
-          <div class="highscore__wrapper__name-box__play-time">00:42:00</div>
+          <div class="highscore__wrapper__name-box__place-number">3rd</div>
+          <div
+            id="highscore-third-place-player-name"
+            class="highscore__wrapper__name-box__player-name"
+          ></div>
+          <div
+            id="highscore-third-place-floor-number"
+            class="highscore__wrapper__name-box__floor-number"
+          ></div>
+          <div
+            id="highscore-third-place-play-time"
+            class="highscore__wrapper__name-box__play-time"
+          ></div>
         </div>
         <div class="highscore__wrapper__name-box">
           <div class="highscore__wrapper__name-box__place-number">4th</div>
-          <div class="highscore__wrapper__name-box__player-name">DDDDDDD</div>
-          <div class="highscore__wrapper__name-box__floor-number">20</div>
-          <div class="highscore__wrapper__name-box__play-time">00:42:00</div>
+          <div
+            id="highscore-fourth-place-player-name"
+            class="highscore__wrapper__name-box__player-name"
+          ></div>
+          <div
+            id="highscore-fourth-place-floor-number"
+            class="highscore__wrapper__name-box__floor-number"
+          ></div>
+          <div
+            id="highscore-fourth-place-play-time"
+            class="highscore__wrapper__name-box__play-time"
+          ></div>
         </div>
         <div class="highscore__wrapper__name-box">
           <div class="highscore__wrapper__name-box__place-number">5th</div>
-          <div class="highscore__wrapper__name-box__player-name">EEEEEEE</div>
-          <div class="highscore__wrapper__name-box__floor-number">20</div>
-          <div class="highscore__wrapper__name-box__play-time">00:42:00</div>
+          <div
+            id="highscore-fifth-place-player-name"
+            class="highscore__wrapper__name-box__player-name"
+          ></div>
+          <div
+            id="highscore-fifth-place-floor-number"
+            class="highscore__wrapper__name-box__floor-number"
+          ></div>
+          <div
+            id="highscore-fifth-place-play-time"
+            class="highscore__wrapper__name-box__play-time"
+          ></div>
         </div>
         <div class="highscore__wrapper__name-box">
           <div class="highscore__wrapper__name-box__place-number">6th</div>
-          <div class="highscore__wrapper__name-box__player-name">FFFFFFF</div>
-          <div class="highscore__wrapper__name-box__floor-number">20</div>
-          <div class="highscore__wrapper__name-box__play-time">00:42:00</div>
+          <div
+            id="highscore-sixth-place-player-name"
+            class="highscore__wrapper__name-box__player-name"
+          ></div>
+          <div
+            id="highscore-sixth-place-floor-number"
+            class="highscore__wrapper__name-box__floor-number"
+          ></div>
+          <div
+            id="highscore-sixth-place-play-time"
+            class="highscore__wrapper__name-box__play-time"
+          ></div>
         </div>
         <div class="highscore__wrapper__name-box">
           <div class="highscore__wrapper__name-box__place-number">7th</div>
-          <div class="highscore__wrapper__name-box__player-name">
-            BBBBBBBBBB
-          </div>
-          <div class="highscore__wrapper__name-box__floor-number">20</div>
-          <div class="highscore__wrapper__name-box__play-time">00:42:00</div>
+          <div
+            id="highscore-seventh-place-player-name"
+            class="highscore__wrapper__name-box__player-name"
+          ></div>
+          <div
+            id="highscore-seventh-place-floor-number"
+            class="highscore__wrapper__name-box__floor-number"
+          ></div>
+          <div
+            id="highscore-seventh-place-play-time"
+            class="highscore__wrapper__name-box__play-time"
+          ></div>
         </div>
         <div class="highscore__wrapper__name-box">
           <div class="highscore__wrapper__name-box__place-number">8th</div>
-          <div class="highscore__wrapper__name-box__player-name">
-            BBBBBBBBBB
-          </div>
-          <div class="highscore__wrapper__name-box__floor-number">20</div>
-          <div class="highscore__wrapper__name-box__play-time">00:42:00</div>
+          <div
+            id="highscore-eighth-place-player-name"
+            class="highscore__wrapper__name-box__player-name"
+          ></div>
+          <div
+            id="highscore-eighth-place-floor-number"
+            class="highscore__wrapper__name-box__floor-number"
+          ></div>
+          <div
+            id="highscore-eighth-place-play-time"
+            class="highscore__wrapper__name-box__play-time"
+          ></div>
         </div>
         <div class="highscore__wrapper__name-box">
           <div class="highscore__wrapper__name-box__place-number">9th</div>
-          <div class="highscore__wrapper__name-box__player-name">
-            BBBBBBBBBB
-          </div>
-          <div class="highscore__wrapper__name-box__floor-number">423</div>
-          <div class="highscore__wrapper__name-box__play-time">00:42:00</div>
+          <div
+            id="highscore-ninth-place-player-name"
+            class="highscore__wrapper__name-box__player-name"
+          ></div>
+          <div
+            id="highscore-ninth-place-floor-number"
+            class="highscore__wrapper__name-box__floor-number"
+          ></div>
+          <div
+            id="highscore-ninth-place-play-time"
+            class="highscore__wrapper__name-box__play-time"
+          ></div>
         </div>
         <div class="highscore__wrapper__name-box" style="margin-bottom: 50px">
           <div class="highscore__wrapper__name-box__place-number">10th</div>
-          <div class="highscore__wrapper__name-box__player-name">
-            BBBBBBBBBB
-          </div>
-          <div class="highscore__wrapper__name-box__floor-number">20</div>
-          <div class="highscore__wrapper__name-box__play-time">00:42:00</div>
+          <div
+            id="highscore-tenth-place-player-name"
+            class="highscore__wrapper__name-box__player-name"
+          ></div>
+          <div
+            id="highscore-tenth-place-floor-number"
+            class="highscore__wrapper__name-box__floor-number"
+          ></div>
+          <div
+            id="highscore-tenth-place-play-time"
+            class="highscore__wrapper__name-box__play-time"
+          ></div>
         </div>
-        <button class="highscore__backbutton d-none" id="backbutton">
+        <button class="highscore__backbutton" id="highscore-backbutton">
           Go Back
         </button>
       </div>
