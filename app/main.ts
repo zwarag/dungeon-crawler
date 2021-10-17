@@ -5,7 +5,7 @@ import "./styles/style.scss";
 // import {highscoreElementFloors, highscoreElementNames, highscoreElementTimes, HTMLELEMENTS} from './src/helper/const';
 // import highscoreJson from './public/highscore/highscore.json';
 // import {Game} from './src/game';
-import { DomController } from "./src/dom-controller";
+import { initDom } from './src/dom-controller';
 import { HighscoreController } from "./src/highscore-controller";
 import highscoreJson from "./public/highscore/highscore.json";
 import { highscoreItem } from "./src/helper/type";
@@ -129,18 +129,10 @@ import { highscoreItem } from "./src/helper/type";
 // sortHighscore(highscoreJson);
 // initHighscore(highscoreJson);
 
-function initDom() {
-  new DomController();
-}
-
+const domController = initDom();
 const highscoreController = new HighscoreController(highscoreJson);
 
-function initHighscore() {
-  return highscoreController;
-}
 
-initDom();
-initHighscore();
 
 // class Player {
 //   createNewPlayer() {
