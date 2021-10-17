@@ -1,37 +1,18 @@
 import { highscoreItem } from "./helper/type";
-import { HIGHSCOREELEMENTS } from "./helper/const";
+import {
+  highscoreElementFloors,
+  highscoreElementNames,
+  highscoreElementTimes,
+} from "./helper/const";
 
 export class HighscoreController {
-  highscore: highscoreItem[] = [
-    {
-      name: "aa",
-      floor: "1",
-      time: "11:25:30",
-    },
-    {
-      name: "bb",
-      floor: "4",
-      time: "10:59:12",
-    },
-    {
-      name: "ee",
-      floor: "1",
-      time: "10:59:12",
-    },
-    {
-      name: "cc",
-      floor: "3",
-      time: "10",
-    },
-    {
-      name: "dd",
-      floor: "2",
-      time: "10",
-    },
-  ];
+  constructor(highscoreJson: highscoreItem[]) {
+    this._sortHighscore(highscoreJson);
+    this._initHighscore(highscoreJson);
+  }
 
-  sortHighscore(array: any) {
-    array.sort((a: highscoreItem, b: highscoreItem): number => {
+  private _sortHighscore(highscoreData: highscoreItem[]) {
+    highscoreData.sort((a: highscoreItem, b: highscoreItem): number => {
       if (a.floor === b.floor) {
         return a.time > b.time ? -1 : 1;
       }
@@ -39,9 +20,25 @@ export class HighscoreController {
     });
   }
 
-  setHighscore() {
-    const array: any = [];
-    HIGHSCOREELEMENTS.forEach((e) => array.push(e?.innerHTML));
-    this.sortHighscore(array);
+  private _initHighscore(highscoreData: highscoreItem[]) {
+    const data: highscoreItem[] = [];
+    highscoreData.map((e) => data.push(e));
+    data.forEach((a, b) => {
+      highscoreElementNames[b]!.innerHTML = a.name;
+      highscoreElementFloors[b]!.innerHTML = a.floor.toString();
+      highscoreElementTimes[b]!.innerHTML = a.time.toString();
+    });
+  }
+
+  public addToHighscore(player: highscoreItem, highscoreData: highscoreItem[]) {
+    highscoreData.push(player);
+    this._sortHighscore(highscoreData);
+    if (highscoreData.length > 10) {
+      console.log("before pop", highscoreData);
+      highscoreData.pop();
+      console.log("after pop", highscoreData);
+    }
+    localStorage.setItem("myStorage", JSON.stringify(highscoreData));
+    this._initHighscore(highscoreData);
   }
 }

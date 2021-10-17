@@ -1,34 +1,33 @@
 import { HTMLELEMENTS } from "./helper/const";
-import { HIGHSCOREELEMENTS } from "./helper/const";
 import { Game } from "./game";
 
 export class DomController {
   constructor() {
-    HTMLELEMENTS.startButton?.addEventListener("click", this.displayNameInput);
+    HTMLELEMENTS.startButton?.addEventListener("click", this._displayNameInput);
     HTMLELEMENTS.highscoreButton?.addEventListener(
       "click",
-      this.displayHighscore
+      this._displayHighscore
     );
     HTMLELEMENTS.highscoreBackButton?.addEventListener(
       "click",
-      this.backToStartScreen
+      this._backToStartScreen
     );
-    HTMLELEMENTS.exitButton?.addEventListener("click", this.backToStartScreen);
-    HTMLELEMENTS.continueButton?.addEventListener("click", this.continueGame);
+    HTMLELEMENTS.exitButton?.addEventListener("click", this._backToStartScreen);
+    HTMLELEMENTS.continueButton?.addEventListener("click", this._continueGame);
     HTMLELEMENTS.nameInputBackButton?.addEventListener(
       "click",
-      this.backToStartScreen
+      this._backToStartScreen
     );
-    HTMLELEMENTS.nameInputOkButton?.addEventListener("click", this.startGame);
-    HTMLELEMENTS.formInput?.addEventListener("input", this.enableButton);
+    HTMLELEMENTS.nameInputOkButton?.addEventListener("click", this._startGame);
+    HTMLELEMENTS.formInput?.addEventListener("input", this._enableButton);
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
-        this.displayExitOverlay();
+        this._displayExitOverlay();
       }
     });
   }
 
-  private startGame(): void {
+  private _startGame(): void {
     HTMLELEMENTS.app?.classList.remove("d-none");
     HTMLELEMENTS.startScreen?.classList.add("d-none");
     HTMLELEMENTS.highscore?.classList.add("d-none");
@@ -38,19 +37,18 @@ export class DomController {
     }
   }
 
-  private displayNameInput(): void {
+  private _displayNameInput(): void {
     HTMLELEMENTS.startScreen?.classList.add("d-none");
     HTMLELEMENTS.highscore?.classList.add("d-none");
     HTMLELEMENTS.nameInput?.classList.remove("d-none");
   }
 
-  private displayHighscore(): void {
+  private _displayHighscore(): void {
     HTMLELEMENTS.startScreen?.classList.add("d-none");
     HTMLELEMENTS.highscore?.classList.remove("d-none");
-    // HTMLELEMENTS.highscoreBackButton?.classList.remove("d-none");
   }
 
-  private displayExitOverlay(): void {
+  private _displayExitOverlay(): void {
     //TODO: logic to freeze game
     if (!HTMLELEMENTS.app?.classList.contains("d-none")) {
       if (HTMLELEMENTS.element) {
@@ -60,7 +58,7 @@ export class DomController {
     }
   }
 
-  private continueGame(): void {
+  private _continueGame(): void {
     //TODO: logic to "unfreeze" game
     HTMLELEMENTS.overlay?.classList.add("d-none");
     if (HTMLELEMENTS.element) {
@@ -68,7 +66,7 @@ export class DomController {
     }
   }
 
-  private enableButton(): void {
+  private _enableButton(): void {
     if (
       HTMLELEMENTS.nameInputOkButton &&
       HTMLELEMENTS.formInput?.value !== undefined
@@ -81,7 +79,7 @@ export class DomController {
     }
   }
 
-  private backToStartScreen(): void {
+  private _backToStartScreen(): void {
     //TODO: some logic to end the game (i.e. destroy scene, create highscore, etc)
     if (!HTMLELEMENTS.app?.classList.contains("d-none")) {
       //function that inserts player into highscore
