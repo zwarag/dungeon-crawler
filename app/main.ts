@@ -139,17 +139,15 @@ function initHighscore() {
   return highscoreController;
 }
 
-class Player {
-  createNewPlayer() {
-    // return { name: "me", floor: Math.floor(Math.random() * 10) + 1, time: 0 };
-    return { name: "me", floor: 100, time: 0 };
-  }
-}
-
-const player = new Player();
-
 initDom();
 initHighscore();
+
+// class Player {
+//   createNewPlayer() {
+//     // return { name: "me", floor: Math.floor(Math.random() * 10) + 1, time: 0 };
+//     return { name: "me", floor: 100, time: 0 };
+//   }
+// }
 
 //
 // const addBtn = document.querySelector<HTMLButtonElement>("#btn");

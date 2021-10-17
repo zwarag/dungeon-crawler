@@ -1,0 +1,13 @@
+// story box
+.story-box{
+  height: fit-content;
+  width: 800px;
+  position: absolute;
+  top: 30%;
+  left: 30%;
+  font-family: "Skranji", cursive;
+  font-size: 2rem;
+  border: 4px ridge #ffffff;
+  border-bottom-style: groove;
+  border-left-style: groove;
+}

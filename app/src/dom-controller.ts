@@ -1,5 +1,7 @@
 import { HTMLELEMENTS } from "./helper/const";
 import { Game } from "./game";
+import story from "../public/txt/story.json";
+import { storyWriter } from "./helper/typewriter";
 
 export class DomController {
   constructor() {
@@ -18,7 +20,10 @@ export class DomController {
       "click",
       this._backToStartScreen
     );
-    HTMLELEMENTS.nameInputOkButton?.addEventListener("click", this._startGame);
+    HTMLELEMENTS.nameInputOkButton?.addEventListener(
+      "click",
+      this._displayStoryBox
+    );
     HTMLELEMENTS.formInput?.addEventListener("input", this._enableButton);
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
@@ -77,6 +82,13 @@ export class DomController {
         HTMLELEMENTS.nameInputOkButton.disabled = true;
       }
     }
+  }
+
+  private async _displayStoryBox() {
+    HTMLELEMENTS.storyBox?.classList.remove("d-none");
+    HTMLELEMENTS.nameInput?.classList.add("d-none");
+    await storyWriter(story.story, "story-box", 2);
+    this._startGame();
   }
 
   private _backToStartScreen(): void {

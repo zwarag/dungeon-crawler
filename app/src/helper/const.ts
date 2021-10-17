@@ -43,6 +43,7 @@ const nameInputOkButton = document.querySelector<HTMLButtonElement>(
 );
 const formInput =
   document.querySelector<HTMLInputElement>("#player-name-input");
+const storyBox = document.querySelector<HTMLDivElement>("#story-box");
 export const HTMLELEMENTS = {
   app,
   highscore,
@@ -58,6 +59,7 @@ export const HTMLELEMENTS = {
   nameInputBackButton,
   nameInputOkButton,
   formInput,
+  storyBox,
 };
 
 // Highscore Div Elements
