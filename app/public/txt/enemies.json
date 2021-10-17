@@ -15,7 +15,8 @@
       "attack": "....",
       "walking": "....",
       "death": "...."
-    }
+    },
+    "experience": 12
   },
   "HUMAN": {
     "health": {
@@ -33,7 +34,8 @@
       "attack": "....",
       "walking": "....",
       "death": "...."
-    }
+    },
+    "experience": 15
   },
   "DEVIL": {
     "health": {
@@ -51,6 +53,7 @@
       "attack": "....",
       "walking": "....",
       "death": "...."
-    }
+    },
+    "experience": 20
   }
 }

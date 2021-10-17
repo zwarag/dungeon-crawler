@@ -51,6 +51,12 @@ export class Enemy {
      */
     private _maxDamage: number
 
+    /**
+     * The experience the player receives when this enemy is killed.
+     */
+
+    private _experience: number
+
 
     constructor(x: number, z: number) {
         const enemyCount = Object.keys(ENEMY).length / 2
@@ -63,6 +69,7 @@ export class Enemy {
         this._accuracy = enemyObject.accuracy
         this._minDamage = enemyObject.damage.min
         this._maxDamage = enemyObject.damage.max
+        this._experience = enemyObject.experience
         this._active = false
         // replace by graphics
         const geometry = new THREE.ConeGeometry(0.5, 1, 32);

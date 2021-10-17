@@ -53,6 +53,14 @@ export class Character {
      */
     private _attacks: boolean
 
+    /**
+     * The current experience of the character.
+     */
+
+    private _experience: number
+
+
+
 
     private _camera: PerspectiveCamera;
 
@@ -64,6 +72,7 @@ export class Character {
         this._minDamage = 10
         this._maxDamage = 18
         this._accuracy = 80
+        this._experience = 0
 
         // threejs parts
         this._input = new KeyBoardInputController();

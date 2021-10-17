@@ -1,6 +1,6 @@
 import {GLOBAL_GROUND_Y, GLOBAL_Y, PROPERTIES} from "./helper/const";
 import * as THREE from "three";
-import {Mesh, Scene, Vector3} from "three";
+import {Mesh, Vector3} from "three";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";
 import {Character} from "./character";
 import {millisecondsToSeconds} from "./helper/time";
@@ -15,7 +15,6 @@ export class Game {
     private _camera: THREE.PerspectiveCamera;
     private _scene: THREE.Scene;
     private _previousRAF: number | null;
-    // private _objects: Array<any>;
     private _player: Character;
     private _dungeon: Dungeon;
     private _goal: Mesh;
@@ -104,7 +103,6 @@ export class Game {
         this._camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1000);
 
         // create the character
-        // this._objects = [];
         this._player = new Character(this._camera);
 
         // set the character into the first room
@@ -128,16 +126,9 @@ export class Game {
 
         // Temporary Camera
         // TODO: this is only temporary and should be swaped out for the actual implementaiton of the camera
-        const controls = new OrbitControls(this._camera, this._threejs.domElement);
-        controls.target.set(0, 0, 0);
-        controls.update();
-
-        // TODO move the following blocks to game loop
-        // activate and deactivate enemies
-        // this._activateEnemies()
-
-        // move enemy or attack player
-        // this._enemiesMoveOrAttack()
+        // const controls = new OrbitControls(this._camera, this._threejs.domElement);
+        // controls.target.set(0, 0, 0);
+        // controls.update();
 
         this._requestAnimationFrame();
 
