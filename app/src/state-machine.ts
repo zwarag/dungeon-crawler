@@ -38,13 +38,17 @@ export class StateMachine {
     state.enter(previousState);
   }
 
+  getCurrentState(): State {
+    return this._currentState
+  }
+
   update(timeDelta?: number, input?: unknown): void {
     this._currentState.update(timeDelta, input);
   }
 }
 
 /**
- * A Character is just stading around.
+ * A Character is just standing around.
  */
 class IdleState extends State {
   get name(): string {

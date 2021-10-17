@@ -1,6 +1,6 @@
 import {GLOBAL_GROUND_Y, GLOBAL_Y, PROPERTIES} from "./helper/const";
 import * as THREE from "three";
-import {Mesh} from "three";
+import {Mesh, Scene, Vector3} from "three";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";
 import {Character} from "./character";
 import {millisecondsToSeconds} from "./helper/time";
@@ -8,17 +8,19 @@ import {Dungeon} from "./dungeon";
 import {ELEMENTS} from "./helper/grid-elements";
 import {Enemy} from "./enemy";
 import {AStarFinder} from "astar-typescript";
+import {DIRECTION} from "./helper/direction";
 
 export class Game {
     private _threejs: THREE.WebGLRenderer;
     private _camera: THREE.PerspectiveCamera;
     private _scene: THREE.Scene;
     private _previousRAF: number | null;
-    private _objects: Array<any>;
+    // private _objects: Array<any>;
     private _player: Character;
     private _dungeon: Dungeon;
     private _goal: Mesh;
     private _enemies: Array<Enemy> = []
+
 
     constructor(element: HTMLCanvasElement) {
         this._threejs = new THREE.WebGLRenderer({
@@ -102,7 +104,7 @@ export class Game {
         this._camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1000);
 
         // create the character
-        this._objects = [];
+        // this._objects = [];
         this._player = new Character(this._camera);
 
         // set the character into the first room
@@ -115,33 +117,32 @@ export class Game {
         const axesHelper = new THREE.AxesHelper(10);
         this._scene.add(axesHelper);
 
-        // position and point the camera to the center of the scene
+        // position the camera
         this._camera.position.x = this._player.Element.position.x;
         this._camera.position.y = this._player.Element.position.y;
         this._camera.position.z = this._player.Element.position.z;
         this._camera.rotateY(-Math.PI / 2) // the camera needs to be turned by 90 degrees initially
 
-
         // placing enemies
         this._setEnemies()
 
-        // TODO move the following blocks to game loop
-        // activate and deactivate enemies
-        // this._activateEnemies()
-
-
-        // move enemy or attack player
-        // this._moveOrAttack()
-
-        // Camera
+        // Temporary Camera
         // TODO: this is only temporary and should be swaped out for the actual implementaiton of the camera
         const controls = new OrbitControls(this._camera, this._threejs.domElement);
         controls.target.set(0, 0, 0);
         controls.update();
 
+        // TODO move the following blocks to game loop
+        // activate and deactivate enemies
+        // this._activateEnemies()
+
+        // move enemy or attack player
+        // this._enemiesMoveOrAttack()
+
         this._requestAnimationFrame();
 
     }
+
 
     private _onWindowResize() {
         this._threejs.setSize(window.innerWidth, window.innerHeight);
@@ -163,29 +164,81 @@ export class Game {
             this._previousRAF = timeElapsedMS;
 
             // console.log("Time elapsed: " + timeElapsedMS)
-            if (0 < timeElapsedMS % 2000 && timeElapsedMS % 2000 < 20) {
-                console.log("moving")
-                this._activateEnemies()
-                this._moveOrAttack()
-
-            }
+            // if (0 < timeElapsedMS % 2000 && timeElapsedMS % 2000 < 20) {
+            //     console.log("moving")
+            //     this._activateEnemies()
+            //     this._enemiesMoveOrAttack()
+            // }
 
         });
     }
 
     private _calculateNextState(timeDeltaMS: number) {
         const timeDeltaS = millisecondsToSeconds(timeDeltaMS);
-        this._objects.map((object) => object.update(timeDeltaS));
         this._player.update(timeDeltaS);
-        this._player.moveCharacter(this._scene)
+        this._handleCharacterMovement()
+        this._handleCharacterAttacking()
     }
+
+    private _handleCharacterMovement() {
+
+        const currentPlayerPosition = new Vector3().copy(this._player.Element.position)
+        const newPlayerPosition = this._player.getCharacterMovement()
+        if (!newPlayerPosition.equals(currentPlayerPosition)) { // equals -> Wertevergleich, === -> objektvergleich
+            if (this._checkFreeSpace(newPlayerPosition.x, newPlayerPosition.z)) {
+                this._player.Element.position.set(...newPlayerPosition.toArray())
+                this._camera.position.set(...newPlayerPosition.toArray())
+                this._activateEnemies()
+                this._enemiesMoveOrAttack()
+            } else {
+                this._player.speak("blocked")
+            }
+        }
+    }
+
+    private _handleCharacterAttacking() {
+        if (this._player.attacks) {
+            const playerPosition = this._player.Element.position
+            const playerViewDirection = this._player.direction
+            let enemyPosition: Vector3
+            switch (playerViewDirection) {
+                case DIRECTION.NORTH:
+                    enemyPosition = new Vector3(playerPosition.x + 1, playerPosition.y, playerPosition.z)
+                    break;
+                case DIRECTION.EAST:
+                    enemyPosition = new Vector3(playerPosition.x, playerPosition.y, playerPosition.z - 1)
+                    break;
+                case DIRECTION.SOUTH:
+                    enemyPosition = new Vector3(playerPosition.x - 1, playerPosition.y, playerPosition.z)
+                    break;
+                case DIRECTION.WEST:
+                    enemyPosition = new Vector3(playerPosition.x, playerPosition.y, playerPosition.z + 1)
+                    break;
+            }
+
+            const enemy = this._enemies.filter(value => value.Element.position.equals(enemyPosition)).pop()
+            const damage = this._player.attack()
+
+            console.log(`PLAYER ATTACKED FOR ${damage} DAMAGE`)
+
+            if (enemy !== undefined) {
+                enemy.takeHit(damage)
+                if (enemy.health <= 0) {
+                    this._enemies = this._enemies.filter(child => child !== enemy)
+                    this._scene.remove(enemy.Element)
+                }
+            }
+            this._enemiesMoveOrAttack()
+        }
+    }
+
 
     private _addDungeonToScene() {
 
         const textureLoader = new THREE.TextureLoader();
         const wallTexture = textureLoader.load("./img/wall.jpg")
         const wallGeometry = new THREE.BoxGeometry(1, 1.5, 1);
-        const wallMaterial = new THREE.MeshBasicMaterial({map: wallTexture, opacity:0.8, transparent:true}) // img source: https://www.pinterest.at/pin/376402481328234967/
+        const wallMaterial = new THREE.MeshBasicMaterial({map: wallTexture, opacity: 0.8, transparent: true}) // img source: https://www.pinterest.at/pin/376402481328234967/
         for (let height = 0; height < this._dungeon.grid.length; height++) {
             for (let width = 0; width < this._dungeon.grid[height].length; width++) {
                 if (this._dungeon.grid[height][width] == ELEMENTS.WALL) {
@@ -199,6 +252,14 @@ export class Game {
         }
 
     }
+
+    private _checkFreeSpace(x: number, z: number): boolean {
+        const intersections = this._scene.children.filter(value =>
+            value.position.z === z && value.position.x === x
+        )
+        return intersections.length === 0
+    }
+
 
     private _placeEndRoomObject() {
         const endRoomX = this._dungeon.rooms[this._dungeon.rooms.length - 1].x + Math.floor(this._dungeon.rooms[this._dungeon.rooms.length - 1].width / 2) - PROPERTIES.GRID_WIDTH / 2 - 0.5
@@ -259,14 +320,14 @@ export class Game {
     }
 
     private static _gridToScene(number_: number) {
-        return number_ -  PROPERTIES.GRID_WIDTH / 2 - 0.5
+        return number_ - PROPERTIES.GRID_WIDTH / 2 - 0.5
     }
 
     private _activateEnemies() {
 
         this._enemies.forEach(enemy => {
             const distanceToPlayer = enemy.Element.position.manhattanDistanceTo(this._player.Element.position)
-            if (distanceToPlayer <= enemy.awarenessRange*10) {
+            if (distanceToPlayer <= enemy.awarenessRange) {
                 enemy.active = true
             } else if (distanceToPlayer >= enemy.awarenessRange * 1.5) {
                 enemy.active = false // allows the player to flee and for enemies to loose interest
@@ -276,7 +337,7 @@ export class Game {
     }
 
 
-    private _moveOrAttack() {
+    private _enemiesMoveOrAttack() {
 
         const activeEnemies = this._enemies.filter(enemy => enemy.active)
 
@@ -292,7 +353,7 @@ export class Game {
             }
             const grid = this._constructAStarGrid()
 
-            grid[enemyPosition.y][enemyPosition.x] = 0 // manipulates the grid to allow movement,
+            grid[enemyPosition.y][enemyPosition.x] = 0 // manipulates the grid to allow movement, otherwise the astar fails right away
 
             const aStarFinder = new AStarFinder({
                 grid: {matrix: grid},
@@ -303,13 +364,19 @@ export class Game {
 
             const path: number[][] = aStarFinder.findPath(enemyPosition, playerPosition);
             if (path.length > 0) {
-                // console.log("current enemy position", enemyPosition)
                 const nextStep: number[] = path[0]
-                // console.log("next enemy position", nextStep)
-                // console.log("player position", playerPosition)
                 if (!(nextStep[0] === playerPosition.x && nextStep[1] === playerPosition.y)) {
-                    console.log("moved", enemy.Element)
+                    // console.log("moved", enemy.Element)
                     enemy.Element.position.set(Game._gridToScene(nextStep[0]), GLOBAL_Y, Game._gridToScene(nextStep[1]))
+                } else {
+                    enemy.Element.material.setValues({color: Math.random() * 0xffffff})
+                    const damage = enemy.attack()
+                    this._player.takeHit(damage)
+                    console.log("your health:", this._player.health)
+                    if (this._player.health <= 0) {
+                        console.log("YOU DIED")
+                        // @Chrono666 / Matthias, death screen?
+                    }
                 }
             }
         })

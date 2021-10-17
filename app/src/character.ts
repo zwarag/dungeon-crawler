@@ -30,15 +30,47 @@ export class Character {
     /** The gender of the character, used for voice feedback.*/
     private _gender: number;
 
+    /** The health a character has. */
+    private _health: number;
+
+    /**
+     * How accurate the character attacks
+     */
+    private _accuracy: number
+
+    /**
+     * The minimum number a character does if it hits.
+     */
+    private _minDamage: number
+
+    /**
+     * The maximum number a character does if it hits, besides crits.
+     */
+    private _maxDamage: number
+
+    /**
+     * The player wants to attack.
+     */
+    private _attacks: boolean
+
+
     private _camera: PerspectiveCamera;
 
 
     constructor(camera: PerspectiveCamera) {
+        // game parts
+        this._gender = randomRange(GENDER.MALE, GENDER.FEMALE) // currently determined randomly
+        this._health = 100
+        this._minDamage = 10
+        this._maxDamage = 18
+        this._accuracy = 80
+
+        // threejs parts
         this._input = new KeyBoardInputController();
         this._state = new StateMachine();
         this._velocity = 0;
+        this._attacks = false
         this._direction = DIRECTION.NORTH;
-        this._gender = randomRange(GENDER.MALE, GENDER.FEMALE) // currently determined randomly
         this._camera = camera
         const geometry = new THREE.BoxGeometry(1, 1, 1);
         const loader = new THREE.TextureLoader();
@@ -76,11 +108,94 @@ export class Character {
             this._direction = (this._direction + 1) % 4;
             this.Element.rotateY(-Math.PI / 2);
             this._camera.rotateY(-Math.PI / 2);
+        } else if (keys.action) {
+            this._attacks = true
         } else {
+            this._attacks = false
             this._velocity = 0;
+        }
+
+        this._input.resetKeys()
+
+    }
+
+    attack(): number {
+        let damage = 0;
+        const chance = Math.random() * 100
+        if (chance <= this._accuracy) {
+            damage = randomRange(this._minDamage, this._maxDamage)
+            if (chance > 90) {
+                damage *= 2
+            }
+        }
+        return damage
+    }
+
+
+
+    getCharacterMovement(): Vector3 {
+        if (this._velocity != 0) {
+            switch (this._direction) {
+                case DIRECTION.NORTH:
+                    return new Vector3(this.Element.position.x + this._velocity, this.Element.position.y, this.Element.position.z)
+                case DIRECTION.EAST:
+                    return new Vector3(this.Element.position.x, this.Element.position.y, this.Element.position.z - this._velocity)
+                case DIRECTION.SOUTH:
+                    return new Vector3(this.Element.position.x - this._velocity, this.Element.position.y, this.Element.position.z)
+                case DIRECTION.WEST:
+                    return new Vector3(this.Element.position.x, this.Element.position.y, this.Element.position.z + this._velocity)
+            }
+        }
+        return this.Element.position
+    }
+
+    get attacks(): boolean {
+        return this._attacks
+    }
+
+
+    takeHit(damage: number): void {
+        this._health -= damage
+        console.log(`The player has ${this._health} left`)
+    }
+
+    get health(): number {
+        return this._health
+    }
+
+    get direction(): DIRECTION {
+        return this._direction
+    }
+
+
+    speak(type: string): void {
+
+        try {
+            // avoids to build up a queue of utterances, cancels the current utterance if there is one
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel()
+            }
+            const voices = window.speechSynthesis.getVoices()
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const sentences = text[type] // <-- @harrys, eventuell hast du dazu eine Idee, typescript meckert beim dynamsichen Zugriff mittels string, da das json file nicht getyped ist.
+            const sentence = sentences[Math.floor(Math.random() * sentences.length)] // select a random sentence
+            const utterThis = new SpeechSynthesisUtterance(sentence)
+            utterThis.voice = voices[this._gender]
+            window.speechSynthesis.speak(utterThis) // <-- commented for now, otherwise this might be annoying
+        } catch (error) {
+            console.log("Browser not supported for voice output:" + error)
         }
     }
 
+
+
+
+
+    /**
+     * Removed from the character logic, moved to the game loop.
+     * @deprecated
+     */
     moveCharacter(scene: Scene): void {
         if (this._velocity != 0) {
 
@@ -126,6 +241,9 @@ export class Character {
         }
     }
 
+    /**
+     * @deprecated
+     */
     checkFreeSpace(x: number, z: number, scene: Scene): boolean {
         const intersections = scene.children.filter(value =>
             value.position.z === z && value.position.x === x
@@ -133,25 +251,5 @@ export class Character {
         return intersections.length === 0
     }
 
-
-    speak(type: string): void {
-
-        try {
-            // avoids to build up a queue of utterances, cancels the current utterance if there is one
-            if (window.speechSynthesis.speaking) {
-                window.speechSynthesis.cancel()
-            }
-            const voices = window.speechSynthesis.getVoices()
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            const sentences = text[type] // <-- @harrys, eventuell hast du dazu eine Idee, typescript meckert beim dynamsichen Zugriff mittels string, da das json file nicht getyped ist.
-            const sentence = sentences[Math.floor(Math.random() * sentences.length)] // select a random sentence
-            const utterThis = new SpeechSynthesisUtterance(sentence)
-            utterThis.voice = voices[this._gender]
-            // window.speechSynthesis.speak(utterThis) // <-- commented for now, otherwise this might be annoying
-        } catch (error) {
-            // console.log("Browser not supported for voice output:" + error)
-        }
-    }
 
 }

@@ -5,6 +5,7 @@ import {randomRange} from "./helper/random";
 import enemiesJson from '../public/txt/enemies.json'
 import {GLOBAL_Y} from "./helper/const";
 
+
 export class Enemy {
 
     /** The Statemachine used for animations */
@@ -35,6 +36,21 @@ export class Enemy {
      */
     private _active: boolean
 
+    /**
+     * How accurate the monster attacks
+     */
+    private _accuracy: number
+
+    /**
+     * The minimum number an enemy does if it hits.
+     */
+    private _minDamage: number
+
+    /**
+     * The maximum number an enemy does if it hits, besides crits.
+     */
+    private _maxDamage: number
+
 
     constructor(x: number, z: number) {
         const enemyCount = Object.keys(ENEMY).length / 2
@@ -44,16 +60,32 @@ export class Enemy {
         const enemyObject = enemiesJson[ENEMY[this._type]]
         this._health = randomRange(enemyObject.health.min, enemyObject.health.max)
         this._awarenessRange = enemyObject.awarenessRange
+        this._accuracy = enemyObject.accuracy
+        this._minDamage = enemyObject.damage.min
+        this._maxDamage = enemyObject.damage.max
         this._active = false
         // replace by graphics
-        const endObjectGeometry = new THREE.ConeGeometry(0.5, 1, 32);
-        const endObjectMaterial = new THREE.MeshBasicMaterial({color: 0xFFFFFF});
-        this._3DElement = new THREE.Mesh(endObjectGeometry, endObjectMaterial);
+        const geometry = new THREE.ConeGeometry(0.5, 1, 32);
+        const material = new THREE.MeshBasicMaterial({color: 0xFFFFFF});
+        this._3DElement = new THREE.Mesh(geometry, material);
         this._3DElement.position.set(x, GLOBAL_Y, z)
         this._3DElement.name = "ENEMY"
         // tbd
         this._state = new StateMachine()
     }
+
+    attack(): number {
+        let damage = 0;
+        const chance = Math.random() * 100
+        if (chance <= this._accuracy) {
+            damage = randomRange(this._minDamage, this._maxDamage)
+            if (chance > 90) {
+                damage *= 2
+            }
+        }
+        return damage
+    }
+
 
     get Element(): THREE.Mesh {
         return this._3DElement;
@@ -69,6 +101,15 @@ export class Enemy {
 
     set active(value: boolean) {
         this._active = value
+    }
+
+    takeHit(damage: number): void {
+        this._health -= damage
+        console.log(`The enemy has ${this._health} left`)
+    }
+
+    get health(): number {
+        return this._health
     }
 
 }
