@@ -1,122 +1,89 @@
-import {StateMachine} from "./state-machine";
+import { StateMachine } from "./state-machine";
 import * as THREE from "three";
-import {ENEMY} from "./helper/enemy";
-import {randomRange} from "./helper/random";
-import enemiesJson from '../public/txt/enemies.json'
-import {GLOBAL_Y} from "./helper/const";
+import { ENEMY, ENEMY_TYPE_LIST } from "./helper/enemy";
+import { randomRange } from "./helper/random";
+import enemiesJson from "../public/txt/enemies.json";
+import { GLOBAL_Y } from "./helper/const";
+import { CharacterBase } from "./character";
 
+export class Enemy extends CharacterBase {
+  /** The Statemachine used for animations */
+  private _state: StateMachine;
+  /**
+   * The actual redered object.
+   * Note: THREE.Mesh extends THREE.Object3D which has `position` property
+   */
+  private _3DElement: THREE.Mesh;
 
-export class Enemy {
+  /**
+   *  The type of enemy
+   */
+  private _type: ENEMY;
 
-    /** The Statemachine used for animations */
-    private _state: StateMachine;
-    /**
-     * The actual redered object.
-     * Note: THREE.Mesh extends THREE.Object3D which has `position` property
-     */
-    private _3DElement: THREE.Mesh;
+  /**
+   * Whether the enemy is activated
+   */
+  private _active: boolean;
 
-    /**
-     *  The type of enemy
-     */
-    private _type: ENEMY
+  constructor(x: number, z: number) {
+    const enemyCount = ENEMY_TYPE_LIST.length;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const enemyTypeJsonIndex = randomRange(0, Math.max(enemyCount - 1));
+    const enemyObject = enemiesJson[ENEMY_TYPE_LIST[enemyTypeJsonIndex]];
+    super(
+      randomRange(enemyObject.health.min, enemyObject.health.max),
+      { min: enemyObject.damage.min, max: enemyObject.damage.max },
+      enemyObject.accuracy,
+      enemyObject.experience,
+      enemyObject.awarenessRange
+    );
+    this._type = ENEMY_TYPE_LIST[enemyTypeJsonIndex];
+    this._active = false;
+    // replace by graphics
+    const geometry = new THREE.ConeGeometry(0.5, 1, 32);
+    const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    this._3DElement = new THREE.Mesh(geometry, material);
+    this._3DElement.position.set(x, GLOBAL_Y, z);
+    this._3DElement.name = "ENEMY";
+    // tbd
+    this._state = new StateMachine();
+  }
 
-    /**
-     *  The health of the enemy
-     */
-    private _health: number
-
-    /**
-     * The awareness range of the enemy
-     */
-    private _awarenessRange: number
-
-    /**
-     * Whether the enemy is activated
-     */
-    private _active: boolean
-
-    /**
-     * How accurate the monster attacks
-     */
-    private _accuracy: number
-
-    /**
-     * The minimum number an enemy does if it hits.
-     */
-    private _minDamage: number
-
-    /**
-     * The maximum number an enemy does if it hits, besides crits.
-     */
-    private _maxDamage: number
-
-    /**
-     * The experience the player receives when this enemy is killed.
-     */
-
-    private _experience: number
-
-
-    constructor(x: number, z: number) {
-        const enemyCount = Object.keys(ENEMY).length / 2
-        this._type = randomRange(0, Math.max(enemyCount - 1))
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const enemyObject = enemiesJson[ENEMY[this._type]]
-        this._health = randomRange(enemyObject.health.min, enemyObject.health.max)
-        this._awarenessRange = enemyObject.awarenessRange
-        this._accuracy = enemyObject.accuracy
-        this._minDamage = enemyObject.damage.min
-        this._maxDamage = enemyObject.damage.max
-        this._experience = enemyObject.experience
-        this._active = false
-        // replace by graphics
-        const geometry = new THREE.ConeGeometry(0.5, 1, 32);
-        const material = new THREE.MeshBasicMaterial({color: 0xFFFFFF});
-        this._3DElement = new THREE.Mesh(geometry, material);
-        this._3DElement.position.set(x, GLOBAL_Y, z)
-        this._3DElement.name = "ENEMY"
-        // tbd
-        this._state = new StateMachine()
+  attack(): number {
+    let damage = 0;
+    const chance = Math.random() * 100;
+    if (chance <= this._accuracy) {
+      damage = randomRange(this.damage.min, this.damage.max);
+      if (chance > 90) {
+        damage *= 2;
+      }
     }
+    return damage;
+  }
 
-    attack(): number {
-        let damage = 0;
-        const chance = Math.random() * 100
-        if (chance <= this._accuracy) {
-            damage = randomRange(this._minDamage, this._maxDamage)
-            if (chance > 90) {
-                damage *= 2
-            }
-        }
-        return damage
-    }
+  get Element(): THREE.Mesh {
+    return this._3DElement;
+  }
 
+  get awarenessRange(): number {
+    return this._awarenessRange;
+  }
 
-    get Element(): THREE.Mesh {
-        return this._3DElement;
-    }
+  get active(): boolean {
+    return this._active;
+  }
 
-    get awarenessRange(): number {
-        return this._awarenessRange
-    }
+  set active(value: boolean) {
+    this._active = value;
+  }
 
-    get active(): boolean {
-        return this._active
-    }
+  takeHit(damage: number): void {
+    this._health -= damage;
+    console.log(`The enemy has ${this._health} left`);
+  }
 
-    set active(value: boolean) {
-        this._active = value
-    }
-
-    takeHit(damage: number): void {
-        this._health -= damage
-        console.log(`The enemy has ${this._health} left`)
-    }
-
-    get health(): number {
-        return this._health
-    }
-
+  get health(): number {
+    return this._health;
+  }
 }
