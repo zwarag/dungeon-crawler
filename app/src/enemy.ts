@@ -1,6 +1,6 @@
 import { StateMachine } from "./state-machine";
 import * as THREE from "three";
-import { ENEMY } from "./helper/enemy";
+import { ENEMY, ENEMY_TYPE_LIST } from "./helper/enemy";
 import { randomRange } from "./helper/random";
 import enemiesJson from "../public/txt/enemies.json";
 import { GLOBAL_Y } from "./helper/const";
@@ -26,11 +26,11 @@ export class Enemy extends CharacterBase {
   private _active: boolean;
 
   constructor(x: number, z: number) {
-    const enemyCount = Object.keys(ENEMY).length / 2;
-    const temporary_type = randomRange(0, Math.max(enemyCount - 1));
+    const enemyCount = ENEMY_TYPE_LIST.length;
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const enemyObject = enemiesJson[ENEMY[temporary_type]];
+    const enemyTypeJsonIndex = randomRange(0, Math.max(enemyCount - 1));
+    const enemyObject = enemiesJson[ENEMY_TYPE_LIST[enemyTypeJsonIndex]];
     super(
       randomRange(enemyObject.health.min, enemyObject.health.max),
       { min: enemyObject.damage.min, max: enemyObject.damage.max },
@@ -38,7 +38,7 @@ export class Enemy extends CharacterBase {
       enemyObject.experience,
       enemyObject.awarenessRange
     );
-    this._type = temporary_type;
+    this._type = ENEMY_TYPE_LIST[enemyTypeJsonIndex];
     this._active = false;
     // replace by graphics
     const geometry = new THREE.ConeGeometry(0.5, 1, 32);
