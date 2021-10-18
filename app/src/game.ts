@@ -104,7 +104,7 @@ export class Game {
 
     // create a camera, which defines where we're looking at.
     this._camera = new THREE.PerspectiveCamera(
-      65,
+      75,
       window.innerWidth / window.innerHeight,
       0.1,
       1000
@@ -247,6 +247,7 @@ export class Game {
       if (enemy !== undefined) {
         enemy.takeHit(damage);
         if (enemy.health <= 0) {
+          this._player.increaseExperience(enemy.experience)
           this._enemies = this._enemies.filter((child) => child !== enemy);
           this._scene.remove(enemy.Element);
         }
@@ -421,12 +422,13 @@ export class Game {
             Game._gridToScene(nextStep[1])
           );
         } else {
-          enemy.Element.material.setValues({ color: Math.random() * 0xffffff });
+          enemy.Element.material.setValues({ color: Math.random() * 0xffffff });  // TODO remove later, just to visualize an enemy attacking
           const damage = enemy.attack();
           this._player.takeHit(damage);
           console.log("your health:", this._player.health);
           if (this._player.health <= 0) {
             console.log("YOU DIED");
+            // this._player.die()
             // @Chrono666 / Matthias, death screen?
           }
         }

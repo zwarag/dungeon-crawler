@@ -5,10 +5,11 @@ import * as THREE from "three";
 import { InputController, KeyBoardInputController } from "./input-controller";
 import { StateMachine } from "./state-machine";
 import text from "../public/txt/text.json";
-import { Camera, PerspectiveCamera, Scene, Vector3 } from "three";
+import { PerspectiveCamera, Scene, Vector3 } from "three";
 import { GENDER } from "./helper/gender";
 import { randomRange } from "./helper/random";
 import { CharacterBase } from "./character";
+import initialPlayerStats from '../public/txt/initialPlayerStats.json'
 
 export class Player extends CharacterBase {
   /** A InputController for Keyboard or AI Controlled inputs. */
@@ -36,11 +37,30 @@ export class Player extends CharacterBase {
    */
   private _attacks: boolean;
 
+  /**
+   * The required experience to level up to the next level.
+   */
+  private _requiredExperience: number
+
+  /**
+   * The current level of the player.
+   */
+  private _level: number
+
+  /**
+   * The camera following the player around.
+   */
   private _camera: PerspectiveCamera;
 
   constructor(camera: PerspectiveCamera) {
+    // character stats
     super(100, { min: 10, max: 18 }, 80, 0, 100);
     this._gender = randomRange(GENDER.MALE, GENDER.FEMALE); // currently determined randomly
+    this._health = initialPlayerStats.health
+    this._accuracy = initialPlayerStats.accuracy
+    this._experience = initialPlayerStats.experience
+    this._level = initialPlayerStats.level
+    this._requiredExperience = initialPlayerStats.level2experience
 
     // threejs parts
     this._input = new KeyBoardInputController();
@@ -174,6 +194,38 @@ export class Player extends CharacterBase {
       console.log("Browser not supported for voice output:" + error);
     }
   }
+
+  increaseExperience(exp: number): void {
+    this._experience += exp
+    console.log(`You've gained ${exp} experience, which is now in total ${this._experience}`)
+    // level up the player if he gathered enough experience
+    if (this._experience >= this._requiredExperience) {
+      this._levelUp()
+    }
+
+  }
+
+  private _levelUp(): void {
+    this._level += 1
+    console.log(`You've leveled up to level ${this._level}`)
+    this._experience = this._experience - this._requiredExperience
+    // stats are increased by 5 percent per level up
+    // furthermore with each level up the health of the character is replenished
+    this._health = Math.ceil(initialPlayerStats.health + (this._level * 0.05 * initialPlayerStats.health))
+    this._requiredExperience = this._health
+    this._accuracy = Math.ceil(initialPlayerStats.accuracy + (this._level * 0.05 * initialPlayerStats.accuracy))
+    this._damage.min = Math.ceil(initialPlayerStats.damage.min + (this._level * 0.05 * initialPlayerStats.damage.min))
+    this._damage.max = Math.ceil(initialPlayerStats.damage.max + (this._level * 0.05 * initialPlayerStats.damage.max))
+  }
+
+  getMaxHealth(): number {
+    return initialPlayerStats.health + (this._level * 0.05 * initialPlayerStats.health)
+  }
+
+  die(): void {
+    throw new Error("Method not implemented.");
+  }
+
 
   /**
    * Removed from the character logic, moved to the game loop.
