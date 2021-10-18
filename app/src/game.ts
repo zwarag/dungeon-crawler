@@ -424,7 +424,7 @@ export class Game {
         } else {
           (enemy.Element.material as Material).setValues({
             color: Math.random() * 0xffffff,
-          }); // TODO remove later, just to visualize an enemy attacking
+          } as Partial<MaterialParameters>); // TODO remove later, just to visualize an enemy attacking
           const damage = enemy.attack();
           this._player.takeHit(damage);
           console.log("your health:", this._player.health);
