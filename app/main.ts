@@ -1,5 +1,6 @@
 import "./styles/style.scss";
 import { Game } from "./src/game";
+import "three/examples/fonts/helvetiker_regular.typeface.json"
 
 const app = document.querySelector<HTMLDivElement>("#app");
 const highscore = document.querySelector<HTMLDivElement>("#highscore");

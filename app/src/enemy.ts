@@ -5,6 +5,7 @@ import {randomRange} from "./helper/random";
 import enemiesJson from "../public/txt/enemies.json";
 import {GLOBAL_Y} from "./helper/const";
 import {CharacterBase} from "./character";
+import {TextGeometry} from "three";
 
 export class Enemy extends CharacterBase {
     /** The Statemachine used for animations */
