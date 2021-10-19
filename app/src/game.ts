@@ -1,6 +1,6 @@
 import {GLOBAL_GROUND_Y, GLOBAL_Y, PLAYER_Y, PROPERTIES} from "./helper/const";
 import * as THREE from "three";
-import {AnimationMixer, FontLoader, Mesh, Vector3} from "three";
+import {AnimationMixer, FontLoader, Mesh, Vector2, Vector3} from "three";
 import {Player} from "./player";
 import {millisecondsToSeconds} from "./helper/time";
 import {Dungeon} from "./dungeon";
@@ -9,6 +9,9 @@ import {Enemy} from "./enemy";
 import {AStarFinder} from "astar-typescript";
 import {DIRECTION} from "./helper/direction";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
+import {EffectComposer} from 'three/examples/jsm/postprocessing/EffectComposer';
+import {RenderPass} from 'three/examples/jsm/postprocessing/RenderPass';
+import {OutlinePass} from "three/examples/jsm/postprocessing/OutlinePass";
 import {DamageText} from "./damageText";
 
 export class Game {
@@ -20,6 +23,10 @@ export class Game {
     private _dungeon: Dungeon;
     private _goal: Mesh;
     private _enemies: Array<Enemy> = [];
+    private _raycaster: THREE.Raycaster
+    private _mouse: THREE.Vector2
+    private _composer: EffectComposer
+    private _outlinePass: OutlinePass
 
     constructor(element: HTMLCanvasElement) {
         this._threejs = new THREE.WebGLRenderer({
@@ -41,6 +48,11 @@ export class Game {
             },
             false
         );
+
+        document.addEventListener("mousemove", (ev: MouseEvent) => {
+            this._raycast(ev)
+        })
+
 
         this._scene = new THREE.Scene();
 
@@ -112,6 +124,25 @@ export class Game {
             1000
         );
 
+        // set up raycaster
+        this._raycaster = new THREE.Raycaster()
+        this._mouse = new Vector2()
+
+        // set up composer and outline pass
+        this._composer = new EffectComposer(this._threejs)
+
+        const renderPass = new RenderPass(this._scene, this._camera)
+        this._composer.addPass(renderPass)
+
+        this._outlinePass = new OutlinePass(new THREE.Vector2(window.innerWidth, window.innerHeight), this._scene, this._camera, [])
+        this._outlinePass.edgeStrength = 20
+        this._outlinePass.edgeGlow = 2
+        this._outlinePass.edgeThickness = 1
+        this._outlinePass.pulsePeriod = 2
+
+
+        this._composer.addPass(this._outlinePass)
+
         // create the character
         this._player = new Player(this._camera);
 
@@ -167,7 +198,7 @@ export class Game {
 
             this._requestAnimationFrame();
 
-            this._threejs.render(this._scene, this._camera);
+            this._composer.render()
             this._calculateNextState(timeElapsedMS - this._previousRAF);
             this._previousRAF = timeElapsedMS;
 
@@ -470,6 +501,19 @@ export class Game {
         const gridPlayerPosition = Game._sceneToGrid(scenePlayerPosition);
         console.log("scene to grid", scenePlayerPosition, gridPlayerPosition);
         console.log("grid to scene", gridPlayerPosition, scenePlayerPosition);
+    }
+
+    private _raycast(event: MouseEvent) {
+        this._mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        this._mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        this._raycaster.setFromCamera(this._mouse, this._camera)
+        const intersects = this._raycaster.intersectObjects(this._scene.children.filter(child => child.name == ELEMENTS.ENEMY))
+        if (intersects.length > 0) {
+            const enemy = intersects[0].object
+            this._outlinePass.selectedObjects = [enemy]
+
+        }
+
     }
 }
 
