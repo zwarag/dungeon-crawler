@@ -1,6 +1,6 @@
 import {GLOBAL_GROUND_Y, GLOBAL_Y, PLAYER_Y, PROPERTIES} from "./helper/const";
 import * as THREE from "three";
-import {AnimationClip, AnimationMixer, FontLoader, Mesh, Vector2, Vector3} from "three";
+import {AnimationAction, AnimationClip, AnimationMixer, FontLoader, Mesh, Vector2, Vector3} from "three";
 import {Player} from "./player";
 import {millisecondsToSeconds} from "./helper/time";
 import {Dungeon} from "./dungeon";
@@ -28,6 +28,9 @@ export class Game {
     private _composer: EffectComposer
     private _outlinePass: OutlinePass
     private _animationMixers: AnimationMixer[] = []
+    // private _sceneCallback: (mesh: Mesh) => void
+    private _animationMixerCallback: (animationMixer: AnimationMixer, animationClip: AnimationClip, mesh: Mesh) => void
+    private _clock: THREE.Clock
 
     constructor(element: HTMLCanvasElement) {
         this._threejs = new THREE.WebGLRenderer({
@@ -41,6 +44,7 @@ export class Game {
             document.body.scrollWidth,
             document.body.scrollHeight
         );
+        this._clock = new THREE.Clock()
 
         window.addEventListener(
             "resize",
@@ -180,7 +184,27 @@ export class Game {
         // controls.target.set(0, 0, 0);
         // controls.update();
 
-        console.table(this._dungeon.grid)
+        // console.table(this._dungeon.grid)
+
+        // this._sceneCallback = (mesh: Mesh): void => {
+        //     this._scene.add(mesh)
+        // }
+
+        this._animationMixerCallback = (animationMixer: AnimationMixer, animationClip: AnimationClip, mesh: Mesh): void => {
+            this._scene.add(mesh)
+            const action: AnimationAction = animationMixer.clipAction(animationClip)
+            action.loop = THREE.LoopOnce
+            action.clampWhenFinished = true
+            action.play()
+            this._animationMixers.push(animationMixer)
+            animationMixer.addEventListener('finished', () => {
+                action.stop()
+                this._animationMixers = this._animationMixers.filter(value => value !== animationMixer)
+                this._scene.remove(mesh)
+
+            });
+        }
+
 
         this._requestAnimationFrame();
     }
@@ -197,11 +221,14 @@ export class Game {
                 this._previousRAF = timeElapsedMS;
             }
 
+            const delta = this._clock.getDelta()
             this._requestAnimationFrame();
+            this._animationMixers.forEach(mixer => {
+                mixer.update(delta)
 
-            this._animationMixers.forEach(mixer => mixer.update(timeElapsedMS))
-            this._composer.render()
+            })
             this._calculateNextState(timeElapsedMS - this._previousRAF);
+            this._composer.render()
             this._previousRAF = timeElapsedMS;
 
             // console.log("Time elapsed: " + timeElapsedMS)
@@ -284,7 +311,14 @@ export class Game {
             if (enemy !== undefined) {
                 enemy.takeHit(damage);
 
-                const damageText = new DamageText(damage, this._player.Element.position, this._player.direction, this._player.Element.rotation, enemy.Element.position, enemy.Element.geometry.parameters.height, () => {this.animationMixerCallback}, () => {this.sceneCallback})
+                const damageText = new DamageText(damage,
+                    this._player.Element.position,
+                    this._player.direction,
+                    this._player.Element.rotation,
+                    enemy.Element.position,
+                    enemy.Element.geometry.parameters.height,
+                    this._animationMixerCallback
+                )
 
                 if (enemy.health <= 0) {
                     this._player.increaseExperience(enemy.experience)
@@ -514,18 +548,6 @@ export class Game {
             this._outlinePass.selectedObjects = [enemy]
 
         }
-    }
-
-    animationMixerCallback(animationMixer: AnimationMixer, animationClip: AnimationClip): void {
-        animationMixer.clipAction(animationClip).play()
-        this._animationMixers.push(animationMixer)
-    }
-
-    sceneCallback(mesh: Mesh): void {
-
-        this._scene.add(mesh)
-
-        // this._scene.add(mesh)
     }
 
 

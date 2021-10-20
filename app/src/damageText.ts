@@ -16,7 +16,14 @@ export class DamageText {
 
     private _fontLoader: FontLoader
 
-    constructor(damage: number, playerPosition: Vector3, playerDirection: DIRECTION, playerRotation: Euler, enemyPosition: Vector3, enemyHeight: number, animationMixerCallback: (mixer: AnimationMixer, clip: AnimationClip) => void, sceneCallback: any) {
+    constructor(damage: number,
+                playerPosition: Vector3,
+                playerDirection: DIRECTION,
+                playerRotation: Euler,
+                enemyPosition: Vector3,
+                enemyHeight: number,
+                animationMixerCallback: (mixer: AnimationMixer, clip: AnimationClip, mesh: Mesh) => void) {
+
         this._fontLoader = new FontLoader()
         this._fontLoader.load('fonts/helvetiker_regular.typeface.json', (font) => {
             const textGeometry = new THREE.TextGeometry(damage.toString(), {
@@ -31,7 +38,7 @@ export class DamageText {
                 bevelSegments: 0
             })
             // textGeometry.scale(0.1, 0.1, 0.1)
-            const textMaterial = new THREE.MeshBasicMaterial({color: 0xFF0000});
+            const textMaterial = new THREE.MeshBasicMaterial({color: 0xFF0000, transparent: true});
             const textMesh = new THREE.Mesh(textGeometry, textMaterial);
 
             // The Box3 is a helper object to get the exact dimensions of the placed text object to deal with the needed offset
@@ -66,19 +73,18 @@ export class DamageText {
             textMesh.rotation.set(playerRotation.x, playerRotation.y, playerRotation.z)
             textMesh.name = "TEXT"
             textMesh.lookAt(playerPosition)
-            // jo, do warat ma
-            sceneCallback(textMesh)
+            // sceneCallback(textMesh)
 
             // Animation
-            const liftTrack3 = new THREE.BooleanKeyframeTrack('this._textMesh.material.transparent', [5, 6], [false, true])
+            // const liftTrack3 = new THREE.BooleanKeyframeTrack('textMesh.material.transparent', [5, 6], [false, true])
             const liftTrack4 = new THREE.NumberKeyframeTrack(
-                'this._textMesh.material.opacity',
-                [6, 8],
+                '.material.opacity',
+                [0, 1],
                 [1, 0])
-
-            const animationClip = new AnimationClip("fadeOut", 10, [liftTrack3, liftTrack4])
+            textMesh.material.opacity = 1
+            const animationClip = new AnimationClip("fadeOut", 2, [liftTrack4])
             const animationMixer = new AnimationMixer(textMesh)
-            animationMixerCallback(animationMixer, animationClip)
+            animationMixerCallback(animationMixer, animationClip, textMesh)
         })
 
     }
