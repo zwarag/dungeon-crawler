@@ -1,6 +1,6 @@
 import {GLOBAL_GROUND_Y, GLOBAL_Y, PLAYER_Y, PROPERTIES} from "./helper/const";
 import * as THREE from "three";
-import {AnimationMixer, FontLoader, Mesh, Vector2, Vector3} from "three";
+import {AnimationClip, AnimationMixer, FontLoader, Mesh, Vector2, Vector3} from "three";
 import {Player} from "./player";
 import {millisecondsToSeconds} from "./helper/time";
 import {Dungeon} from "./dungeon";
@@ -27,6 +27,7 @@ export class Game {
     private _mouse: THREE.Vector2
     private _composer: EffectComposer
     private _outlinePass: OutlinePass
+    private _animationMixers: AnimationMixer[] = []
 
     constructor(element: HTMLCanvasElement) {
         this._threejs = new THREE.WebGLRenderer({
@@ -198,6 +199,7 @@ export class Game {
 
             this._requestAnimationFrame();
 
+            this._animationMixers.forEach(mixer => mixer.update(timeElapsedMS))
             this._composer.render()
             this._calculateNextState(timeElapsedMS - this._previousRAF);
             this._previousRAF = timeElapsedMS;
@@ -282,8 +284,7 @@ export class Game {
             if (enemy !== undefined) {
                 enemy.takeHit(damage);
 
-                const damageText = new DamageText(damage, this._player.Element.position, this._player.direction, this._player.Element.rotation, enemy.Element.position, this._scene, enemy.Element.geometry.parameters.height)
-
+                const damageText = new DamageText(damage, this._player.Element.position, this._player.direction, this._player.Element.rotation, enemy.Element.position, enemy.Element.geometry.parameters.height, () => {this.animationMixerCallback}, () => {this.sceneCallback})
 
                 if (enemy.health <= 0) {
                     this._player.increaseExperience(enemy.experience)
@@ -513,7 +514,20 @@ export class Game {
             this._outlinePass.selectedObjects = [enemy]
 
         }
-
     }
+
+    animationMixerCallback(animationMixer: AnimationMixer, animationClip: AnimationClip): void {
+        animationMixer.clipAction(animationClip).play()
+        this._animationMixers.push(animationMixer)
+    }
+
+    sceneCallback(mesh: Mesh): void {
+
+        this._scene.add(mesh)
+
+        // this._scene.add(mesh)
+    }
+
+
 }
 
