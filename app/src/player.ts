@@ -10,6 +10,7 @@ import {GENDER} from "./helper/gender";
 import {randomRange} from "./helper/random";
 import {CharacterBase} from "./character";
 import initialPlayerStats from '../public/txt/initialPlayerStats.json'
+import {ELEMENTS} from "./helper/grid-elements";
 
 export class Player extends CharacterBase {
     /** A InputController for Keyboard or AI Controlled inputs. */
@@ -54,11 +55,11 @@ export class Player extends CharacterBase {
 
     constructor(camera: PerspectiveCamera) {
         // character stats
-        super(100, {min: 10, max: 18}, 80, 0, 100);
+        super(initialPlayerStats.health, {
+            min: initialPlayerStats.damage.min,
+            max: initialPlayerStats.damage.max
+        }, initialPlayerStats.accuracy, initialPlayerStats.experience, 100);
         this._gender = randomRange(GENDER.MALE, GENDER.FEMALE); // currently determined randomly
-        this._health = initialPlayerStats.health
-        this._accuracy = initialPlayerStats.accuracy
-        this._experience = initialPlayerStats.experience
         this._level = initialPlayerStats.level
         this._requiredExperience = initialPlayerStats.level2experience
 
@@ -80,6 +81,7 @@ export class Player extends CharacterBase {
             new THREE.MeshBasicMaterial({map: loader.load("./img/player_lf.jpg")}),
         ];
         this._3DElement = new THREE.Mesh(geometry, material);
+        this._3DElement.name = ELEMENTS.PLAYER
     }
 
     get Element(): THREE.Mesh {
@@ -98,11 +100,11 @@ export class Player extends CharacterBase {
         } else if (keys.left) {
             this._direction = (4 + this._direction - 1) % 4;
             this.Element.rotateY(Math.PI / 2);
-            this._camera.rotateY(Math.PI / 2);
+            // this._camera.rotateY(Math.PI / 2);
         } else if (keys.right) {
             this._direction = (this._direction + 1) % 4;
             this.Element.rotateY(-Math.PI / 2);
-            this._camera.rotateY(-Math.PI / 2);
+            // this._camera.rotateY(-Math.PI / 2);
         } else if (keys.action) {
             this._attacks = true;
         } else {
@@ -130,27 +132,27 @@ export class Player extends CharacterBase {
             switch (this._direction) {
                 case DIRECTION.NORTH:
                     return new Vector3(
-                        this.Element.position.x + this._velocity,
-                        this.Element.position.y,
-                        this.Element.position.z
-                    );
-                case DIRECTION.EAST:
-                    return new Vector3(
                         this.Element.position.x,
                         this.Element.position.y,
                         this.Element.position.z - this._velocity
                     );
-                case DIRECTION.SOUTH:
+                case DIRECTION.EAST:
                     return new Vector3(
                         this.Element.position.x - this._velocity,
                         this.Element.position.y,
                         this.Element.position.z
                     );
-                case DIRECTION.WEST:
+                case DIRECTION.SOUTH:
                     return new Vector3(
                         this.Element.position.x,
                         this.Element.position.y,
                         this.Element.position.z + this._velocity
+                    );
+                case DIRECTION.WEST:
+                    return new Vector3(
+                        this.Element.position.x + this._velocity,
+                        this.Element.position.y,
+                        this.Element.position.z
                     );
             }
         }
@@ -223,69 +225,4 @@ export class Player extends CharacterBase {
         throw new Error("Method not implemented.");
     }
 
-    /**
-     * Removed from the character logic, moved to the game loop.
-     * @deprecated
-     */
-    moveCharacter(scene: Scene): void {
-        if (this._velocity != 0) {
-            let newPosition: number;
-            switch (this._direction) {
-                case DIRECTION.NORTH:
-                    newPosition = this.Element.position.x + this._velocity;
-                    if (
-                        this.checkFreeSpace(newPosition, this.Element.position.z, scene)
-                    ) {
-                        this.Element.position.setX(newPosition);
-                        this._camera.position.setX(newPosition);
-                    } else {
-                        this.speak("blocked");
-                    }
-                    break;
-                case DIRECTION.EAST:
-                    newPosition = this.Element.position.z - this._velocity;
-                    if (
-                        this.checkFreeSpace(this.Element.position.x, newPosition, scene)
-                    ) {
-                        this.Element.position.setZ(newPosition);
-                        this._camera.position.setZ(newPosition);
-                    } else {
-                        this.speak("blocked");
-                    }
-                    break;
-                case DIRECTION.SOUTH:
-                    newPosition = this.Element.position.x - this._velocity;
-                    if (
-                        this.checkFreeSpace(newPosition, this.Element.position.z, scene)
-                    ) {
-                        this.Element.position.setX(newPosition);
-                        this._camera.position.setX(newPosition);
-                    } else {
-                        this.speak("blocked");
-                    }
-                    break;
-                case DIRECTION.WEST:
-                    newPosition = this.Element.position.z + this._velocity;
-                    if (
-                        this.checkFreeSpace(this.Element.position.x, newPosition, scene)
-                    ) {
-                        this.Element.position.setZ(newPosition);
-                        this._camera.position.setZ(newPosition);
-                    } else {
-                        this.speak("blocked");
-                    }
-                    break;
-            }
-        }
-    }
-
-    /**
-     * @deprecated
-     */
-    checkFreeSpace(x: number, z: number, scene: Scene): boolean {
-        const intersections = scene.children.filter(
-            (value) => value.position.z === z && value.position.x === x
-        );
-        return intersections.length === 0;
-    }
 }

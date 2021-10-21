@@ -81,7 +81,7 @@ export class DamageText {
                 '.material.opacity',
                 [0, 1],
                 [1, 0])
-            textMesh.material.opacity = 1
+            // textMesh.material.opacity = 1
             const animationClip = new AnimationClip("fadeOut", 2, [liftTrack4])
             const animationMixer = new AnimationMixer(textMesh)
             animationMixerCallback(animationMixer, animationClip, textMesh)

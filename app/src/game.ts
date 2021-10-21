@@ -1,6 +1,6 @@
-import {GLOBAL_GROUND_Y, GLOBAL_Y, PLAYER_Y, PROPERTIES} from "./helper/const";
+import {GLOBAL_GROUND_Y, GLOBAL_Y, PROPERTIES} from "./helper/const";
 import * as THREE from "three";
-import {AnimationAction, AnimationClip, AnimationMixer, FontLoader, Mesh, Vector2, Vector3} from "three";
+import {AnimationAction, AnimationClip, AnimationMixer, Mesh, SpotLight, Vector2, Vector3} from "three";
 import {Player} from "./player";
 import {millisecondsToSeconds} from "./helper/time";
 import {Dungeon} from "./dungeon";
@@ -28,9 +28,9 @@ export class Game {
     private _composer: EffectComposer
     private _outlinePass: OutlinePass
     private _animationMixers: AnimationMixer[] = []
-    // private _sceneCallback: (mesh: Mesh) => void
-    private _animationMixerCallback: (animationMixer: AnimationMixer, animationClip: AnimationClip, mesh: Mesh) => void
+    private _damageTextCallback: (animationMixer: AnimationMixer, animationClip: AnimationClip, mesh: Mesh) => void
     private _clock: THREE.Clock
+    private _spotLight: SpotLight
 
     constructor(element: HTMLCanvasElement) {
         this._threejs = new THREE.WebGLRenderer({
@@ -61,25 +61,26 @@ export class Game {
 
         this._scene = new THREE.Scene();
 
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-        directionalLight.position.set(20, 100, 10);
-        directionalLight.target.position.set(0, 0, 0);
-        directionalLight.castShadow = true;
-        directionalLight.shadow.bias = -0.001;
-        directionalLight.shadow.mapSize.width = 2048;
-        directionalLight.shadow.mapSize.height = 2048;
-        directionalLight.shadow.camera.near = 0.1;
-        directionalLight.shadow.camera.far = 500;
-        directionalLight.shadow.camera.near = 0.5;
-        directionalLight.shadow.camera.far = 500;
-        directionalLight.shadow.camera.left = 100;
-        directionalLight.shadow.camera.right = -100;
-        directionalLight.shadow.camera.top = 100;
-        directionalLight.shadow.camera.bottom = -100;
-        this._scene.add(directionalLight);
+        // const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        // directionalLight.position.set(20, 100, 10);
+        // directionalLight.target.position.set(0, 0, 0);
+        // directionalLight.castShadow = true;
+        // directionalLight.shadow.bias = -0.001;
+        // directionalLight.shadow.mapSize.width = 2048;
+        // directionalLight.shadow.mapSize.height = 2048;
+        // directionalLight.shadow.camera.near = 0.1;
+        // directionalLight.shadow.camera.far = 500;
+        // directionalLight.shadow.camera.near = 0.5;
+        // directionalLight.shadow.camera.far = 500;
+        // directionalLight.shadow.camera.left = 100;
+        // directionalLight.shadow.camera.right = -100;
+        // directionalLight.shadow.camera.top = 100;
+        // directionalLight.shadow.camera.bottom = -100;
+        // this._scene.add(directionalLight);
 
-        const ambientLight = new THREE.AmbientLight(0xffffff, 4);
-        this._scene.add(ambientLight);
+
+        // const ambientLight = new THREE.AmbientLight(0xffffff, 4);
+        // this._scene.add(ambientLight);
 
         // Skybox
         const loader = new THREE.CubeTextureLoader();
@@ -91,6 +92,7 @@ export class Game {
             "./img/cocoa_rt_.jpg",
             "./img/cocoa_lf_.jpg",
         ]);
+        // this._scene.background = new THREE.Color("black")
 
         // Create the ground
         const ground = new THREE.Mesh(
@@ -123,7 +125,7 @@ export class Game {
 
         // create a camera, which defines where we're looking at.
         this._camera = new THREE.PerspectiveCamera(
-            75,
+            90,
             window.innerWidth / window.innerHeight,
             0.1,
             1000
@@ -144,8 +146,6 @@ export class Game {
         this._outlinePass.edgeGlow = 2
         this._outlinePass.edgeThickness = 1
         this._outlinePass.pulsePeriod = 2
-
-
         this._composer.addPass(this._outlinePass)
 
         // create the character
@@ -165,18 +165,23 @@ export class Game {
         this._player.Element.position.set(playerX, GLOBAL_Y, playerZ);
         this._scene.add(this._player.Element);
 
+
         // axes helper
         const axesHelper = new THREE.AxesHelper(10);
         this._scene.add(axesHelper);
 
-        // position the camera
-        this._camera.position.x = this._player.Element.position.x;
-        this._camera.position.y = this._player.Element.position.y;
-        this._camera.position.z = this._player.Element.position.z;
-        this._camera.rotateY(-Math.PI / 2); // the camera needs to be turned by 90 degrees initially
+        // set the camera as child of the player element, this ensures that the camera follows the player around
+        this._player.Element.add(this._camera)
 
         // placing enemies
         this._setEnemies();
+
+        // Spotlight symbolizing a torch carried by the player
+        this._spotLight = new THREE.SpotLight('#f9d97b', 1, 15, Math.PI / 2, 0.5, 1);
+        this._spotLight.castShadow = true;
+        this._camera.add(this._spotLight)
+        this._spotLight.position.set(0, 0, 1)
+        this._spotLight.target = this._camera
 
         // Temporary Camera
         // TODO: this is only temporary and should be swaped out for the actual implementaiton of the camera
@@ -184,13 +189,7 @@ export class Game {
         // controls.target.set(0, 0, 0);
         // controls.update();
 
-        // console.table(this._dungeon.grid)
-
-        // this._sceneCallback = (mesh: Mesh): void => {
-        //     this._scene.add(mesh)
-        // }
-
-        this._animationMixerCallback = (animationMixer: AnimationMixer, animationClip: AnimationClip, mesh: Mesh): void => {
+        this._damageTextCallback = (animationMixer: AnimationMixer, animationClip: AnimationClip, mesh: Mesh): void => {
             this._scene.add(mesh)
             const action: AnimationAction = animationMixer.clipAction(animationClip)
             action.loop = THREE.LoopOnce
@@ -201,7 +200,6 @@ export class Game {
                 action.stop()
                 this._animationMixers = this._animationMixers.filter(value => value !== animationMixer)
                 this._scene.remove(mesh)
-
             });
         }
 
@@ -225,24 +223,18 @@ export class Game {
             this._requestAnimationFrame();
             this._animationMixers.forEach(mixer => {
                 mixer.update(delta)
-
             })
             this._calculateNextState(timeElapsedMS - this._previousRAF);
             this._composer.render()
             this._previousRAF = timeElapsedMS;
 
-            // console.log("Time elapsed: " + timeElapsedMS)
-            // if (0 < timeElapsedMS % 2000 && timeElapsedMS % 2000 < 20) {
-            //     console.log("moving")
-            //     this._activateEnemies()
-            //     this._enemiesMoveOrAttack()
-            // }
         });
     }
 
     private _calculateNextState(timeDeltaMS: number) {
         const timeDeltaS = millisecondsToSeconds(timeDeltaMS);
         this._player.update(timeDeltaS);
+        // this._setSpotlightPosition()
         this._handleCharacterMovement();
         this._handleCharacterAttacking();
     }
@@ -256,7 +248,7 @@ export class Game {
             // equals -> Wertevergleich, === -> objektvergleich
             if (this._checkFreeSpace(newPlayerPosition.x, newPlayerPosition.z)) {
                 this._player.Element.position.set(...newPlayerPosition.toArray());
-                this._camera.position.set(...newPlayerPosition.toArray());
+                // this._camera.position.set(...newPlayerPosition.toArray());
                 this._activateEnemies();
                 this._enemiesMoveOrAttack();
             } else {
@@ -273,30 +265,30 @@ export class Game {
             switch (playerViewDirection) {
                 case DIRECTION.NORTH:
                     enemyPosition = new Vector3(
-                        playerPosition.x + 1,
-                        playerPosition.y,
-                        playerPosition.z
-                    );
-                    break;
-                case DIRECTION.EAST:
-                    enemyPosition = new Vector3(
                         playerPosition.x,
                         playerPosition.y,
                         playerPosition.z - 1
                     );
                     break;
-                case DIRECTION.SOUTH:
+                case DIRECTION.EAST:
                     enemyPosition = new Vector3(
                         playerPosition.x - 1,
                         playerPosition.y,
                         playerPosition.z
                     );
                     break;
-                case DIRECTION.WEST:
+                case DIRECTION.SOUTH:
                     enemyPosition = new Vector3(
                         playerPosition.x,
                         playerPosition.y,
                         playerPosition.z + 1
+                    );
+                    break;
+                case DIRECTION.WEST:
+                    enemyPosition = new Vector3(
+                        playerPosition.x + 1,
+                        playerPosition.y,
+                        playerPosition.z
                     );
                     break;
             }
@@ -311,13 +303,13 @@ export class Game {
             if (enemy !== undefined) {
                 enemy.takeHit(damage);
 
-                const damageText = new DamageText(damage,
+                new DamageText(damage,
                     this._player.Element.position,
                     this._player.direction,
                     this._player.Element.rotation,
                     enemy.Element.position,
                     enemy.Element.geometry.parameters.height,
-                    this._animationMixerCallback
+                    this._damageTextCallback
                 )
 
                 if (enemy.health <= 0) {
@@ -334,15 +326,16 @@ export class Game {
         const textureLoader = new THREE.TextureLoader();
         const wallTexture = textureLoader.load("./img/wall.jpg");
         const wallGeometry = new THREE.BoxGeometry(1, 1.5, 1);
-        const wallMaterial = new THREE.MeshBasicMaterial({
+        const wallMaterial = new THREE.MeshPhongMaterial({
             map: wallTexture,
-            opacity: 0.6,
+            // opacity: 0.6,
             transparent: true,
         }); // img source: https://www.pinterest.at/pin/376402481328234967/
         for (let height = 0; height < this._dungeon.grid.length; height++) {
             for (let width = 0; width < this._dungeon.grid[height].length; width++) {
                 if (this._dungeon.grid[height][width] == ELEMENTS.WALL) {
                     const cube = new THREE.Mesh(wallGeometry, wallMaterial);
+                    cube.receiveShadow = true
                     cube.name = ELEMENTS.WALL;
                     // offset by half the size of the grid, since 0,0,0 is in the center of it. Furthermore offset by 0.5, as otherwise the center of each box is used and not the corner.
                     cube.position.set(
@@ -379,10 +372,11 @@ export class Game {
             PROPERTIES.GRID_WIDTH / 2 -
             0.5;
         const endObjectGeometry = new THREE.ConeGeometry(0.5, 4, 32);
-        const endObjectMaterial = new THREE.MeshBasicMaterial({color: 0xffff00});
+        const endObjectMaterial = new THREE.MeshPhongMaterial({color: 0xffff00});
         const cone = new THREE.Mesh(endObjectGeometry, endObjectMaterial);
         cone.position.set(endRoomX, GLOBAL_Y, endRoomZ);
         cone.name = "GOAL";
+        // todo place ladder
         this._goal = cone;
         this._scene.add(cone);
     }
@@ -514,7 +508,7 @@ export class Game {
         const grid = this._constructAStarGrid();
 
         const geometry = new THREE.BoxGeometry(1, 3, 1);
-        const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
+        const material = new THREE.MeshPhongMaterial({color: 0x00ff00});
 
         for (let i = 0; i < grid.length; i++) {
             for (let j = 0; j < grid.length; j++) {
@@ -542,14 +536,16 @@ export class Game {
         this._mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         this._mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
         this._raycaster.setFromCamera(this._mouse, this._camera)
-        const intersects = this._raycaster.intersectObjects(this._scene.children.filter(child => child.name == ELEMENTS.ENEMY))
+        const intersects = this._raycaster.intersectObjects(this._scene.children)
         if (intersects.length > 0) {
             const enemy = intersects[0].object
-            this._outlinePass.selectedObjects = [enemy]
-
+            if (enemy.name === ELEMENTS.ENEMY) {
+                this._outlinePass.selectedObjects = [enemy]
+            } else {
+                this._outlinePass.selectedObjects = []
+            }
         }
     }
-
 
 }
 

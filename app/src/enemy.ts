@@ -5,7 +5,6 @@ import {randomRange} from "./helper/random";
 import enemiesJson from "../public/txt/enemies.json";
 import {GLOBAL_Y} from "./helper/const";
 import {CharacterBase} from "./character";
-import {TextGeometry} from "three";
 
 export class Enemy extends CharacterBase {
     /** The Statemachine used for animations */
@@ -43,10 +42,12 @@ export class Enemy extends CharacterBase {
         this._active = false;
         // replace by graphics
         const geometry = new THREE.ConeGeometry(0.5, 1, 32);
-        const material = new THREE.MeshBasicMaterial({color: 0xffffff});
+        const material = new THREE.MeshPhongMaterial({color: 0xffffff});
         this._3DElement = new THREE.Mesh(geometry, material);
         this._3DElement.position.set(x, GLOBAL_Y, z);
         this._3DElement.name = "ENEMY";
+        this._3DElement.castShadow = true;
+
         // tbd
         this._state = new StateMachine();
     }
