@@ -1,6 +1,6 @@
 import {GLOBAL_GROUND_Y, GLOBAL_Y, PROPERTIES} from "./helper/const";
 import * as THREE from "three";
-import {Mesh, Vector3} from "three";
+import { Material, MaterialParameters, Mesh, Vector3 } from "three";
 import { Player } from "./player";
 import { millisecondsToSeconds } from "./helper/time";
 import { Dungeon } from "./dungeon";
@@ -247,7 +247,7 @@ export class Game {
       if (enemy !== undefined) {
         enemy.takeHit(damage);
         if (enemy.health <= 0) {
-          this._player.increaseExperience(enemy.experience)
+          this._player.increaseExperience(enemy.experience);
           this._enemies = this._enemies.filter((child) => child !== enemy);
           this._scene.remove(enemy.Element);
         }
@@ -422,7 +422,9 @@ export class Game {
             Game._gridToScene(nextStep[1])
           );
         } else {
-          enemy.Element.material.setValues({ color: Math.random() * 0xffffff });  // TODO remove later, just to visualize an enemy attacking
+          (enemy.Element.material as Material).setValues({
+            color: Math.random() * 0xffffff,
+          } as Partial<MaterialParameters>); // TODO remove later, just to visualize an enemy attacking
           const damage = enemy.attack();
           this._player.takeHit(damage);
           console.log("your health:", this._player.health);
