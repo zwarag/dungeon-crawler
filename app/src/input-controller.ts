@@ -31,7 +31,7 @@ export abstract class InputController {
   }
 
   /** Resets the keys to the initial state. */
-  protected resetKeys(): void {
+  resetKeys(): void {
     this._keys = { ...this._ro_keys };
   }
 }
@@ -52,7 +52,7 @@ export class KeyBoardInputController extends InputController {
 
   public get keys(): ActionKeys {
     const returnValue = { ...this._keys };
-    this.resetKeys();
+    // this.resetKeys();
     this._debounced = true;
     return returnValue;
   }

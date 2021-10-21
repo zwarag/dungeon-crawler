@@ -1,0 +1,59 @@
+{
+  "SKELETON": {
+    "health": {
+      "min": 20,
+      "max": 25
+    },
+    "damage": {
+      "min": 5,
+      "max": 8
+    },
+    "accuracy": 60,
+    "awarenessRange": 3,
+    "animations": {
+      "idle": "....",
+      "attack": "....",
+      "walking": "....",
+      "death": "...."
+    },
+    "experience": 12
+  },
+  "HUMAN": {
+    "health": {
+      "min": 25,
+      "max": 30
+    },
+    "damage": {
+      "min": 5,
+      "max": 9
+    },
+    "accuracy": 65,
+    "awarenessRange": 4,
+    "animations": {
+      "idle": "....",
+      "attack": "....",
+      "walking": "....",
+      "death": "...."
+    },
+    "experience": 15
+  },
+  "DEVIL": {
+    "health": {
+      "min": 30,
+      "max": 40
+    },
+    "damage": {
+      "min": 6,
+      "max": 12
+    },
+    "accuracy": 70,
+    "awarenessRange": 5,
+    "animations": {
+      "idle": "....",
+      "attack": "....",
+      "walking": "....",
+      "death": "...."
+    },
+    "experience": 20
+  }
+}

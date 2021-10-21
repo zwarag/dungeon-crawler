@@ -1,5 +1,9 @@
 export enum ELEMENTS {
-    WALL = "W",
+    WALL = "WALL",
     AIR = " ",
-    DOOR = 'D'
+    DOOR = 'DOOR',
+    ENEMY = 'ENEMY',
+    GOAL = 'GOAL',
+    PLAYER = 'PLAYER'
+
 }
