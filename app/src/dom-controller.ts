@@ -1,15 +1,16 @@
 import { HTMLELEMENTS } from "./helper/const";
-import { Game } from "./game";
 import story from "../public/txt/story.json";
 import { storyWriter } from "./helper/typewriter";
+import { addToHighscore } from "./highscore-controller";
+import highscoreData from "../public/highscore/highscore.json";
+import { Game } from "./game";
 
+let _startDate: Date;
+let _game: Game;
 
 export function initDom(): void {
   HTMLELEMENTS.startButton?.addEventListener("click", _displayNameInput);
-  HTMLELEMENTS.highscoreButton?.addEventListener(
-    "click",
-    _displayHighscore
-  );
+  HTMLELEMENTS.highscoreButton?.addEventListener("click", _displayHighscore);
   HTMLELEMENTS.highscoreBackButton?.addEventListener(
     "click",
     _backToStartScreen
@@ -20,13 +21,10 @@ export function initDom(): void {
     "click",
     _backToStartScreen
   );
-  HTMLELEMENTS.nameInputOkButton?.addEventListener(
-    "click",
-    async () => {
-      await _displayStoryBox(); 
-      _startGame();
-    }
-  );
+  HTMLELEMENTS.nameInputOkButton?.addEventListener("click", async () => {
+    await _displayStoryBox();
+    _startGame();
+  });
   HTMLELEMENTS.formInput?.addEventListener("input", _enableButton);
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
@@ -40,23 +38,25 @@ function _startGame(): void {
   HTMLELEMENTS.startScreen?.classList.add("d-none");
   HTMLELEMENTS.highscore?.classList.add("d-none");
   HTMLELEMENTS.nameInput?.classList.add("d-none");
+  HTMLELEMENTS.storyBox?.classList.add("d-none");
   if (HTMLELEMENTS.element) {
-    new Game(HTMLELEMENTS.element);
+    _startDate = new Date();
+    _game = new Game(HTMLELEMENTS.element);
   }
 }
 
-function  _displayNameInput(): void {
+function _displayNameInput(): void {
   HTMLELEMENTS.startScreen?.classList.add("d-none");
   HTMLELEMENTS.highscore?.classList.add("d-none");
   HTMLELEMENTS.nameInput?.classList.remove("d-none");
 }
 
-function  _displayHighscore(): void {
+function _displayHighscore(): void {
   HTMLELEMENTS.startScreen?.classList.add("d-none");
   HTMLELEMENTS.highscore?.classList.remove("d-none");
 }
 
-function  _displayExitOverlay(): void {
+function _displayExitOverlay(): void {
   //TODO: logic to freeze game
   if (!HTMLELEMENTS.app?.classList.contains("d-none")) {
     if (HTMLELEMENTS.element) {
@@ -66,7 +66,7 @@ function  _displayExitOverlay(): void {
   }
 }
 
-function  _continueGame(): void {
+function _continueGame(): void {
   //TODO: logic to "unfreeze" game
   HTMLELEMENTS.overlay?.classList.add("d-none");
   if (HTMLELEMENTS.element) {
@@ -74,7 +74,7 @@ function  _continueGame(): void {
   }
 }
 
-function  _enableButton(): void {
+function _enableButton(): void {
   if (
     HTMLELEMENTS.nameInputOkButton &&
     HTMLELEMENTS.formInput?.value !== undefined
@@ -87,24 +87,74 @@ function  _enableButton(): void {
   }
 }
 
- async  function _displayStoryBox(): Promise<void> {
+async function _displayStoryBox(): Promise<void> {
   HTMLELEMENTS.storyBox?.classList.remove("d-none");
   HTMLELEMENTS.nameInput?.classList.add("d-none");
   return await storyWriter(story.story, "story-box", 2);
 }
 
- function _backToStartScreen(): void {
+function _getPlayerName(): string {
+  if (HTMLELEMENTS.formInput) {
+    return HTMLELEMENTS.formInput.value;
+  }
+  return "default";
+}
+
+function _resetNameInput(): string | boolean {
+  return HTMLELEMENTS.formInput
+    ? (HTMLELEMENTS.formInput.value = HTMLELEMENTS.formInput.defaultValue)
+    : false;
+}
+
+function _resetStoryBox(): string | boolean {
+  return HTMLELEMENTS.storyBox ? (HTMLELEMENTS.storyBox.innerHTML = "") : false;
+}
+
+function _endGame(): void {
+  _game.stopGame();
+  const endDate = new Date();
+  console.log(endDate);
+  console.log(_startDate);
+  const playTime: number =
+    endDate.getMilliseconds() - _startDate.getMilliseconds();
+  console.log(_startDate.getMilliseconds());
+  addToHighscore(
+    {
+      name: _getPlayerName(),
+      floor: Math.floor(Math.random() * 100) + 1,
+      time: playTime,
+    },
+    highscoreData
+  );
+  _resetNameInput();
+  _resetStoryBox();
+}
+
+function _hideDomExitingGame(): void {
+  HTMLELEMENTS.overlay?.classList.add("d-none");
+  HTMLELEMENTS.app?.classList.add("d-none");
+  HTMLELEMENTS.highscore?.classList.remove("d-none");
+}
+
+function _goToStartScreenFromHighscore(): void {
+  HTMLELEMENTS.highscore?.classList.add("d-none");
+  HTMLELEMENTS.startScreen?.classList.remove("d-none");
+}
+
+function _goToStartScreenFromNameInput(): void {
+  HTMLELEMENTS.nameInput?.classList.add("d-none");
+  HTMLELEMENTS.startScreen?.classList.remove("d-none");
+}
+
+function _backToStartScreen(): void {
   //TODO: some logic to end the game (i.e. destroy scene, create highscore, etc)
   if (!HTMLELEMENTS.app?.classList.contains("d-none")) {
-    //function that inserts player into highscore
-    HTMLELEMENTS.overlay?.classList.add("d-none");
-    HTMLELEMENTS.app?.classList.add("d-none");
-    HTMLELEMENTS.highscore?.classList.remove("d-none");
+    _endGame();
+    _hideDomExitingGame();
+    // _startGame();
   } else if (!HTMLELEMENTS.highscore?.classList.contains("d-none")) {
-    HTMLELEMENTS.highscore?.classList.add("d-none");
-    HTMLELEMENTS.startScreen?.classList.remove("d-none");
+    _goToStartScreenFromHighscore();
   } else if (!HTMLELEMENTS.nameInput?.classList.contains("d-none")) {
-    HTMLELEMENTS.nameInput?.classList.add("d-none");
-    HTMLELEMENTS.startScreen?.classList.remove("d-none");
+    _goToStartScreenFromNameInput();
   }
 }

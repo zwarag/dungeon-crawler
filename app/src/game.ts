@@ -17,6 +17,8 @@ export class Game {
   private _player: Character;
   private _dungeon: Dungeon;
   private _camControls: FirstPersonControls;
+  private _animationFrameId: number;
+  private _stopAnimationFrame = false;
 
   constructor(element: HTMLCanvasElement) {
     this._threejs = new THREE.WebGLRenderer({
@@ -153,6 +155,9 @@ export class Game {
   }
 
   private _requestAnimationFrame() {
+    if (this._stopAnimationFrame) {
+      return;
+    }
     requestAnimationFrame((timeElapsedMS) => {
       if (this._previousRAF === null) {
         this._previousRAF = timeElapsedMS;
@@ -164,6 +169,18 @@ export class Game {
       this._calculateNextState(timeElapsedMS - this._previousRAF);
       this._previousRAF = timeElapsedMS;
     });
+  }
+
+  public stopGame(): number {
+    this._stopAnimationFrame = true;
+    // let playTime: number;
+    // if (this._previousRAF) {
+    // cancelAnimationFrame(this._animationFrameId);
+    // playTime = this._previousRAF;
+    // return playTime;
+    // return this._previousRAF;
+    // }
+    return 0;
   }
 
   private _calculateNextState(timeDeltaMS: number) {
