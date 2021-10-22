@@ -1,0 +1,11 @@
+{
+  "health": 100,
+  "damage": {
+    "min": 10,
+    "max": 18
+  },
+  "level": 1,
+  "accuracy": 80,
+  "experience": 0,
+  "level2experience": 100
+}

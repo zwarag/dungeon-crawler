@@ -1,158 +1,64 @@
-import {GLOBAL_Y} from "./helper/const";
-import {DIRECTION} from "./helper/direction";
-import {TimeInSeconds} from "./helper/time";
-import * as THREE from "three";
-import {InputController, KeyBoardInputController} from "./input-controller";
-import {StateMachine} from "./state-machine";
-import text from '../public/txt/text.json'
-import {Camera, PerspectiveCamera, Scene, Vector3} from "three";
-import {GENDER} from "./helper/gender";
-import {randomRange} from "./helper/random";
+import { Accuracy, Damage, Experience, Health, Range } from "./helper/type";
+import { MinMax } from "./helper/interfaces";
 
-export class Character {
-    /** A InputController for Keyboard or AI Controlled inputs. */
-    private _input: InputController;
+export abstract class CharacterBase {
+  constructor(
+    protected _health: Health,
+    protected _damage: MinMax,
+    protected _accuracy: Accuracy,
+    protected _experience: Experience,
+    protected _awarenessRange: Range
+  ) {}
 
-    /** The Statemachine used for animations */
-    private _state: StateMachine;
-    /**
-     * The actual redered object.
-     * Note: THREE.Mesh extends THREE.Object3D which has `position` property
-     */
-    private _3DElement: THREE.Mesh;
+  /**
+   *  The health of the character
+   */
+  public get health(): Health {
+    return this._health;
+  }
+  public set health(value: Health) {
+    this._health = value;
+  }
 
-    /** The velocity a Charater is moving. Backwards, idle, forwards. */
-    private _velocity: -1 | 0 | 1;
+  /**
+   * The damage that the character causes without modifiers.
+   */
+  public get damage(): MinMax {
+    return this._damage;
+  }
+  public set damage(value: MinMax) {
+    this._damage = value;
+  }
 
-    /** A simplified version of that THREE.Object3D would offer. */
-    private _direction: DIRECTION;
+  /**
+   * Number in Percentage. How accurate the monster hits.
+   * 100 means it always hits.
+   * 0 means it never hits.
+   */
+  public get accuracy(): Accuracy {
+    return this._accuracy;
+  }
+  public set accuracy(value: Accuracy) {
+    this._accuracy = value;
+  }
 
-    /** The gender of the character, used for voice feedback.*/
-    private _gender: number;
+  /**
+   * The gathered experiece.
+   */
+  public get experience(): Experience {
+    return this._experience;
+  }
+  public set experience(value: Experience) {
+    this._experience = value;
+  }
 
-    private _camera: PerspectiveCamera;
-
-
-    constructor(camera: PerspectiveCamera) {
-        this._input = new KeyBoardInputController();
-        this._state = new StateMachine();
-        this._velocity = 0;
-        this._direction = DIRECTION.NORTH;
-        this._gender = randomRange(GENDER.MALE, GENDER.FEMALE) // currently determined randomly
-        this._camera = camera
-        const geometry = new THREE.BoxGeometry(1, 1, 1);
-        const loader = new THREE.TextureLoader();
-        const material = [
-            new THREE.MeshBasicMaterial({map: loader.load("./img/player_ft.jpg")}),
-            new THREE.MeshBasicMaterial({map: loader.load("./img/player_bk.jpg")}),
-            new THREE.MeshBasicMaterial({map: loader.load("./img/player_up.jpg")}),
-            new THREE.MeshBasicMaterial({map: loader.load("./img/player_dn.jpg")}),
-            new THREE.MeshBasicMaterial({map: loader.load("./img/player_rt.jpg")}),
-            new THREE.MeshBasicMaterial({map: loader.load("./img/player_lf.jpg")}),
-        ];
-        this._3DElement = new THREE.Mesh(geometry, material);
-        // const startPosition = new THREE.Vector3(-4.5, GLOBAL_Y, -4.5);
-        // this._3DElement.position.set(...startPosition.toArray());
-    }
-
-    get Element(): THREE.Mesh {
-        return this._3DElement;
-    }
-
-    /** This function shall be called after every drawn AnimationFrame. */
-    update(delta: TimeInSeconds): void {
-        // this._state.update(delta, this._input)
-
-        const keys = {...this._input.keys};
-        if (keys.forward) {
-            this._velocity = 1;
-        } else if (keys.backward) {
-            this._velocity = -1;
-        } else if (keys.left) {
-            this._direction = (4 + this._direction - 1) % 4;
-            this.Element.rotateY(Math.PI / 2);
-            this._camera.rotateY(Math.PI / 2);
-        } else if (keys.right) {
-            this._direction = (this._direction + 1) % 4;
-            this.Element.rotateY(-Math.PI / 2);
-            this._camera.rotateY(-Math.PI / 2);
-        } else {
-            this._velocity = 0;
-        }
-    }
-
-    moveCharacter(scene: Scene): void {
-        if (this._velocity != 0) {
-
-            let newPosition: number
-            switch (this._direction) {
-                case DIRECTION.NORTH:
-                    newPosition = this.Element.position.x + this._velocity
-                    if (this.checkFreeSpace(newPosition, this.Element.position.z, scene)) {
-                        this.Element.position.setX(newPosition);
-                        this._camera.position.setX(newPosition)
-                    } else {
-                        this.speak("blocked")
-                    }
-                    break;
-                case DIRECTION.EAST:
-                    newPosition = this.Element.position.z - this._velocity
-                    if (this.checkFreeSpace(this.Element.position.x, newPosition, scene)) {
-                        this.Element.position.setZ(newPosition);
-                        this._camera.position.setZ(newPosition);
-                    } else {
-                        this.speak("blocked")
-                    }
-                    break;
-                case DIRECTION.SOUTH:
-                    newPosition = this.Element.position.x - this._velocity
-                    if (this.checkFreeSpace(newPosition, this.Element.position.z, scene)) {
-                        this.Element.position.setX(newPosition);
-                        this._camera.position.setX(newPosition)
-                    } else {
-                        this.speak("blocked")
-                    }
-                    break;
-                case DIRECTION.WEST:
-                    newPosition = this.Element.position.z + this._velocity
-                    if (this.checkFreeSpace(this.Element.position.x, newPosition, scene)) {
-                        this.Element.position.setZ(newPosition);
-                        this._camera.position.setZ(newPosition)
-                    } else {
-                        this.speak("blocked")
-                    }
-                    break;
-            }
-        }
-    }
-
-    checkFreeSpace(x: number, z: number, scene: Scene): boolean {
-        console.log(this._camera.position)
-        const intersections = scene.children.filter(value =>
-            value.position.z === z && value.position.x === x
-        )
-        return intersections.length === 0
-    }
-
-
-    speak(type: string): void {
-
-        try {
-            // avoids to build up a queue of utterances, cancels the current utterance if there is one
-            if (window.speechSynthesis.speaking) {
-                window.speechSynthesis.cancel()
-            }
-            const voices = window.speechSynthesis.getVoices()
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            const sentences = text[type] // <-- @harrys, eventuell hast du dazu eine Idee, typescript meckert beim dynamsichen Zugriff mittels string, da das json file nicht getyped ist.
-            const sentence = sentences[Math.floor(Math.random() * sentences.length)] // select a random sentence
-            const utterThis = new SpeechSynthesisUtterance(sentence)
-            utterThis.voice = voices[this._gender]
-            // window.speechSynthesis.speak(utterThis) // <-- commented for now, otherwise this might be annoying
-        } catch (error) {
-            // console.log("Browser not supported for voice output:" + error)
-        }
-    }
-
+  /**
+   * The distance from where on the character starts recognising other characters.
+   */
+  public get awarenessRange(): Range {
+    return this._awarenessRange;
+  }
+  public set awarenessRange(value: Range) {
+    this._awarenessRange = value;
+  }
 }

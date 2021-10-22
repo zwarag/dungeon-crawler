@@ -445,6 +445,13 @@ array-union@^2.1.0:
   resolved "https://registry.npmjs.org/array-union/-/array-union-2.1.0.tgz"
   integrity sha512-HGyxoOTYUyCM6stUe6EJgnd4EoewAI7zMdfqO+kGjnlZmBDz/cR5pf8r/cR4Wq60sL/p0IkcjUEEPwS3GFrIyw==
 
+astar-typescript@^1.2.5:
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/astar-typescript/-/astar-typescript-1.2.5.tgz#93946c8bad155e6a5f69ce3bfbde9abbf6fd6732"
+  integrity sha512-1ESY+q//Ous6QtW68woigdt5e0hI1DJJ4WtST1r14BuchUBUKKYlq6qLQCy1S8/IWMDnqNp/h79YUVXIlNPwkw==
+  dependencies:
+    lodash "4.17.20"
+
 astral-regex@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/astral-regex/-/astral-regex-2.0.0.tgz"
@@ -1282,6 +1289,11 @@ lodash.truncate@^4.4.2:
   version "4.4.2"
   resolved "https://registry.npmjs.org/lodash.truncate/-/lodash.truncate-4.4.2.tgz"
   integrity sha1-WjUNoLERO4N+z//VgSy+WNbq4ZM=
+
+lodash@4.17.20:
+  version "4.17.20"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.20.tgz#b44a9b6297bcb698f1c51a3545a2b3b368d59c52"
+  integrity sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==
 
 lodash@^4.17.21:
   version "4.17.21"
