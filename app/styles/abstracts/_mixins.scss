@@ -22,8 +22,8 @@
 
 @mixin border() {
   border-top: 4px ridge $border-color;
-  border-left: 4px groove $border-color;
-  border-right: 4px ridge $border-color;
+  border-right: 4px groove $border-color;
+  border-left: 4px ridge $border-color;
   border-bottom: 4px groove $border-color;
   box-shadow: inset 0px 0px 5px 3px $box-shadow;
 }
