@@ -1,14 +1,13 @@
 export type TimeInSeconds = number;
 export type TimeInMilliseconds = number;
-export type milliToHMS = string;
-export type secToHMS = string;
+export type TimeInHoursMinutesSeconds = string;
 export function millisecondsToSeconds(
   seconds: TimeInSeconds
 ): TimeInMilliseconds {
   return seconds * 0.001;
 }
 
-export function milliToHMS(millis: number): milliToHMS {
+export function milliToHMS(millis: TimeInMilliseconds): TimeInHoursMinutesSeconds {
   return (
     Math.floor(millis / (1000 * 60 * 60)) +
     ":" +
@@ -18,7 +17,7 @@ export function milliToHMS(millis: number): milliToHMS {
   );
 }
 
-export function secToHMS(sec: number): secToHMS {
+export function secToHMS(sec: TimeInSeconds): TimeInHoursMinutesSeconds {
   return (
     (Math.floor(Math.floor(sec) / 3600) % 60) +
     ":" +
