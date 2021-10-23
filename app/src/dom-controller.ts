@@ -2,7 +2,6 @@ import { HTMLELEMENTS } from "./helper/const";
 import story from "../public/txt/story.json";
 import { storyWriter } from "./helper/typewriter";
 import { addToHighscore } from "./highscore-controller";
-import highscoreData from "../public/highscore/highscore.json";
 import { Game } from "./game";
 import { KEYBOARDMAP } from "./helper/keyboard";
 
@@ -90,7 +89,7 @@ function _enableButton(): void {
 async function _displayStoryBox(): Promise<void> {
   _toggleClass([HTMLELEMENTS.storyBox], [HTMLELEMENTS.nameInput], "d-none");
   for (const lineNumber in story.intro) {
-    await storyWriter(story.intro[lineNumber], "story-box", 90);
+    await storyWriter(story.intro[lineNumber], "story-box", 1);
     await new Promise((resolve) => setTimeout(resolve, 1000));
     _resetStoryBox();
   }
@@ -117,9 +116,7 @@ function _endGame(): void {
       name: _getPlayerName(),
       floor: Math.floor(Math.random() * 100) + 1,
       time: playTime,
-    },
-    highscoreData
-  );
+    });
   _resetNameInput();
   _resetStoryBox();
 }

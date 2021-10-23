@@ -2,6 +2,8 @@ export const GLOBAL_Y = 0;
 export const PLAYER_Y = 0.5;
 export const GLOBAL_GROUND_Y = -0.5;
 
+export const GAME_NAME = "DUNGEON CRAWLER";
+
 // grid settings used for the dungeon generation
 const GRID_HEIGHT = 40; // make sure GRID_HEIGHT and GRID_WIDTH are quadratic!
 const GRID_WIDTH = 40; // make sure GRID_HEIGHT and GRID_WIDTH are quadratic!

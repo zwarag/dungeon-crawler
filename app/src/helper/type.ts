@@ -1,6 +1,6 @@
 export type Grid = string[][];
 
-export type highscoreItem = {
+export type HighscoreItem = {
   name: string;
   floor: number;
   time: number;
