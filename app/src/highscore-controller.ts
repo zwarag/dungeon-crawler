@@ -19,9 +19,9 @@ export function initHighscore(highscoreData: highscoreItem[]): void {
   const data: highscoreItem[] = [];
   highscoreData.map((e) => data.push(e));
   data.forEach((a, b) => {
-    highscoreElementNames[b]!.innerHTML = a.name;
-    highscoreElementFloors[b]!.innerHTML = a.floor.toString();
-    highscoreElementTimes[b]!.innerHTML = secToHMS(a.time);
+    (highscoreElementNames[b] as HTMLElement).innerHTML = a.name;
+    (highscoreElementFloors[b] as HTMLElement).innerHTML = a.floor.toString();
+    (highscoreElementTimes[b] as HTMLElement).innerHTML = secToHMS(a.time);
   });
 }
 

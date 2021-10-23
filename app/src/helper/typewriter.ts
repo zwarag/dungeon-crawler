@@ -3,11 +3,11 @@ export async function storyWriter(
   elementId: string,
   delay: number
 ): Promise<void> {
-  const letters = txt.split("");
+  const letters = [...txt];
   let i = 0;
   while (i < letters.length) {
     await waitForMs(delay);
-    document.querySelector(`#${elementId}`)!.innerHTML += letters[i];
+    (document.querySelector(`#${elementId}`) as HTMLElement).innerHTML += letters[i];
     i++;
   }
 }
