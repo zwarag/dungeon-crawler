@@ -42,6 +42,7 @@ export class Game {
   ) => void;
   private _clock: THREE.Clock;
   private _spotLight: SpotLight;
+  private _stopAnimationFrame = false;
 
   constructor(element: HTMLCanvasElement) {
     this._threejs = new THREE.WebGLRenderer({
@@ -232,13 +233,16 @@ export class Game {
     this._requestAnimationFrame();
   }
 
-  private _onWindowResize() {
+  private _onWindowResize(): void {
     this._threejs.setSize(window.innerWidth, window.innerHeight);
     this._camera.aspect = window.innerWidth / window.innerHeight;
     this._camera.updateProjectionMatrix();
   }
 
-  private _requestAnimationFrame() {
+  private _requestAnimationFrame(): void {
+    if (this._stopAnimationFrame) {
+      return;
+    }
     requestAnimationFrame((timeElapsedMS) => {
       if (this._previousRAF === null) {
         this._previousRAF = timeElapsedMS;
@@ -255,7 +259,7 @@ export class Game {
     });
   }
 
-  private _calculateNextState(timeDeltaMS: number) {
+  private _calculateNextState(timeDeltaMS: number): void {
     const timeDeltaS = millisecondsToSeconds(timeDeltaMS);
     this._player.update(timeDeltaS);
     // this._setSpotlightPosition()
@@ -263,7 +267,7 @@ export class Game {
     this._handleCharacterAttacking();
   }
 
-  private _handleCharacterMovement() {
+  private _handleCharacterMovement(): void {
     const currentPlayerPosition = new Vector3().copy(
       this._player.Element.position
     );
@@ -281,7 +285,7 @@ export class Game {
     }
   }
 
-  private _handleCharacterAttacking() {
+  private _handleCharacterAttacking(): void {
     if (this._player.attacks) {
       const playerPosition = this._player.Element.position;
       const playerViewDirection = this._player.direction;
@@ -347,7 +351,7 @@ export class Game {
     }
   }
 
-  private _addDungeonToScene() {
+  private _addDungeonToScene(): void {
     const textureLoader = new THREE.TextureLoader();
     const wallTexture = textureLoader.load("./img/wall.jpg");
     const wallGeometry = new THREE.BoxGeometry(1, 1.5, 1);
@@ -406,7 +410,7 @@ export class Game {
     this._scene.add(cone);
   }
 
-  private _setEnemies() {
+  private _setEnemies(): void {
     this._dungeon.rooms.forEach((room) => {
       if (!room.start) {
         for (let height = 1; height < room.height - 1; height++) {
@@ -459,15 +463,15 @@ export class Game {
     return grid;
   }
 
-  private static _sceneToGrid(number_: number) {
+  private static _sceneToGrid(number_: number): number {
     return Math.floor(number_ + PROPERTIES.GRID_HEIGHT / 2 + 0.5);
   }
 
-  private static _gridToScene(number_: number) {
+  private static _gridToScene(number_: number): number {
     return number_ - PROPERTIES.GRID_WIDTH / 2 - 0.5;
   }
 
-  private _activateEnemies() {
+  private _activateEnemies(): void {
     this._enemies.forEach((enemy) => {
       const distanceToPlayer = enemy.Element.position.manhattanDistanceTo(
         this._player.Element.position
@@ -480,7 +484,7 @@ export class Game {
     });
   }
 
-  private _enemiesMoveOrAttack() {
+  private _enemiesMoveOrAttack(): void {
     const activeEnemies = this._enemies.filter((enemy) => enemy.active);
 
     activeEnemies.forEach((enemy) => {
@@ -535,7 +539,7 @@ export class Game {
     });
   }
 
-  private _sceneToGridGridToSceneConversion() {
+  private _sceneToGridGridToSceneConversion(): void {
     const grid = this._constructAStarGrid();
 
     const geometry = new THREE.BoxGeometry(1, 3, 1);
@@ -556,14 +560,14 @@ export class Game {
     }
   }
 
-  private _positionConversionCheck() {
+  private _positionConversionCheck(): void {
     const scenePlayerPosition = this._player.Element.position.z;
     const gridPlayerPosition = Game._sceneToGrid(scenePlayerPosition);
     console.log("scene to grid", scenePlayerPosition, gridPlayerPosition);
     console.log("grid to scene", gridPlayerPosition, scenePlayerPosition);
   }
 
-  private _raycast(event: MouseEvent) {
+  private _raycast(event: MouseEvent): void {
     this._mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     this._mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     this._raycaster.setFromCamera(this._mouse, this._camera);
@@ -580,13 +584,6 @@ export class Game {
 
   public stopGame(): number {
     this._stopAnimationFrame = true;
-    // let playTime: number;
-    // if (this._previousRAF) {
-    // cancelAnimationFrame(this._animationFrameId);
-    // playTime = this._previousRAF;
-    // return playTime;
-    // return this._previousRAF;
-    // }
-    return 0;
+    return this._clock.elapsedTime;
   }
 }

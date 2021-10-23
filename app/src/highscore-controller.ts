@@ -4,7 +4,7 @@ import {
   highscoreElementNames,
   highscoreElementTimes,
 } from "./helper/const";
-import { millisToHoursMinutesAndSeconds } from "./helper/time";
+import { secToHMS } from "./helper/time";
 
 export function sortHighscore(highscoreData: highscoreItem[]): void {
   highscoreData.sort((a: highscoreItem, b: highscoreItem): number => {
@@ -21,10 +21,7 @@ export function initHighscore(highscoreData: highscoreItem[]): void {
   data.forEach((a, b) => {
     highscoreElementNames[b]!.innerHTML = a.name;
     highscoreElementFloors[b]!.innerHTML = a.floor.toString();
-    console.log(millisToHoursMinutesAndSeconds(a.time));
-    highscoreElementTimes[b]!.innerHTML = millisToHoursMinutesAndSeconds(
-      a.time
-    );
+    highscoreElementTimes[b]!.innerHTML = secToHMS(a.time);
   });
 }
 
@@ -32,7 +29,6 @@ export function addToHighscore(
   player: highscoreItem,
   highscoreData: highscoreItem[]
 ): void {
-  console.log(player);
   highscoreData.push(player);
   sortHighscore(highscoreData);
   if (highscoreData.length > 10) {

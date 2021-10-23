@@ -5,7 +5,6 @@ import { addToHighscore } from "./highscore-controller";
 import highscoreData from "../public/highscore/highscore.json";
 import { Game } from "./game";
 
-let _startDate: Date;
 let _game: Game;
 
 export function initDom(): void {
@@ -40,7 +39,6 @@ function _startGame(): void {
   HTMLELEMENTS.nameInput?.classList.add("d-none");
   HTMLELEMENTS.storyBox?.classList.add("d-none");
   if (HTMLELEMENTS.element) {
-    _startDate = new Date();
     _game = new Game(HTMLELEMENTS.element);
   }
 }
@@ -111,13 +109,7 @@ function _resetStoryBox(): string | boolean {
 }
 
 function _endGame(): void {
-  _game.stopGame();
-  const endDate = new Date();
-  console.log(endDate);
-  console.log(_startDate);
-  const playTime: number =
-    endDate.getMilliseconds() - _startDate.getMilliseconds();
-  console.log(_startDate.getMilliseconds());
+  const playTime = _game.stopGame();
   addToHighscore(
     {
       name: _getPlayerName(),
@@ -151,7 +143,6 @@ function _backToStartScreen(): void {
   if (!HTMLELEMENTS.app?.classList.contains("d-none")) {
     _endGame();
     _hideDomExitingGame();
-    // _startGame();
   } else if (!HTMLELEMENTS.highscore?.classList.contains("d-none")) {
     _goToStartScreenFromHighscore();
   } else if (!HTMLELEMENTS.nameInput?.classList.contains("d-none")) {

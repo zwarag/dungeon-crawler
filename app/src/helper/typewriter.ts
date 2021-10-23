@@ -1,7 +1,7 @@
 export async function storyWriter(
   txt: string,
   elementId: string,
-  delay: number,
+  delay: number
 ): Promise<void> {
   const letters = txt.split("");
   let i = 0;
@@ -11,6 +11,6 @@ export async function storyWriter(
     i++;
   }
 }
-function waitForMs(ms: number) {
+function waitForMs(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }

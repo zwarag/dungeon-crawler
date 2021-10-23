@@ -1,5 +1,5 @@
 export const GLOBAL_Y = 0;
-export const PLAYER_Y = 0.5
+export const PLAYER_Y = 0.5;
 export const GLOBAL_GROUND_Y = -0.5;
 
 // grid settings used for the dungeon generation
