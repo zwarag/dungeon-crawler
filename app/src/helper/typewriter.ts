@@ -7,7 +7,8 @@ export async function storyWriter(
   let i = 0;
   while (i < letters.length) {
     await waitForMs(delay);
-    (document.querySelector(`#${elementId}`) as HTMLElement).innerHTML += letters[i];
+    (document.querySelector(`#${elementId}`) as HTMLElement).innerHTML +=
+      letters[i];
     i++;
   }
 }

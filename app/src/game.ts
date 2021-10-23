@@ -1,5 +1,5 @@
-import { GLOBAL_GROUND_Y, GLOBAL_Y, PROPERTIES } from "./helper/const";
-import * as THREE from "three";
+import { GLOBAL_GROUND_Y, GLOBAL_Y, PROPERTIES } from './helper/const';
+import * as THREE from 'three';
 import {
   AnimationAction,
   AnimationClip,
@@ -8,18 +8,18 @@ import {
   SpotLight,
   Vector2,
   Vector3,
-} from "three";
-import { Player } from "./player";
-import { millisecondsToSeconds } from "./helper/time";
-import { Dungeon } from "./dungeon";
-import { ELEMENTS } from "./helper/grid-elements";
-import { Enemy } from "./enemy";
-import { AStarFinder } from "astar-typescript";
-import { DIRECTION } from "./helper/direction";
-import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
-import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
-import { OutlinePass } from "three/examples/jsm/postprocessing/OutlinePass";
-import { DamageText } from "./damageText";
+} from 'three';
+import { Player } from './player';
+import { millisecondsToSeconds } from './helper/time';
+import { Dungeon } from './dungeon';
+import { ELEMENTS } from './helper/grid-elements';
+import { Enemy } from './enemy';
+import { AStarFinder } from 'astar-typescript';
+import { DIRECTION } from './helper/direction';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
+import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass';
+import { DamageText } from './damageText';
 
 export class Game {
   private _threejs: THREE.WebGLRenderer;
@@ -59,14 +59,14 @@ export class Game {
     this._clock = new THREE.Clock();
 
     window.addEventListener(
-      "resize",
+      'resize',
       () => {
         this._onWindowResize();
       },
       false
     );
 
-    document.addEventListener("mousemove", (ev: MouseEvent) => {
+    document.addEventListener('mousemove', (ev: MouseEvent) => {
       this._raycast(ev);
     });
 
@@ -95,12 +95,12 @@ export class Game {
     // Skybox
     const loader = new THREE.CubeTextureLoader();
     this._scene.background = loader.load([
-      "./img/cocoa_ft_.jpg",
-      "./img/cocoa_bk_.jpg",
-      "./img/cocoa_up_.jpg",
-      "./img/cocoa_dn_.jpg",
-      "./img/cocoa_rt_.jpg",
-      "./img/cocoa_lf_.jpg",
+      './img/cocoa_ft_.jpg',
+      './img/cocoa_bk_.jpg',
+      './img/cocoa_up_.jpg',
+      './img/cocoa_dn_.jpg',
+      './img/cocoa_rt_.jpg',
+      './img/cocoa_lf_.jpg',
     ]);
     // this._scene.background = new THREE.Color("black")
 
@@ -192,7 +192,7 @@ export class Game {
 
     // Spotlight symbolizing a torch carried by the player
     this._spotLight = new THREE.SpotLight(
-      "#f9d97b",
+      '#f9d97b',
       1,
       15,
       Math.PI / 2,
@@ -221,7 +221,7 @@ export class Game {
       action.clampWhenFinished = true;
       action.play();
       this._animationMixers.push(animationMixer);
-      animationMixer.addEventListener("finished", () => {
+      animationMixer.addEventListener('finished', () => {
         action.stop();
         this._animationMixers = this._animationMixers.filter(
           (value) => value !== animationMixer
@@ -280,7 +280,7 @@ export class Game {
         this._activateEnemies();
         this._enemiesMoveOrAttack();
       } else {
-        this._player.speak("blocked");
+        this._player.speak('blocked');
       }
     }
   }
@@ -353,7 +353,7 @@ export class Game {
 
   private _addDungeonToScene(): void {
     const textureLoader = new THREE.TextureLoader();
-    const wallTexture = textureLoader.load("./img/wall.jpg");
+    const wallTexture = textureLoader.load('./img/wall.jpg');
     const wallGeometry = new THREE.BoxGeometry(1, 1.5, 1);
     const wallMaterial = new THREE.MeshPhongMaterial({
       map: wallTexture,
@@ -404,7 +404,7 @@ export class Game {
     const endObjectMaterial = new THREE.MeshPhongMaterial({ color: 0xffff00 });
     const cone = new THREE.Mesh(endObjectGeometry, endObjectMaterial);
     cone.position.set(endRoomX, GLOBAL_Y, endRoomZ);
-    cone.name = "GOAL";
+    cone.name = 'GOAL';
     // todo place ladder
     this._goal = cone;
     this._scene.add(cone);
@@ -503,7 +503,7 @@ export class Game {
       const aStarFinder = new AStarFinder({
         grid: { matrix: grid },
         diagonalAllowed: false,
-        heuristic: "Manhattan",
+        heuristic: 'Manhattan',
         includeStartNode: false,
       });
 
@@ -528,9 +528,9 @@ export class Game {
           enemy.Element.material.setValues({ color: Math.random() * 0xffffff }); // TODO remove later, just to visualize an enemy attacking
           const damage = enemy.attack();
           this._player.takeHit(damage);
-          console.log("your health:", this._player.health);
+          console.log('your health:', this._player.health);
           if (this._player.health <= 0) {
-            console.log("YOU DIED");
+            console.log('YOU DIED');
             // this._player.die()
             // @Chrono666 / Matthias, death screen?
           }
@@ -563,8 +563,8 @@ export class Game {
   private _positionConversionCheck(): void {
     const scenePlayerPosition = this._player.Element.position.z;
     const gridPlayerPosition = Game._sceneToGrid(scenePlayerPosition);
-    console.log("scene to grid", scenePlayerPosition, gridPlayerPosition);
-    console.log("grid to scene", gridPlayerPosition, scenePlayerPosition);
+    console.log('scene to grid', scenePlayerPosition, gridPlayerPosition);
+    console.log('grid to scene', gridPlayerPosition, scenePlayerPosition);
   }
 
   private _raycast(event: MouseEvent): void {

@@ -29,10 +29,5 @@
   "dependencies": {
     "astar-typescript": "^1.2.5",
     "three": "^0.132.2"
-  },
-  "lint-staged": {
-    "app/**/*.ts": [
-      "yarn run lint"
-    ]
   }
 }

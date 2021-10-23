@@ -1,5 +1,5 @@
-import { Accuracy, Damage, Experience, Health, Range } from "./helper/type";
-import { MinMax } from "./helper/interfaces";
+import { Accuracy, Damage, Experience, Health, Range } from './helper/type';
+import { MinMax } from './helper/interfaces';
 
 export abstract class CharacterBase {
   constructor(

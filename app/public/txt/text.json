@@ -1,12 +1,4 @@
 {
-  "blocked": [
-    "I cannot go that way.",
-    "The way is blocked.",
-    "Not possible."
-  ],
-  "pain": [
-    "Ouch!",
-    "I'm hit!",
-    "Ugh!"
-  ]
+  "blocked": ["I cannot go that way.", "The way is blocked.", "Not possible."],
+  "pain": ["Ouch!", "I'm hit!", "Ugh!"]
 }

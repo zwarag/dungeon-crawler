@@ -1,4 +1,4 @@
-@import "variables";
+@import 'variables';
 
 @mixin fantasy-body($overflow) {
   background-image: url(./img/fantasy_background.jpg);
@@ -61,5 +61,3 @@
   top: $top;
   left: $left;
 }
-
-
