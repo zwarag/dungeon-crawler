@@ -1,0 +1,24 @@
+@import "pages/exit-overlay";
+@import "pages/highscore";
+@import "pages/player-name-input";
+@import "pages/start-screen";
+@import "pages/story-box";
+@import "abstracts/variables";
+
+body {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background: $background;
+  margin: 0;
+  padding: 0;
+  color: $color;
+}
+
+.d-block {
+  display: block;
+}
+
+.d-none {
+  display: none;
+}

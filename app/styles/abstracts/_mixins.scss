@@ -1,0 +1,65 @@
+@import "variables";
+
+@mixin fantasy-body($overflow) {
+  background-image: url(./img/fantasy_background.jpg);
+  //background-image: url(./app/public/img/fantasy_background.jpg);
+  background-position: center center;
+  background-size: cover;
+  background-attachment: fixed;
+  overflow: $overflow;
+}
+
+@mixin title($font-size) {
+  margin-top: 0;
+  text-align: center;
+  letter-spacing: 2px;
+  font-family: $main-font;
+  color: $text-color;
+  font-size: $font-size;
+  font-weight: 400;
+  text-shadow: 0 1px 3px $text-shadow;
+}
+
+@mixin border() {
+  border-top: 4px ridge $border-color;
+  border-right: 4px groove $border-color;
+  border-left: 4px ridge $border-color;
+  border-bottom: 4px groove $border-color;
+  box-shadow: inset 0px 0px 5px 3px $box-shadow;
+}
+
+@mixin button($margin, $width, $font-weight) {
+  margin: $margin;
+  width: $width;
+  letter-spacing: 2px;
+  border-radius: 8px;
+  font-family: $main-font;
+  color: $text-color;
+  font-size: $font-size;
+  font-weight: 400;
+  text-shadow: 0 1px 3px $text-shadow;
+  padding: 10px;
+  background: $box-background;
+  @include border();
+}
+
+@mixin button-hover() {
+  background: $hover-background;
+  box-shadow: 0px 0 5px 5px $hover-box-shadow;
+}
+
+@mixin container() {
+  @include button(10px auto, 1000px, 400);
+  align-items: center;
+}
+
+@mixin overlay($width, $margin, $position, $top, $left) {
+  width: $width;
+  margin: $margin;
+  border-radius: 4px;
+  position: $position;
+  top: $top;
+  left: $left;
+}
+
+

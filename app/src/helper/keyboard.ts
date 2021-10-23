@@ -5,6 +5,7 @@ export enum KEYBOARDMAP {
   d = "d",
   space = " ",
   shift = "Shift",
+  escape = "Escape"
 }
 
 export enum KEYBOARDMAPLEGACY {

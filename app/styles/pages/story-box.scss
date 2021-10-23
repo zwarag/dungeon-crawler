@@ -1,0 +1,13 @@
+@import "../abstracts/mixins";
+@import "../abstracts/variables";
+
+// story box
+.story-box {
+  @include overlay(800px, auto, absolute, 30%, 30%);
+  height: fit-content;
+  font-family: $main-font;
+  font-size: $font-size;
+  border: 4px ridge $color;
+  border-bottom-style: groove;
+  border-left-style: groove;
+}
