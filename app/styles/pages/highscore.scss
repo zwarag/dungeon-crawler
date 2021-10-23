@@ -1,0 +1,47 @@
+@import "../abstracts/mixins";
+
+/*higescore*/
+.highscore {
+  @include fantasy-body(off);
+
+  &__title {
+    @include title(84px);
+  }
+
+  &__wrapper {
+    display: grid;
+    gap: 10px;
+
+    &__name-box {
+      display: grid;
+      grid-gap: 10px;
+      grid-template-columns: repeat(4, 1fr);
+      @include container();
+
+      &__place-number {
+        margin-left: 16px;
+      }
+
+      &__floor-number {
+        text-align: center;
+      }
+
+      &__play-time {
+        margin-right: 16px;
+      }
+    }
+
+    &__name-box:hover {
+      @include button-hover();
+    }
+  }
+
+  &__backbutton {
+    float: left;
+    @include button(10px, 200px, 400);
+  }
+
+  &__backbutton:hover {
+    @include button-hover();
+  }
+}

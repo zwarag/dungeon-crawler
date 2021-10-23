@@ -1,0 +1,51 @@
+@import "../abstracts/mixins";
+
+/*player - name input*/
+.name-input {
+  @include overlay(fit-content, auto, absolute, 46%, 46%);
+
+  &__container {
+    text-align: center;
+    @include button(10px auto, px, 400);
+
+    &__input {
+      margin-top: 16px;
+      font-family: $main-font;
+      height: 2rem;
+      border-radius: 8px;
+      @include border();
+    }
+    &__hint {
+      text-align: left;
+      margin-left: 8px;
+      margin-top: 1px;
+      font-size: 0.7rem;
+    }
+
+    &__button-bar {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 56px;
+      margin-top: 16px;
+
+      &__button {
+        letter-spacing: 2px;
+        border-radius: 8px;
+        font-family: $main-font;
+        color: $text-color;
+        font-size: 1rem;
+        font-weight: 400;
+        text-shadow: 0 1px 3px $text-shadow;
+        padding: 10px;
+        background: $box-background;
+        border: transparent;
+      }
+      &__button:hover:enabled {
+        background: $hover-background;
+      }
+      &__button:disabled {
+        color: gray;
+      }
+    }
+  }
+}

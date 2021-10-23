@@ -32,26 +32,45 @@ export function initDom(): void {
   });
 }
 
+function _toggleClass(
+  removeFromElements: HTMLElement[],
+  addToElements: HTMLElement[],
+  cssClass: string
+) {
+  removeFromElements.forEach((e) => e.classList.remove(cssClass));
+  addToElements.forEach((e) => e.classList.add(cssClass));
+}
+
 function _startGame(): void {
-  HTMLELEMENTS.app?.classList.remove("d-none");
-  HTMLELEMENTS.startScreen?.classList.add("d-none");
-  HTMLELEMENTS.highscore?.classList.add("d-none");
-  HTMLELEMENTS.nameInput?.classList.add("d-none");
-  HTMLELEMENTS.storyBox?.classList.add("d-none");
+  _toggleClass(
+    [HTMLELEMENTS.app!],
+    [
+      HTMLELEMENTS.startScreen!,
+      HTMLELEMENTS.highscore!,
+      HTMLELEMENTS.nameInput!,
+      HTMLELEMENTS.storyBox!,
+    ],
+    "d-none"
+  );
   if (HTMLELEMENTS.element) {
     _game = new Game(HTMLELEMENTS.element);
   }
 }
 
 function _displayNameInput(): void {
-  HTMLELEMENTS.startScreen?.classList.add("d-none");
-  HTMLELEMENTS.highscore?.classList.add("d-none");
-  HTMLELEMENTS.nameInput?.classList.remove("d-none");
+  _toggleClass(
+    [HTMLELEMENTS.nameInput!],
+    [HTMLELEMENTS.startScreen!, HTMLELEMENTS.highscore!],
+    "d-none"
+  );
 }
 
 function _displayHighscore(): void {
-  HTMLELEMENTS.startScreen?.classList.add("d-none");
-  HTMLELEMENTS.highscore?.classList.remove("d-none");
+  _toggleClass(
+    [HTMLELEMENTS.highscore!],
+    [HTMLELEMENTS.startScreen!],
+    "d-none"
+  );
 }
 
 function _displayExitOverlay(): void {
@@ -86,26 +105,26 @@ function _enableButton(): void {
 }
 
 async function _displayStoryBox(): Promise<void> {
-  HTMLELEMENTS.storyBox?.classList.remove("d-none");
-  HTMLELEMENTS.nameInput?.classList.add("d-none");
-  return await storyWriter(story.story, "story-box", 2);
+  _toggleClass([HTMLELEMENTS.storyBox!], [HTMLELEMENTS.nameInput!], "d-none");
+  for (const lineNumber in story.intro) {
+    await storyWriter(story.intro[lineNumber], "story-box", 90);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    _resetStoryBox();
+  }
 }
 
 function _getPlayerName(): string {
-  if (HTMLELEMENTS.formInput) {
-    return HTMLELEMENTS.formInput.value;
-  }
-  return "default";
+  return HTMLELEMENTS.formInput ? HTMLELEMENTS.formInput.value : "default";
 }
 
-function _resetNameInput(): string | boolean {
-  return HTMLELEMENTS.formInput
+function _resetNameInput(): void {
+  HTMLELEMENTS.formInput
     ? (HTMLELEMENTS.formInput.value = HTMLELEMENTS.formInput.defaultValue)
     : false;
 }
 
-function _resetStoryBox(): string | boolean {
-  return HTMLELEMENTS.storyBox ? (HTMLELEMENTS.storyBox.innerHTML = "") : false;
+function _resetStoryBox(): void {
+  HTMLELEMENTS.storyBox ? (HTMLELEMENTS.storyBox.innerHTML = "") : false;
 }
 
 function _endGame(): void {
@@ -122,30 +141,26 @@ function _endGame(): void {
   _resetStoryBox();
 }
 
-function _hideDomExitingGame(): void {
-  HTMLELEMENTS.overlay?.classList.add("d-none");
-  HTMLELEMENTS.app?.classList.add("d-none");
-  HTMLELEMENTS.highscore?.classList.remove("d-none");
-}
-
-function _goToStartScreenFromHighscore(): void {
-  HTMLELEMENTS.highscore?.classList.add("d-none");
-  HTMLELEMENTS.startScreen?.classList.remove("d-none");
-}
-
-function _goToStartScreenFromNameInput(): void {
-  HTMLELEMENTS.nameInput?.classList.add("d-none");
-  HTMLELEMENTS.startScreen?.classList.remove("d-none");
-}
-
 function _backToStartScreen(): void {
   //TODO: some logic to end the game (i.e. destroy scene, create highscore, etc)
   if (!HTMLELEMENTS.app?.classList.contains("d-none")) {
     _endGame();
-    _hideDomExitingGame();
+    _toggleClass(
+      [HTMLELEMENTS.highscore!],
+      [HTMLELEMENTS.app!, HTMLELEMENTS.overlay!],
+      "d-none"
+    );
   } else if (!HTMLELEMENTS.highscore?.classList.contains("d-none")) {
-    _goToStartScreenFromHighscore();
+    _toggleClass(
+      [HTMLELEMENTS.startScreen!],
+      [HTMLELEMENTS.highscore!],
+      "d-none"
+    );
   } else if (!HTMLELEMENTS.nameInput?.classList.contains("d-none")) {
-    _goToStartScreenFromNameInput();
+    _toggleClass(
+      [HTMLELEMENTS.startScreen!],
+      [HTMLELEMENTS.nameInput!],
+      "d-none"
+    );
   }
 }

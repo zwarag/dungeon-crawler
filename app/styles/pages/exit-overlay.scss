@@ -1,0 +1,18 @@
+@import "../abstracts/mixins";
+
+/*exit overlay*/
+.exit-overlay {
+  @include overlay(fit-content, auto, absolute, 46%, 46%);
+
+  &__button-bar {
+    display: grid;
+
+    &__button {
+      @include button(10px, auto, 400);
+    }
+
+    &__button:hover {
+      @include button-hover();
+    }
+  }
+}
