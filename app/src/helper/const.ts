@@ -18,33 +18,32 @@ export const PROPERTIES = {
 };
 
 // HTML Elements
-const app = document.querySelector<HTMLDivElement>("#app");
-const highscore = document.querySelector<HTMLDivElement>("#highscore");
-const startScreen = document.querySelector<HTMLDivElement>("#start-screen");
-const nameInput = document.querySelector<HTMLDivElement>("#name-input");
-const element = document.querySelector<HTMLCanvasElement>("#element");
-const startButton = document.querySelector<HTMLButtonElement>("#startbutton");
-const highscoreButton =
-  document.querySelector<HTMLButtonElement>("#highscoreButton");
-const highscoreBackButton = document.querySelector<HTMLButtonElement>(
+const app = (document.querySelector("#app") as HTMLDivElement)
+const highscore = (document.querySelector("#highscore") as HTMLDivElement);
+const startScreen = (document.querySelector("#start-screen") as HTMLDivElement)
+const nameInput = (document.querySelector("#name-input") as HTMLDivElement)
+const element = (document.querySelector("#element") as HTMLCanvasElement)
+const startButton = (document.querySelector("#startbutton") as HTMLButtonElement)
+const highscoreButton = (document.querySelector("#highscoreButton") as HTMLButtonElement)
+const highscoreBackButton = (document.querySelector(
   "#highscore-backbutton"
-);
-const overlay = document.querySelector<HTMLDivElement>("#overlay");
-const continueButton = document.querySelector<HTMLButtonElement>(
+) as HTMLButtonElement);
+const overlay = (document.querySelector("#overlay") as HTMLDivElement)
+const continueButton = (document.querySelector<HTMLButtonElement>(
   "#exit-overlay-continueButton"
-);
-const exitButton = document.querySelector<HTMLButtonElement>(
+)as HTMLButtonElement);
+const exitButton = (document.querySelector<HTMLButtonElement>(
   "#exit-overlay-exitButton"
-);
+)as HTMLButtonElement);
 const nameInputBackButton = document.querySelector<HTMLButtonElement>(
   "#name-input-backButton"
-);
+) as HTMLButtonElement;
 const nameInputOkButton = document.querySelector<HTMLButtonElement>(
   "#name-input-okButton"
-);
+) as HTMLButtonElement;
 const formInput =
-  document.querySelector<HTMLInputElement>("#player-name-input");
-const storyBox = document.querySelector<HTMLDivElement>("#story-box");
+  document.querySelector<HTMLInputElement>("#player-name-input") as HTMLInputElement;
+const storyBox = document.querySelector<HTMLDivElement>("#story-box") as HTMLDivElement;
 export const HTMLELEMENTS = {
   app,
   highscore,
@@ -154,38 +153,6 @@ const highscoreFloorTenthPlace = document.querySelector<HTMLDivElement>(
 const highscoreTimeTenthPlace = document.querySelector<HTMLDivElement>(
   "#highscore-tenth-place-play-time"
 );
-export const HIGHSCOREELEMENTS = [
-  highscoreNameFirstPlace,
-  highscoreFloorFirstPlace,
-  highscoreTimeFirstPlace,
-  highscoreNameSecondPlace,
-  highscoreFloorSecondPlace,
-  highscoreTimeSecondPlace,
-  highscoreNameThirdPlace,
-  highscoreFloorThirdPlace,
-  highscoreTimeThirdPlace,
-  highscoreNameFourthPlace,
-  highscoreFloorFourthPlace,
-  highscoreTimeFourthPlace,
-  highscoreNameFifthPlace,
-  highscoreFloorFifthPlace,
-  highscoreTimeFifthPlace,
-  highscoreNameSixthPlace,
-  highscoreFloorSixthPlace,
-  highscoreTimeSixthPlace,
-  highscoreNameSeventhPlace,
-  highscoreFloorSeventhPlace,
-  highscoreTimeSeventhPlace,
-  highscoreNameEighthPlace,
-  highscoreFloorEighthPlace,
-  highscoreTimeEighthPlace,
-  highscoreNameNinthPlace,
-  highscoreFloorNinthPlace,
-  highscoreTimeNinthPlace,
-  highscoreNameTenthPlace,
-  highscoreFloorTenthPlace,
-  highscoreTimeTenthPlace,
-];
 export const highscoreElementNames = [
   highscoreNameFirstPlace,
   highscoreNameSecondPlace,

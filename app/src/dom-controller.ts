@@ -4,32 +4,31 @@ import { storyWriter } from "./helper/typewriter";
 import { addToHighscore } from "./highscore-controller";
 import highscoreData from "../public/highscore/highscore.json";
 import { Game } from "./game";
+import { KEYBOARDMAP } from "./helper/keyboard";
 
 let _game: Game;
 
 export function initDom(): void {
-  HTMLELEMENTS.startButton?.addEventListener("click", _displayNameInput);
-  HTMLELEMENTS.highscoreButton?.addEventListener("click", _displayHighscore);
-  HTMLELEMENTS.highscoreBackButton?.addEventListener(
-    "click",
-    _backToStartScreen
-  );
-  HTMLELEMENTS.exitButton?.addEventListener("click", _backToStartScreen);
-  HTMLELEMENTS.continueButton?.addEventListener("click", _continueGame);
-  HTMLELEMENTS.nameInputBackButton?.addEventListener(
-    "click",
-    _backToStartScreen
-  );
-  HTMLELEMENTS.nameInputOkButton?.addEventListener("click", async () => {
+  addEventListener(HTMLELEMENTS.startButton, "click", () => {_toggleClass([HTMLELEMENTS.nameInput], [HTMLELEMENTS.startScreen], "d-none")});
+  addEventListener(HTMLELEMENTS.highscoreButton, "click", () => {_toggleClass([HTMLELEMENTS.highscore], [HTMLELEMENTS.startScreen], "d-none")});
+  addEventListener(HTMLELEMENTS.highscoreBackButton, "click", _backToStartScreen);
+  addEventListener(HTMLELEMENTS.exitButton, "click", _backToStartScreen);
+  addEventListener(HTMLELEMENTS.continueButton, "click", _continueGame);
+  addEventListener(HTMLELEMENTS.nameInputBackButton, "click", _backToStartScreen);
+  addEventListener(HTMLELEMENTS.nameInputOkButton, "click", async () => {
     await _displayStoryBox();
     _startGame();
   });
-  HTMLELEMENTS.formInput?.addEventListener("input", _enableButton);
+  addEventListener(HTMLELEMENTS.formInput, "input", _enableButton);
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
+    if (event.key === KEYBOARDMAP.escape) {
       _displayExitOverlay();
     }
   });
+}
+
+function addEventListener(element: HTMLElement, key: string, event: () => void) {
+  element.addEventListener(key, event)
 }
 
 function _toggleClass(
@@ -43,34 +42,18 @@ function _toggleClass(
 
 function _startGame(): void {
   _toggleClass(
-    [HTMLELEMENTS.app!],
+    [HTMLELEMENTS.app],
     [
-      HTMLELEMENTS.startScreen!,
-      HTMLELEMENTS.highscore!,
-      HTMLELEMENTS.nameInput!,
-      HTMLELEMENTS.storyBox!,
+      HTMLELEMENTS.startScreen,
+      HTMLELEMENTS.highscore,
+      HTMLELEMENTS.nameInput,
+      HTMLELEMENTS.storyBox,
     ],
     "d-none"
   );
   if (HTMLELEMENTS.element) {
     _game = new Game(HTMLELEMENTS.element);
   }
-}
-
-function _displayNameInput(): void {
-  _toggleClass(
-    [HTMLELEMENTS.nameInput!],
-    [HTMLELEMENTS.startScreen!, HTMLELEMENTS.highscore!],
-    "d-none"
-  );
-}
-
-function _displayHighscore(): void {
-  _toggleClass(
-    [HTMLELEMENTS.highscore!],
-    [HTMLELEMENTS.startScreen!],
-    "d-none"
-  );
 }
 
 function _displayExitOverlay(): void {
@@ -105,7 +88,7 @@ function _enableButton(): void {
 }
 
 async function _displayStoryBox(): Promise<void> {
-  _toggleClass([HTMLELEMENTS.storyBox!], [HTMLELEMENTS.nameInput!], "d-none");
+  _toggleClass([HTMLELEMENTS.storyBox], [HTMLELEMENTS.nameInput], "d-none");
   for (const lineNumber in story.intro) {
     await storyWriter(story.intro[lineNumber], "story-box", 90);
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -146,20 +129,20 @@ function _backToStartScreen(): void {
   if (!HTMLELEMENTS.app?.classList.contains("d-none")) {
     _endGame();
     _toggleClass(
-      [HTMLELEMENTS.highscore!],
-      [HTMLELEMENTS.app!, HTMLELEMENTS.overlay!],
+      [HTMLELEMENTS.highscore],
+      [HTMLELEMENTS.app, HTMLELEMENTS.overlay],
       "d-none"
     );
   } else if (!HTMLELEMENTS.highscore?.classList.contains("d-none")) {
     _toggleClass(
-      [HTMLELEMENTS.startScreen!],
-      [HTMLELEMENTS.highscore!],
+      [HTMLELEMENTS.startScreen],
+      [HTMLELEMENTS.highscore],
       "d-none"
     );
   } else if (!HTMLELEMENTS.nameInput?.classList.contains("d-none")) {
     _toggleClass(
-      [HTMLELEMENTS.startScreen!],
-      [HTMLELEMENTS.nameInput!],
+      [HTMLELEMENTS.startScreen],
+      [HTMLELEMENTS.nameInput],
       "d-none"
     );
   }
