@@ -7,12 +7,14 @@ export function millisecondsToSeconds(
   return seconds * 0.001;
 }
 
-export function milliToHMS(millis: TimeInMilliseconds): TimeInHoursMinutesSeconds {
+export function milliToHMS(
+  millis: TimeInMilliseconds
+): TimeInHoursMinutesSeconds {
   return (
     Math.floor(millis / (1000 * 60 * 60)) +
-    ":" +
+    ':' +
     (Math.floor(millis / (1000 * 60)) % 60) +
-    ":" +
+    ':' +
     (Math.floor(millis / 1000) % 60)
   );
 }
@@ -20,9 +22,9 @@ export function milliToHMS(millis: TimeInMilliseconds): TimeInHoursMinutesSecond
 export function secToHMS(sec: TimeInSeconds): TimeInHoursMinutesSeconds {
   return (
     (Math.floor(Math.floor(sec) / 3600) % 60) +
-    ":" +
+    ':' +
     (Math.floor(Math.floor(sec) / 60) % 60) +
-    ":" +
+    ':' +
     (Math.floor(sec) % 60)
   );
 }

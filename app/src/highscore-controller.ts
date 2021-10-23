@@ -1,10 +1,10 @@
-import { HighscoreItem } from "./helper/type";
+import { HighscoreItem } from './helper/type';
 import {
   highscoreElementFloors,
   highscoreElementNames,
   highscoreElementTimes,
-} from "./helper/const";
-import { secToHMS } from "./helper/time";
+} from './helper/const';
+import { secToHMS } from './helper/time';
 import { GAME_NAME } from './helper/const';
 
 function sortHighscore(highscoreData: HighscoreItem[]): void {
@@ -17,7 +17,7 @@ function sortHighscore(highscoreData: HighscoreItem[]): void {
 }
 
 function loadFromLocalStoryge(): HighscoreItem[] {
-  return JSON.parse(localStorage.getItem(GAME_NAME) ?? "[]")
+  return JSON.parse(localStorage.getItem(GAME_NAME) ?? '[]');
 }
 
 /**
@@ -27,14 +27,16 @@ export function initHighscore(highscoreData: HighscoreItem[]): void {
   const ls = loadFromLocalStoryge();
   const data: HighscoreItem[] = [];
 
-  if (ls.length === 0) { // localstorage does not have any highscores, game has never been played on this browser
+  if (ls.length === 0) {
+    // localstorage does not have any highscores, game has never been played on this browser
     highscoreData.map((e) => data.push(e));
     localStorage.setItem(GAME_NAME, JSON.stringify(highscoreData));
-  } else { // localstorage has highscores
-    data.push(...ls)
+  } else {
+    // localstorage has highscores
+    data.push(...ls);
   }
 
-  sortHighscore(ls)
+  sortHighscore(ls);
 
   data.forEach((a, b) => {
     (highscoreElementNames[b] as HTMLElement).innerHTML = a.name;

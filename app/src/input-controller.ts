@@ -1,4 +1,4 @@
-import { KEYBOARDMAP } from "./helper/keyboard";
+import { KEYBOARDMAP } from './helper/keyboard';
 
 export interface ActionKeys {
   forward: boolean;
@@ -62,7 +62,7 @@ export class KeyBoardInputController extends InputController {
    * This function can be called after `unsetKeyDownEvent`.
    */
   setKeyDownEvent(): void {
-    document.addEventListener("keydown", this._keyDownEventReferece, false);
+    document.addEventListener('keydown', this._keyDownEventReferece, false);
   }
 
   /**
@@ -70,7 +70,7 @@ export class KeyBoardInputController extends InputController {
    * Use this function if you need to temporarly remove the event in case it conflicts with another one.
    */
   unsetKeyDownEvent(): void {
-    document.removeEventListener("keydown", this._keyDownEventReferece, false);
+    document.removeEventListener('keydown', this._keyDownEventReferece, false);
   }
 
   /**

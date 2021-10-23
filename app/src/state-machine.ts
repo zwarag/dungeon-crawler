@@ -1,4 +1,4 @@
-import { KeyBoardInputController } from "./input-controller";
+import { KeyBoardInputController } from './input-controller';
 
 type StateConstructor = new (parent: StateMachine) => State;
 export abstract class State {
@@ -39,7 +39,7 @@ export class StateMachine {
   }
 
   getCurrentState(): State {
-    return this._currentState
+    return this._currentState;
   }
 
   update(timeDelta?: number, input?: unknown): void {
@@ -52,19 +52,19 @@ export class StateMachine {
  */
 class IdleState extends State {
   get name(): string {
-    return "idle";
+    return 'idle';
   }
   constructor(parent: StateMachine) {
     super(parent);
   }
   enter(state: State): void {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   exit(): void {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   update(): void {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
 }
 
@@ -73,16 +73,16 @@ class IdleState extends State {
  */
 class WalkState extends State {
   get name(): string {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   enter(state: State): void {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   exit(): void {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   update(): void {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
 }
 
@@ -92,16 +92,16 @@ class WalkState extends State {
  */
 class TurningState extends State {
   get name(): string {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   enter(state: State): void {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   exit(): void {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   update(): void {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
 }
 
@@ -110,16 +110,16 @@ class TurningState extends State {
  */
 class AttackState extends State {
   get name(): string {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   enter(state: State): void {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   exit(): void {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   update(): void {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
 }
 
@@ -128,15 +128,15 @@ class AttackState extends State {
  */
 class HitState extends State {
   get name(): string {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   enter(state: State): void {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   exit(): void {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   update(): void {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
 }

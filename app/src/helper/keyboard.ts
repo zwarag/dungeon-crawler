@@ -1,11 +1,11 @@
 export enum KEYBOARDMAP {
-  w = "w",
-  a = "a",
-  s = "s",
-  d = "d",
-  space = " ",
-  shift = "Shift",
-  escape = "Escape"
+  w = 'w',
+  a = 'a',
+  s = 's',
+  d = 'd',
+  space = ' ',
+  shift = 'Shift',
+  escape = 'Escape',
 }
 
 export enum KEYBOARDMAPLEGACY {
