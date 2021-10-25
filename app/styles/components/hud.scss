@@ -1,0 +1,78 @@
+@import '../abstracts/mixins';
+@import '../abstracts/variables';
+
+.hud {
+  @include border();
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  text-align: center;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: fit-content;
+  &__controls {
+    &__keyboard {
+      &__keyboardRow {
+        text-align: center;
+        margin: 32px 0 32px 0;
+        &__description {
+          margin: 0;
+          font-family: $main-font;
+          color: $text-color;
+        }
+        &__key {
+          @include key();
+          margin: 16px 16px 0 16px;
+          &__space {
+            width: 200px;
+            display: inline-block;
+            padding: 10px;
+            margin-bottom: 5px;
+            @include key();
+          }
+        }
+      }
+    }
+  }
+  &__player-status {
+    border-right: 4px groove $border-color;
+    border-left: 4px ridge $border-color;
+  }
+  &__placeholder {
+  }
+}
+
+/*
+#top,
+#bottom,
+#left,
+#right {
+  background: $border-color;
+  position: fixed;
+}
+#left,
+#right {
+  top: 0;
+  bottom: 0;
+  width: 10px;
+}
+#left {
+  left: 0;
+}
+#right {
+  right: 0;
+}
+
+#top,
+#bottom {
+  left: 0;
+  right: 0;
+  height: 10px;
+}
+#top {
+  top: 0;
+}
+#bottom {
+  bottom: 0;
+}
+*/

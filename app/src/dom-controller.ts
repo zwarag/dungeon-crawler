@@ -114,7 +114,7 @@ async function _displayStoryBox(): Promise<void> {
   _toggleClass([HTMLELEMENTS.storyBox], [HTMLELEMENTS.nameInput], 'd-none');
   for (const lineNumber in story.intro) {
     await storyWriter(story.intro[lineNumber], 'story-box', 1);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1));
     _resetStoryBox();
   }
 }

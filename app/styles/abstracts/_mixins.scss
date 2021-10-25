@@ -43,6 +43,16 @@
   @include border();
 }
 
+@mixin key() {
+  @include border();
+  display: inline-block;
+  padding: 10px;
+  font-family: $main-font;
+  color: $text-color;
+  text-shadow: 0 1px 3px $text-shadow;
+  background: $box-background;
+}
+
 @mixin button-hover() {
   background: $hover-background;
   box-shadow: 0px 0 5px 5px $hover-box-shadow;
