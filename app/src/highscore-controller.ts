@@ -16,7 +16,7 @@ function sortHighscore(highscoreData: HighscoreItem[]): void {
   });
 }
 
-function loadFromLocalStoryge(): HighscoreItem[] {
+function loadFromLocalStorage(): HighscoreItem[] {
   return JSON.parse(localStorage.getItem(GAME_NAME) ?? '[]');
 }
 
@@ -24,7 +24,7 @@ function loadFromLocalStoryge(): HighscoreItem[] {
  * To be called once per runtime. Adds the saved highscoreData to the HTML.
  */
 export function initHighscore(highscoreData: HighscoreItem[]): void {
-  const ls = loadFromLocalStoryge();
+  const ls = loadFromLocalStorage();
   const data: HighscoreItem[] = [];
 
   if (ls.length === 0) {
@@ -39,14 +39,14 @@ export function initHighscore(highscoreData: HighscoreItem[]): void {
   sortHighscore(ls);
 
   data.forEach((a, b) => {
-    (highscoreElementNames[b] as HTMLElement).innerHTML = a.name;
-    (highscoreElementFloors[b] as HTMLElement).innerHTML = a.floor.toString();
-    (highscoreElementTimes[b] as HTMLElement).innerHTML = secToHMS(a.time);
+    highscoreElementNames[b].innerHTML = a.name;
+    highscoreElementFloors[b].innerHTML = a.floor.toString();
+    highscoreElementTimes[b].innerHTML = secToHMS(a.time);
   });
 }
 
 export function addToHighscore(player: HighscoreItem): void {
-  const ls = loadFromLocalStoryge();
+  const ls = loadFromLocalStorage();
   ls.push(player);
   sortHighscore(ls);
   if (ls.length > 10) {

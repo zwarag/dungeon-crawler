@@ -12,6 +12,7 @@ import { randomRange } from './helper/random';
 import { CharacterBase } from './character';
 import initialPlayerStats from '../public/txt/initialPlayerStats.json';
 import { ELEMENTS } from './helper/grid-elements';
+import { updateProgressBar } from './dom-controller';
 
 export class Player extends CharacterBase {
   /** A InputController for Keyboard or AI Controlled inputs. */
@@ -172,6 +173,7 @@ export class Player extends CharacterBase {
 
   takeHit(damage: number): void {
     this._health -= damage;
+    updateProgressBar(this._health);
     console.log(`The player has ${this._health} left`);
   }
 

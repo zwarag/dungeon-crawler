@@ -10,52 +10,65 @@
     <!-- canvas-element -->
     <div id="app" class="d-none">
       <canvas id="element" class="d-block"></canvas>
-      <!--      <div id="left"></div>-->
-      <!--      <div id="right"></div>-->
-      <!--      <div id="top"></div>-->
-      <!--      <div id="bottom"></div>-->
-    </div>
-
-    <div class="hud">
-      <div class="hud__controls">
-        <div class="hud__controls__keyboard">
-          <div class="hud__controls__keyboard__keyboardRow">
+      <!--    heads up display-->
+      <div class="hud">
+        <div class="hud__controls">
+          <div class="hud__controls__keyboard">
+            <div class="hud__controls__keyboard__keyboardRow">
             <span class="hud__controls__keyboard__keyboardRow__description"
-              >EXIT GAME</span
+            >EXIT GAME</span
             >
-            <span class="hud__controls__keyboard__keyboardRow__key">Esc</span>
-            <span class="hud__controls__keyboard__keyboardRow__key">W</span>
-            <span class="hud__controls__keyboard__keyboardRow__description"
+              <span class="hud__controls__keyboard__keyboardRow__key">Esc</span>
+              <span class="hud__controls__keyboard__keyboardRow__key">W</span>
+              <span class="hud__controls__keyboard__keyboardRow__description"
               >FORWARD</span
-            >
-          </div>
-          <div class="hud__controls__keyboard__keyboardRow">
+              >
+            </div>
+            <div class="hud__controls__keyboard__keyboardRow">
             <span class="hud__controls__keyboard__keyboardRow__description"
-              >TURN-LEFT</span
+            >TURN-LEFT</span
             >
-            <span class="hud__controls__keyboard__keyboardRow__key">A</span>
-            <span class="hud__controls__keyboard__keyboardRow__key">S</span>
-            <span class="hud__controls__keyboard__keyboardRow__key">D</span>
-            <span class="hud__controls__keyboard__keyboardRow__description"
+              <span class="hud__controls__keyboard__keyboardRow__key">A</span>
+              <span class="hud__controls__keyboard__keyboardRow__key">S</span>
+              <span class="hud__controls__keyboard__keyboardRow__key">D</span>
+              <span class="hud__controls__keyboard__keyboardRow__description"
               >TURN-RIGHT</span
-            >
-            <p class="hud__controls__keyboard__keyboardRow__description">
-              GO-BACK
-            </p>
-          </div>
-          <div class="hud__controls__keyboard__keyboardRow">
+              >
+              <p class="hud__controls__keyboard__keyboardRow__description">
+                GO-BACK
+              </p>
+            </div>
+            <div class="hud__controls__keyboard__keyboardRow">
             <span class="hud__controls__keyboard__keyboardRow__key__space"
-              >SPACE</span
+            >SPACE</span
             >
-            <p class="hud__controls__keyboard__keyboardRow__description">
-              ATTACK
-            </p>
+              <p class="hud__controls__keyboard__keyboardRow__description">
+                ATTACK
+              </p>
+            </div>
           </div>
         </div>
+        <div class="hud__player-status">
+          <p class="hud__player-status__title">PLAYER STATUS</p>
+          <div class="hud__player-status__progress">
+            <div class="hud__player-status__progress__description">HP</div>
+            <div id="progress-bar" class="hud__player-status__progress__bar">
+              <div
+                      id="progress-bar-fill"
+                      class="hud__player-status__progress__bar__fill"
+              ></div>
+              <span
+                      id="progress-bar-text"
+                      class="hud__player-status__progress__bar__text"
+              >0%</span
+              >
+            </div>
+          </div>
+        </div>
+        <div class="hud__placeholder">placeholder</div>
       </div>
-      <div class="hud__player-status">HP</div>
-      <div class="hud__placeholder">placeholder/map</div>
     </div>
+
 
     <!-- start-screen -->
     <div id="start-screen" class="start-screen">

@@ -144,6 +144,12 @@ function _endGame(): void {
   _resetStoryBox();
 }
 
+export function updateProgressBar(value: number) {
+  value = Math.round(value);
+  HTMLELEMENTS.progressBarFill.style.width = `${value}%`;
+  HTMLELEMENTS.progressBarText.textContent = `${value}%`;
+}
+
 function _backToStartScreen(): void {
   //TODO: some logic to end the game (i.e. destroy scene, create highscore, etc)
   if (!HTMLELEMENTS.app?.classList.contains('d-none')) {

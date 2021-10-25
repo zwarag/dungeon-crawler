@@ -1,6 +1,7 @@
 @import '../abstracts/mixins';
 @import '../abstracts/variables';
 
+/*HUD*/
 .hud {
   @include border();
   display: grid;
@@ -8,8 +9,9 @@
   text-align: center;
   position: fixed;
   bottom: 0;
-  width: 100%;
   height: fit-content;
+
+  /*keymap*/
   &__controls {
     &__keyboard {
       &__keyboardRow {
@@ -17,8 +19,7 @@
         margin: 32px 0 32px 0;
         &__description {
           margin: 0;
-          font-family: $main-font;
-          color: $text-color;
+          @include fantasy-Text();
         }
         &__key {
           @include key();
@@ -34,45 +35,59 @@
       }
     }
   }
+
+  /*Player-status*/
   &__player-status {
     border-right: 4px groove $border-color;
     border-left: 4px ridge $border-color;
+    width: fit-content;
+
+    &__title {
+      @include fantasy-Text();
+      font-weight: bolder;
+      font-size: 32px;
+    }
+    &__progress {
+      width: fit-content;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      margin-top: 80px;
+      margin-left: 16px;
+
+      &__description {
+        @include fantasy-Text();
+        margin: auto;
+        font-weight: bolder;
+        font-size: 32px;
+      }
+      &__bar {
+        @include border();
+        position: relative;
+        width: 30rem;
+        height: 60px;
+        margin-right: 32px;
+        margin-left: 16px;
+        border-radius: 5px;
+        overflow: hidden;
+
+        &__fill {
+          width: 0%;
+          height: 100%;
+          background: red;
+          transition: all 0.2s;
+        }
+
+        &__text {
+          @include fantasy-Text();
+          position: absolute;
+          top: 50%;
+          right: 5px;
+          transform: translateY(-50%);
+        }
+      }
+    }
   }
+
   &__placeholder {
   }
 }
-
-/*
-#top,
-#bottom,
-#left,
-#right {
-  background: $border-color;
-  position: fixed;
-}
-#left,
-#right {
-  top: 0;
-  bottom: 0;
-  width: 10px;
-}
-#left {
-  left: 0;
-}
-#right {
-  right: 0;
-}
-
-#top,
-#bottom {
-  left: 0;
-  right: 0;
-  height: 10px;
-}
-#top {
-  top: 0;
-}
-#bottom {
-  bottom: 0;
-}
-*/
