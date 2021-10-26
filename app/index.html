@@ -65,10 +65,11 @@
             </div>
           </div>
         </div>
-        <div class="hud__placeholder">placeholder</div>
+        <div id="hud-animation-display" class="hud__placeholder">
+          <canvas id="hud-animation" class="hud__placeholder__canvas"></canvas>
+        </div>
       </div>
     </div>
-
 
     <!-- start-screen -->
     <div id="start-screen" class="start-screen">
@@ -114,7 +115,7 @@
           type="text"
           id="player-name-input"
           maxlength="10"
-          placeholder="Enter your Heros name"
+          placeholder="Enter your Heroes name"
         />
         <p class="name-input__container__hint">1 to 10 characters</p>
         <div class="name-input__container__button-bar">

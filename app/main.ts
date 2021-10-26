@@ -6,5 +6,3 @@ import 'three/examples/fonts/helvetiker_regular.typeface.json';
 
 initDom();
 initHighscore(highscoreData);
-
-// startGame();

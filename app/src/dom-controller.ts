@@ -4,6 +4,7 @@ import { storyWriter } from './helper/typewriter';
 import { addToHighscore } from './highscore-controller';
 import { Game } from './game';
 import { KEYBOARDMAP } from './helper/keyboard';
+import { HudAnimation } from './hud-animation';
 
 let _game: Game;
 
@@ -76,6 +77,7 @@ function _startGame(): void {
   );
   if (HTMLELEMENTS.element) {
     _game = new Game(HTMLELEMENTS.element);
+    new HudAnimation(HTMLELEMENTS.hudAnimation);
   }
 }
 

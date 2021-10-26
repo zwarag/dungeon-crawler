@@ -60,6 +60,12 @@ const progressBarFill = document.querySelector<HTMLDivElement>(
 const progressBarText = document.querySelector<HTMLDivElement>(
   '#progress-bar-text'
 ) as HTMLDivElement;
+const hudAnimationDisplay = document.querySelector<HTMLDivElement>(
+  '#hud-animation'
+) as HTMLDivElement;
+const hudAnimation = document.querySelector<HTMLCanvasElement>(
+  '#hud-animation'
+) as HTMLCanvasElement;
 export const HTMLELEMENTS = {
   app,
   highscore,
@@ -79,6 +85,8 @@ export const HTMLELEMENTS = {
   progressBar,
   progressBarFill,
   progressBarText,
+  hudAnimationDisplay,
+  hudAnimation,
 };
 
 // Highscore Div Elements
