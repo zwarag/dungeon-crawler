@@ -533,8 +533,8 @@ export class Game {
           console.log('your health:', this._player.health);
           if (this._player.health <= 0) {
             console.log('YOU DIED');
-            // this._player.die()
-            // @Chrono666 / Matthias, death screen?
+            this.stopGame();
+            this._player.die();
           }
         }
       }

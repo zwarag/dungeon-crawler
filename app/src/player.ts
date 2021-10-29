@@ -11,7 +11,7 @@ import { randomRange } from './helper/random';
 import { CharacterBase } from './character';
 import initialPlayerStats from '../public/txt/initialPlayerStats.json';
 import { ELEMENTS } from './helper/grid-elements';
-import { updateProgressBar } from './dom-controller';
+import { exitOnDeath, updateProgressBar } from './dom-controller';
 
 export class Player extends CharacterBase {
   /** A InputController for Keyboard or AI Controlled inputs. */
@@ -245,6 +245,6 @@ export class Player extends CharacterBase {
   }
 
   die(): void {
-    throw new Error('Method not implemented.');
+    exitOnDeath();
   }
 }

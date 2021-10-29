@@ -32,7 +32,9 @@ const highscoreButton = document.querySelector(
 const highscoreBackButton = document.querySelector(
   '#highscore-backbutton'
 ) as HTMLButtonElement;
-const overlay = document.querySelector('#overlay') as HTMLDivElement;
+const overlay = document.querySelector<HTMLDivElement>(
+  '#overlay'
+) as HTMLDivElement;
 const continueButton = document.querySelector<HTMLButtonElement>(
   '#exit-overlay-continueButton'
 ) as HTMLButtonElement;
@@ -66,6 +68,9 @@ const hudAnimationDisplay = document.querySelector<HTMLDivElement>(
 const hudAnimation = document.querySelector<HTMLCanvasElement>(
   '#hud-animation'
 ) as HTMLCanvasElement;
+const deathScreen = document.querySelector<HTMLDivElement>(
+  '#death-screen'
+) as HTMLDivElement;
 export const HTMLELEMENTS = {
   app,
   highscore,
@@ -87,6 +92,7 @@ export const HTMLELEMENTS = {
   progressBarText,
   hudAnimationDisplay,
   hudAnimation,
+  deathScreen,
 };
 
 // Highscore Div Elements

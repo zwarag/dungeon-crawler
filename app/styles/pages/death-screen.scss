@@ -1,0 +1,20 @@
+@import '../abstracts/mixins';
+@import '../abstracts/keyframes';
+
+.death-screen {
+  position: absolute;
+  top: 25%;
+  background: black;
+  text-align: center;
+  width: 100%;
+  opacity: 1;
+  animation: fade-in 10s linear;
+  * {
+    @include fantasy-Text();
+    color: #ff0000;
+    letter-spacing: 5px;
+    font-size: 8em;
+    font-weight: 400;
+    animation: fade-in 10s linear, text-zoom 5s linear;
+  }
+}

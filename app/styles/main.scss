@@ -1,10 +1,11 @@
+@import 'abstracts/variables';
+@import 'components/hud';
 @import 'pages/exit-overlay';
 @import 'pages/highscore';
 @import 'pages/player-name-input';
 @import 'pages/start-screen';
 @import 'pages/story-box';
-@import 'components/hud';
-@import 'abstracts/variables';
+@import 'pages/death-screen';
 
 body {
   width: 100%;
