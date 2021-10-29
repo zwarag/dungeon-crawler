@@ -64,7 +64,7 @@ function _toggleClass(
   addToElements.forEach((e) => e.classList.add(cssClass));
 }
 
-function _startGame(): void {
+export function _startGame(): void {
   _toggleClass(
     [HTMLELEMENTS.app],
     [

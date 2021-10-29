@@ -16,8 +16,8 @@ export class HudAnimation {
   constructor(element: HTMLCanvasElement) {
     this._scene = new THREE.Scene();
 
-    this._width = HTMLELEMENTS.hudAnimationDisplay.clientWidth;
-    this._height = HTMLELEMENTS.hudAnimationDisplay.offsetHeight;
+    this._width = HTMLELEMENTS.hudAnimationDisplay.clientWidth / 1.5;
+    this._height = HTMLELEMENTS.hudAnimationDisplay.offsetHeight / 1.5;
 
     this._camera = new THREE.PerspectiveCamera(
       45,

@@ -10,9 +10,11 @@
   position: fixed;
   bottom: 0;
   height: fit-content;
+  width: 100%;
 
   /*keymap*/
   &__controls {
+    min-width: 300px !important;
     &__keyboard {
       &__keyboardRow {
         text-align: center;
@@ -40,7 +42,6 @@
   &__player-status {
     border-right: 4px groove $border-color;
     border-left: 4px ridge $border-color;
-    width: fit-content;
 
     &__title {
       @include fantasy-Text();
@@ -48,22 +49,20 @@
       font-size: 32px;
     }
     &__progress {
-      width: fit-content;
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: 10% 90%;
       margin-top: 80px;
       margin-left: 16px;
 
       &__description {
         @include fantasy-Text();
-        margin: auto;
+        align-self: center;
         font-weight: bolder;
         font-size: 32px;
       }
       &__bar {
         @include border();
         position: relative;
-        width: 30rem;
         height: 60px;
         margin-right: 32px;
         margin-left: 16px;
@@ -89,6 +88,7 @@
   }
 
   &__placeholder {
+    max-width: 200px;
     &__canvas {
       width: 100%;
       height: 100%;
