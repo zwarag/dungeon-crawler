@@ -1,6 +1,7 @@
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+
 import { HTMLELEMENTS } from './helper/const';
 
 export class HudAnimation {
@@ -54,7 +55,7 @@ export class HudAnimation {
     this._animate();
   }
 
-  _animate() {
+  _animate(): void {
     requestAnimationFrame(() => {
       this._animate();
     });

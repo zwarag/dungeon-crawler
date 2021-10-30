@@ -1,4 +1,3 @@
-import { GLOBAL_Y } from './helper/const';
 import { DIRECTION } from './helper/direction';
 import { TimeInSeconds } from './helper/time';
 import * as THREE from 'three';
@@ -6,7 +5,7 @@ import { InputController, KeyBoardInputController } from './input-controller';
 
 import { StateMachine } from './state-machine';
 import text from '../public/txt/text.json';
-import { PerspectiveCamera, Scene, Vector3 } from 'three';
+import { PerspectiveCamera, Vector3 } from 'three';
 import { GENDER } from './helper/gender';
 import { randomRange } from './helper/random';
 import { CharacterBase } from './character';
