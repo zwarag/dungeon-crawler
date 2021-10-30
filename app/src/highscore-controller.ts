@@ -1,11 +1,11 @@
-import { HighscoreItem } from './helper/type';
 import {
+  GAME_NAME,
   highscoreElementFloors,
   highscoreElementNames,
   highscoreElementTimes,
 } from './helper/const';
 import { secToHMS } from './helper/time';
-import { GAME_NAME } from './helper/const';
+import { HighscoreItem } from './helper/type';
 
 function sortHighscore(highscoreData: HighscoreItem[]): void {
   highscoreData.sort((a: HighscoreItem, b: HighscoreItem): number => {
@@ -29,7 +29,7 @@ export function initHighscore(highscoreData: HighscoreItem[]): void {
 
   if (ls.length === 0) {
     // localstorage does not have any highscores, game has never been played on this browser
-    highscoreData.map((e) => data.push(e));
+    highscoreData.map((dataPoint) => data.push(dataPoint));
     localStorage.setItem(GAME_NAME, JSON.stringify(highscoreData));
   } else {
     // localstorage has highscores
