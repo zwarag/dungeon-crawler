@@ -1,9 +1,9 @@
-import { HTMLELEMENTS } from './helper/const';
 import story from '../public/txt/story.json';
+import { Game } from './game';
+import { HTMLELEMENTS } from './helper/const';
+import { KEYBOARDMAP } from './helper/keyboard';
 import { storyWriter } from './helper/typewriter';
 import { addToHighscore } from './highscore-controller';
-import { Game } from './game';
-import { KEYBOARDMAP } from './helper/keyboard';
 import { HudAnimation } from './hud-animation';
 
 let _game: Game;
@@ -60,8 +60,8 @@ function _toggleClass(
   addToElements: HTMLElement[],
   cssClass: string
 ) {
-  removeFromElements.forEach((e) => e.classList.remove(cssClass));
-  addToElements.forEach((e) => e.classList.add(cssClass));
+  removeFromElements.forEach((event) => event.classList.remove(cssClass));
+  addToElements.forEach((event) => event.classList.add(cssClass));
 }
 
 export function _startGame(): void {
@@ -146,7 +146,7 @@ function _endGame(): void {
   _resetStoryBox();
 }
 
-export function updateProgressBar(value: number) {
+export function updateProgressBar(value: number): void {
   value = Math.round(value);
   HTMLELEMENTS.progressBarFill.style.width = `${value}%`;
   HTMLELEMENTS.progressBarText.textContent = `${value}%`;
