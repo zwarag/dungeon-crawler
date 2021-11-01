@@ -1,0 +1,97 @@
+@import '../abstracts/mixins';
+@import '../abstracts/variables';
+
+/*HUD*/
+.hud {
+  @include border();
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  text-align: center;
+  position: fixed;
+  bottom: 0;
+  height: fit-content;
+  width: 100%;
+
+  /*keymap*/
+  &__controls {
+    min-width: 300px !important;
+    &__keyboard {
+      &__keyboardRow {
+        text-align: center;
+        margin: 32px 0 32px 0;
+        &__description {
+          margin: 0;
+          @include fantasy-Text();
+        }
+        &__key {
+          @include key();
+          margin: 16px 16px 0 16px;
+          &__space {
+            width: 200px;
+            display: inline-block;
+            padding: 10px;
+            margin-bottom: 5px;
+            @include key();
+          }
+        }
+      }
+    }
+  }
+
+  /*Player-status*/
+  &__player-status {
+    border-right: 4px groove $border-color;
+    border-left: 4px ridge $border-color;
+
+    &__title {
+      @include fantasy-Text();
+      font-weight: bolder;
+      font-size: 32px;
+    }
+    &__progress {
+      display: grid;
+      grid-template-columns: 10% 90%;
+      margin-top: 80px;
+      margin-left: 16px;
+
+      &__description {
+        @include fantasy-Text();
+        align-self: center;
+        font-weight: bolder;
+        font-size: 32px;
+      }
+      &__bar {
+        @include border();
+        position: relative;
+        height: 60px;
+        margin-right: 32px;
+        margin-left: 16px;
+        border-radius: 5px;
+        overflow: hidden;
+
+        &__fill {
+          width: 0%;
+          height: 100%;
+          background: red;
+          transition: all 0.2s;
+        }
+
+        &__text {
+          @include fantasy-Text();
+          position: absolute;
+          top: 50%;
+          right: 5px;
+          transform: translateY(-50%);
+        }
+      }
+    }
+  }
+
+  &__placeholder {
+    max-width: 200px;
+    &__canvas {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}

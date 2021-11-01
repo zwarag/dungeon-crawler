@@ -20,6 +20,7 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass';
 import { DamageText } from './damageText';
+import { updateProgressBar } from './dom-controller';
 
 export class Game {
   private _threejs: THREE.WebGLRenderer;
@@ -230,6 +231,7 @@ export class Game {
       });
     };
 
+    updateProgressBar(100);
     this._requestAnimationFrame();
   }
 

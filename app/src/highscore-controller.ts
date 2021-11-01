@@ -1,11 +1,11 @@
-import { HighscoreItem } from './helper/type';
 import {
+  GAME_NAME,
   highscoreElementFloors,
   highscoreElementNames,
   highscoreElementTimes,
 } from './helper/const';
 import { secToHMS } from './helper/time';
-import { GAME_NAME } from './helper/const';
+import { HighscoreItem } from './helper/type';
 
 function sortHighscore(highscoreData: HighscoreItem[]): void {
   highscoreData.sort((a: HighscoreItem, b: HighscoreItem): number => {
@@ -16,7 +16,7 @@ function sortHighscore(highscoreData: HighscoreItem[]): void {
   });
 }
 
-function loadFromLocalStoryge(): HighscoreItem[] {
+function loadFromLocalStorage(): HighscoreItem[] {
   return JSON.parse(localStorage.getItem(GAME_NAME) ?? '[]');
 }
 
@@ -24,12 +24,12 @@ function loadFromLocalStoryge(): HighscoreItem[] {
  * To be called once per runtime. Adds the saved highscoreData to the HTML.
  */
 export function initHighscore(highscoreData: HighscoreItem[]): void {
-  const ls = loadFromLocalStoryge();
+  const ls = loadFromLocalStorage();
   const data: HighscoreItem[] = [];
 
   if (ls.length === 0) {
     // localstorage does not have any highscores, game has never been played on this browser
-    highscoreData.map((e) => data.push(e));
+    highscoreData.map((dataPoint) => data.push(dataPoint));
     localStorage.setItem(GAME_NAME, JSON.stringify(highscoreData));
   } else {
     // localstorage has highscores
@@ -39,14 +39,14 @@ export function initHighscore(highscoreData: HighscoreItem[]): void {
   sortHighscore(ls);
 
   data.forEach((a, b) => {
-    (highscoreElementNames[b] as HTMLElement).innerHTML = a.name;
-    (highscoreElementFloors[b] as HTMLElement).innerHTML = a.floor.toString();
-    (highscoreElementTimes[b] as HTMLElement).innerHTML = secToHMS(a.time);
+    highscoreElementNames[b].innerHTML = a.name;
+    highscoreElementFloors[b].innerHTML = a.floor.toString();
+    highscoreElementTimes[b].innerHTML = secToHMS(a.time);
   });
 }
 
 export function addToHighscore(player: HighscoreItem): void {
-  const ls = loadFromLocalStoryge();
+  const ls = loadFromLocalStorage();
   ls.push(player);
   sortHighscore(ls);
   if (ls.length > 10) {

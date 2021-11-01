@@ -1,9 +1,10 @@
-import { HTMLELEMENTS } from './helper/const';
 import story from '../public/txt/story.json';
+import { Game } from './game';
+import { HTMLELEMENTS } from './helper/const';
+import { KEYBOARDMAP } from './helper/keyboard';
 import { storyWriter } from './helper/typewriter';
 import { addToHighscore } from './highscore-controller';
-import { Game } from './game';
-import { KEYBOARDMAP } from './helper/keyboard';
+import { HudAnimation } from './hud-animation';
 
 let _game: Game;
 
@@ -59,11 +60,11 @@ function _toggleClass(
   addToElements: HTMLElement[],
   cssClass: string
 ) {
-  removeFromElements.forEach((e) => e.classList.remove(cssClass));
-  addToElements.forEach((e) => e.classList.add(cssClass));
+  removeFromElements.forEach((event) => event.classList.remove(cssClass));
+  addToElements.forEach((event) => event.classList.add(cssClass));
 }
 
-function _startGame(): void {
+export function _startGame(): void {
   _toggleClass(
     [HTMLELEMENTS.app],
     [
@@ -76,6 +77,7 @@ function _startGame(): void {
   );
   if (HTMLELEMENTS.element) {
     _game = new Game(HTMLELEMENTS.element);
+    new HudAnimation(HTMLELEMENTS.hudAnimation);
   }
 }
 
@@ -114,7 +116,7 @@ async function _displayStoryBox(): Promise<void> {
   _toggleClass([HTMLELEMENTS.storyBox], [HTMLELEMENTS.nameInput], 'd-none');
   for (const lineNumber in story.intro) {
     await storyWriter(story.intro[lineNumber], 'story-box', 1);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1));
     _resetStoryBox();
   }
 }
@@ -142,6 +144,12 @@ function _endGame(): void {
   });
   _resetNameInput();
   _resetStoryBox();
+}
+
+export function updateProgressBar(value: number): void {
+  value = Math.round(value);
+  HTMLELEMENTS.progressBarFill.style.width = `${value}%`;
+  HTMLELEMENTS.progressBarText.textContent = `${value}%`;
 }
 
 function _backToStartScreen(): void {

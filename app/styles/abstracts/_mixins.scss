@@ -9,12 +9,16 @@
   overflow: $overflow;
 }
 
+@mixin fantasy-Text() {
+  font-family: $main-font;
+  color: $text-color;
+}
+
 @mixin title($font-size) {
   margin-top: 0;
   text-align: center;
   letter-spacing: 2px;
-  font-family: $main-font;
-  color: $text-color;
+  @include fantasy-Text();
   font-size: $font-size;
   font-weight: 400;
   text-shadow: 0 1px 3px $text-shadow;
@@ -33,14 +37,24 @@
   width: $width;
   letter-spacing: 2px;
   border-radius: 8px;
-  font-family: $main-font;
-  color: $text-color;
+  @include fantasy-Text();
   font-size: $font-size;
   font-weight: 400;
   text-shadow: 0 1px 3px $text-shadow;
   padding: 10px;
   background: $box-background;
   @include border();
+}
+
+@mixin key() {
+  @include border();
+  display: inline-block;
+  padding: 10px;
+  min-width: 28px;
+  min-height: 24px;
+  @include fantasy-Text();
+  text-shadow: 0 1px 3px $text-shadow;
+  background: $box-background;
 }
 
 @mixin button-hover() {
