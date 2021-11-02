@@ -77,7 +77,7 @@ export function _startGame(): void {
   );
   if (HTMLELEMENTS.element) {
     _game = new Game(HTMLELEMENTS.element);
-    new HudAnimation(HTMLELEMENTS.hudAnimation);
+    // new HudAnimation(HTMLELEMENTS.hudAnimation);
   }
 }
 
@@ -114,11 +114,12 @@ function _enableButton(): void {
 
 async function _displayStoryBox(): Promise<void> {
   _toggleClass([HTMLELEMENTS.storyBox], [HTMLELEMENTS.nameInput], 'd-none');
-  for (const lineNumber in story.intro) {
-    await storyWriter(story.intro[lineNumber], 'story-box', 1);
-    await new Promise((resolve) => setTimeout(resolve, 1));
-    _resetStoryBox();
-  }
+  await storyWriter(story.story, 'story-box', 1);
+  // for (const lineNumber in story.intro) {
+  //   await storyWriter(story.intro[lineNumber], 'story-box', 1);
+  //   await new Promise((resolve) => setTimeout(resolve, 1));
+  //   _resetStoryBox();
+  // }
 }
 
 function _getPlayerName(): string {
@@ -146,31 +147,46 @@ function _endGame(): void {
   _resetStoryBox();
 }
 
-export function updateProgressBar(value: number): void {
+export function updateProgressBar(value: number) {
+  if (value < 0) {
+    value = 0;
+  }
   value = Math.round(value);
   HTMLELEMENTS.progressBarFill.style.width = `${value}%`;
   HTMLELEMENTS.progressBarText.textContent = `${value}%`;
 }
 
+export function exitOnDeath() {
+  _endGame();
+  _toggleClass([HTMLELEMENTS.deathScreen], [HTMLELEMENTS.app], 'd-none');
+  setTimeout(_backToStartScreen, 5000);
+}
+
 function _backToStartScreen(): void {
   //TODO: some logic to end the game (i.e. destroy scene, create highscore, etc)
-  if (!HTMLELEMENTS.app?.classList.contains('d-none')) {
+  if (!HTMLELEMENTS.app.classList.contains('d-none')) {
     _endGame();
     _toggleClass(
       [HTMLELEMENTS.highscore],
       [HTMLELEMENTS.app, HTMLELEMENTS.overlay],
       'd-none'
     );
-  } else if (!HTMLELEMENTS.highscore?.classList.contains('d-none')) {
+  } else if (!HTMLELEMENTS.highscore.classList.contains('d-none')) {
     _toggleClass(
       [HTMLELEMENTS.startScreen],
       [HTMLELEMENTS.highscore],
       'd-none'
     );
-  } else if (!HTMLELEMENTS.nameInput?.classList.contains('d-none')) {
+  } else if (!HTMLELEMENTS.nameInput.classList.contains('d-none')) {
     _toggleClass(
       [HTMLELEMENTS.startScreen],
       [HTMLELEMENTS.nameInput],
+      'd-none'
+    );
+  } else if (!HTMLELEMENTS.deathScreen.classList.contains('d-none')) {
+    _toggleClass(
+      [HTMLELEMENTS.highscore],
+      [HTMLELEMENTS.app, HTMLELEMENTS.deathScreen, HTMLELEMENTS.startScreen],
       'd-none'
     );
   }
