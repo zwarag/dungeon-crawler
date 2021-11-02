@@ -18,39 +18,30 @@
     &__keyboard {
       &__keyboardRow {
         text-align: center;
-        @include mediumScreen() {
+        @include largeScreen() {
           margin: 32px 0 32px 0;
         }
         &__description {
-          margin: 0;
-          @include smallScreen() {
+          margin: 4px;
+          @include mediumScreen() {
             font-size: 10px;
           }
           @include fantasy-Text();
         }
         &__key {
           @include key();
-          @include smallScreen() {
-            font-size: 10px;
-            max-width: 8px;
-            max-height: 4px;
-          }
-          @include mediumScreen() {
-            margin: 16px 16px 0 16px;
-            min-width: 28px;
-            min-height: 24px;
-          }
           &__space {
-            @include smallScreen() {
-              width: 90px;
+            @include key();
+            @include mediumScreen() {
+              min-width: 90px !important;
+              font-size: 10px;
+            }
+            @include largeScreen() {
+              min-width: 200px !important;
             }
             display: inline-block;
             padding: 10px;
             margin-bottom: 5px;
-            @include key();
-            @include smallScreen() {
-              font-size: 10px;
-            }
           }
         }
       }
@@ -64,10 +55,10 @@
 
     &__title {
       @include fantasy-Text();
-      @include mediumScreen() {
+      @include largeScreen() {
         font-size: 32px;
       }
-      @include smallScreen() {
+      @include mediumScreen() {
         font-size: 22px;
       }
       font-weight: bolder;
@@ -75,20 +66,20 @@
     &__progress {
       display: grid;
       grid-template-columns: 10% 90%;
-      @include mediumScreen() {
+      @include largeScreen() {
         margin-top: 80px;
       }
-      @include smallScreen() {
+      @include mediumScreen() {
         margin-top: 10px;
       }
       margin-left: 16px;
 
       &__description {
         @include fantasy-Text();
-        @include mediumScreen() {
+        @include largeScreen() {
           font-size: 32px;
         }
-        @include smallScreen() {
+        @include mediumScreen() {
           font-size: 22px;
         }
         align-self: center;
@@ -96,10 +87,10 @@
       }
       &__bar {
         @include border();
-        @include mediumScreen() {
+        @include largeScreen() {
           height: 60px;
         }
-        @include smallScreen() {
+        @include mediumScreen() {
           height: 30px;
         }
         position: relative;
