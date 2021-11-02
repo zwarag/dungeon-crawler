@@ -91,7 +91,7 @@ export class DamageText {
       // sceneCallback(textMesh)
 
       // Animation
-      // const liftTrack3 = new THREE.BooleanKeyframeTrack('textMesh.material.transparent', [5, 6], [false, true])
+      // TODO: statemaschine
       const liftTrack4 = new THREE.NumberKeyframeTrack(
         '.material.opacity',
         [0, 1],
