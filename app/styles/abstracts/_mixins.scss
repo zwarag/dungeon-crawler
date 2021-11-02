@@ -1,5 +1,16 @@
 @import 'variables';
 
+@mixin mediumScreen() {
+  @media (min-width: 1600px) {
+    @content;
+  }
+}
+@mixin smallScreen() {
+  @media (max-width: 1600px) {
+    @content;
+  }
+}
+
 @mixin fantasy-body($overflow) {
   background-image: url(./img/fantasy_background.jpg);
   //background-image: url(./app/public/img/fantasy_background.jpg);
@@ -50,11 +61,9 @@
 
 @mixin key() {
   @include border();
+  @include fantasy-Text();
   display: inline-block;
   padding: 10px;
-  min-width: 28px;
-  min-height: 24px;
-  @include fantasy-Text();
   text-shadow: 0 1px 3px $text-shadow;
   background: $box-background;
 }
