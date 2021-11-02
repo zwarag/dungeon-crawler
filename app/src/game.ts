@@ -19,7 +19,7 @@ import { DIRECTION } from './helper/direction';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass';
-import { DamageText } from './damageText';
+import { DamageText } from './damage-text';
 import { updateProgressBar } from './dom-controller';
 
 export class Game {
@@ -72,6 +72,7 @@ export class Game {
     });
 
     this._scene = new THREE.Scene();
+    window._scene = this._scene;
 
     // const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     // directionalLight.position.set(20, 100, 10);
@@ -560,6 +561,16 @@ export class Game {
         }
       }
     }
+  }
+
+  addMixer(animationMixer: AnimationMixer) {
+    this._animationMixers.push(animationMixer);
+  }
+
+  removeMixer(animationMixer: AnimationMixer) {
+    this._animationMixers = this._animationMixers.filter(
+      (value) => value !== animationMixer
+    );
   }
 
   private _positionConversionCheck(): void {

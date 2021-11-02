@@ -1,7 +1,9 @@
 import { Accuracy, Damage, Experience, Health, Range } from './helper/type';
 import { MinMax } from './helper/interfaces';
 
-export abstract class CharacterBase {
+export abstract class CharacterBase implements Animated {
+  _animations = {};
+
   constructor(
     protected _health: Health,
     protected _damage: MinMax,
@@ -16,6 +18,7 @@ export abstract class CharacterBase {
   public get health(): Health {
     return this._health;
   }
+
   public set health(value: Health) {
     this._health = value;
   }
@@ -26,6 +29,7 @@ export abstract class CharacterBase {
   public get damage(): MinMax {
     return this._damage;
   }
+
   public set damage(value: MinMax) {
     this._damage = value;
   }
@@ -38,6 +42,7 @@ export abstract class CharacterBase {
   public get accuracy(): Accuracy {
     return this._accuracy;
   }
+
   public set accuracy(value: Accuracy) {
     this._accuracy = value;
   }
@@ -48,6 +53,7 @@ export abstract class CharacterBase {
   public get experience(): Experience {
     return this._experience;
   }
+
   public set experience(value: Experience) {
     this._experience = value;
   }
@@ -58,6 +64,7 @@ export abstract class CharacterBase {
   public get awarenessRange(): Range {
     return this._awarenessRange;
   }
+
   public set awarenessRange(value: Range) {
     this._awarenessRange = value;
   }

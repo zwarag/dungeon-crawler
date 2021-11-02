@@ -1,32 +1,43 @@
-import { KeyBoardInputController } from './input-controller';
+import { CharacterBase } from './character';
+import { DamageText } from './damage-text';
 
 type StateConstructor = new (parent: StateMachine) => State;
+
 export abstract class State {
-  parent: StateMachine;
+  machine: StateMachine;
+
   abstract get name(): string;
 
-  constructor(parent: StateMachine) {
-    this.parent = parent;
+  constructor(machine: StateMachine) {
+    this.machine = machine;
   }
 
   abstract enter(state: State): void;
+
   abstract exit(): void;
+
   abstract update(timeDelta?: number, input?: unknown): void;
 }
 
 export class StateMachine {
   private _currentState: State;
+  _owner: CharacterBase | DamageText; // actually only used to access the animations.
   private _states: { [key: string]: StateConstructor };
-  constructor() {
+
+  constructor(owner: CharacterBase | DamageText) {
     this._states = {};
-    // eslint-disable-next-line unicorn/no-null
-    this._currentState = new IdleState(this);
+    // eslint-disable-next-line
+    this._owner = owner;
+    this._currentState = null as unknown as State;
+    // this._currentState = new StartState(this);
   }
 
+  // creates the meta for a new state, defines all `f`
   addState(key: string, state: StateConstructor): void {
     this._states[key] = state;
   }
 
+  // sets the new state of the statemachine `f` -> `g`
   setState(key: string): void {
     const previousState = this._currentState;
     if (previousState.name === key) {
@@ -50,19 +61,23 @@ export class StateMachine {
 /**
  * A Character is just standing around.
  */
-class IdleState extends State {
+export class IdleState extends State {
   get name(): string {
     return 'idle';
   }
+
   constructor(parent: StateMachine) {
     super(parent);
   }
+
   enter(state: State): void {
     throw new Error('Method not implemented.');
   }
+
   exit(): void {
     throw new Error('Method not implemented.');
   }
+
   update(): void {
     throw new Error('Method not implemented.');
   }
@@ -75,12 +90,15 @@ class WalkState extends State {
   get name(): string {
     throw new Error('Method not implemented.');
   }
+
   enter(state: State): void {
     throw new Error('Method not implemented.');
   }
+
   exit(): void {
     throw new Error('Method not implemented.');
   }
+
   update(): void {
     throw new Error('Method not implemented.');
   }
@@ -94,12 +112,15 @@ class TurningState extends State {
   get name(): string {
     throw new Error('Method not implemented.');
   }
+
   enter(state: State): void {
     throw new Error('Method not implemented.');
   }
+
   exit(): void {
     throw new Error('Method not implemented.');
   }
+
   update(): void {
     throw new Error('Method not implemented.');
   }
@@ -112,12 +133,15 @@ class AttackState extends State {
   get name(): string {
     throw new Error('Method not implemented.');
   }
+
   enter(state: State): void {
     throw new Error('Method not implemented.');
   }
+
   exit(): void {
     throw new Error('Method not implemented.');
   }
+
   update(): void {
     throw new Error('Method not implemented.');
   }
@@ -130,12 +154,15 @@ class HitState extends State {
   get name(): string {
     throw new Error('Method not implemented.');
   }
+
   enter(state: State): void {
     throw new Error('Method not implemented.');
   }
+
   exit(): void {
     throw new Error('Method not implemented.');
   }
+
   update(): void {
     throw new Error('Method not implemented.');
   }
