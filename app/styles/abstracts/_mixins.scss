@@ -1,12 +1,12 @@
 @import 'variables';
 
-@mixin mediumScreen() {
-  @media (min-width: 1600px) {
+@mixin largeScreen() {
+  @media (min-width: 1700px) {
     @content;
   }
 }
-@mixin smallScreen() {
-  @media (max-width: 1600px) {
+@mixin mediumScreen() {
+  @media (max-width: 1700px) {
     @content;
   }
 }
@@ -62,6 +62,17 @@
 @mixin key() {
   @include border();
   @include fantasy-Text();
+  @include mediumScreen() {
+    font-size: 10px;
+    max-width: 8px;
+    max-height: 4px;
+    margin: 4px 4px 0 4px;
+  }
+  @include largeScreen() {
+    margin: 14px 14px 0 14px;
+    min-width: 28px;
+    min-height: 24px;
+  }
   display: inline-block;
   padding: 10px;
   text-shadow: 0 1px 3px $text-shadow;
