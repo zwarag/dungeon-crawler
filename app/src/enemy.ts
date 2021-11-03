@@ -31,7 +31,7 @@ export class Enemy extends CharacterBase {
    */
   private _active: boolean;
 
-  public _something: Group;
+  public _model: Group;
 
   constructor() {
     const enemyCount = ENEMY_TYPE_LIST.length;
@@ -62,16 +62,18 @@ export class Enemy extends CharacterBase {
   }
 
   async _init(x: number, z: number): Promise<void> {
-    this._something = await new FBXLoader().loadAsync(
-      'assets/goblin_d_shareyko.fbx'
+    this._model = await new FBXLoader().loadAsync(
+      'assets/nightshade_j_friedrich.fbx'
     );
-    this._something.rotateX(90);
-    this._something.scale.setScalar(0.1);
-    this._something.traverse((c) => {
-      c.castShadow = true;
-    });
-    this._something.position.set(0, 0, 0);
-    this._3DElement = this._something;
+    //this._something.rotateX(90);
+    //this._something.scale.setScalar(0.005);
+    //this._something.traverse((c) => {
+    //  c.castShadow = true;
+    //});
+    //this._something.position.set(0, GLOBAL_Y-0.5, 0);
+    this._model.position.set(x, GLOBAL_Y - 0.5, z);
+    this._3DElement = this._model;
+    // this._3DElement.name="swaboi"
     // const anim = new FBXLoader().loadAsync('assets/')
     //this._something = await new GLTFLoader().loadAsync('assets/goblin_d_shareyko.gltf')
     //const model = this._something.scene;

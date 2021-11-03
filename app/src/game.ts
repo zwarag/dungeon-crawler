@@ -172,12 +172,12 @@ export class Game {
     this._player = new Player(this._camera);
 
     // set the character into the first room
-    const playerX = 0;
+    const playerX = 0.5;
     //this._dungeon.firstRoom.x +
     //Math.floor(this._dungeon.firstRoom.width / 2) -
     //PROPERTIES.GRID_WIDTH / 2 -
     //0.5;
-    const playerZ = 100;
+    const playerZ = 300;
     //this._dungeon.firstRoom.z +
     //Math.floor(this._dungeon.firstRoom.height / 2) -
     //PROPERTIES.GRID_WIDTH / 2 -
@@ -606,6 +606,7 @@ export class Game {
     this._stopAnimationFrame = true;
     return this._clock.elapsedTime;
   }
+
   addGoblin() {
     // MODEL WITH ANIMATIONS
     // var characterControls: CharacterControls
