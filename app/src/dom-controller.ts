@@ -64,7 +64,7 @@ function _toggleClass(
   addToElements.forEach((event) => event.classList.add(cssClass));
 }
 
-export function _startGame(): void {
+export async function _startGame(): Promise<void> {
   _toggleClass(
     [HTMLELEMENTS.app],
     [
@@ -77,6 +77,7 @@ export function _startGame(): void {
   );
   if (HTMLELEMENTS.element) {
     _game = new Game(HTMLELEMENTS.element);
+    await _game._initGame();
     // new HudAnimation(HTMLELEMENTS.hudAnimation);
   }
 }

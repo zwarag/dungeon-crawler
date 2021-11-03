@@ -22,6 +22,7 @@ import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass';
 import { DamageText } from './damage-text';
 import { updateProgressBar } from './dom-controller';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 export class Game {
   private _threejs: THREE.WebGLRenderer;
@@ -93,8 +94,8 @@ export class Game {
     // directionalLight.shadow.camera.bottom = -100;
     // this._scene.add(directionalLight);
 
-    // const ambientLight = new THREE.AmbientLight(0xffffff, 4);
-    // this._scene.add(ambientLight);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 4);
+    this._scene.add(ambientLight);
 
     // Skybox
     const loader = new THREE.CubeTextureLoader();
@@ -171,16 +172,16 @@ export class Game {
     this._player = new Player(this._camera);
 
     // set the character into the first room
-    const playerX =
-      this._dungeon.firstRoom.x +
-      Math.floor(this._dungeon.firstRoom.width / 2) -
-      PROPERTIES.GRID_WIDTH / 2 -
-      0.5;
-    const playerZ =
-      this._dungeon.firstRoom.z +
-      Math.floor(this._dungeon.firstRoom.height / 2) -
-      PROPERTIES.GRID_WIDTH / 2 -
-      0.5;
+    const playerX = 0;
+    //this._dungeon.firstRoom.x +
+    //Math.floor(this._dungeon.firstRoom.width / 2) -
+    //PROPERTIES.GRID_WIDTH / 2 -
+    //0.5;
+    const playerZ = 100;
+    //this._dungeon.firstRoom.z +
+    //Math.floor(this._dungeon.firstRoom.height / 2) -
+    //PROPERTIES.GRID_WIDTH / 2 -
+    //0.5;
     this._player.Element.position.set(playerX, GLOBAL_Y, playerZ);
     this._scene.add(this._player.Element);
 
@@ -190,9 +191,6 @@ export class Game {
 
     // set the camera as child of the player element, this ensures that the camera follows the player around
     this._player.Element.add(this._camera);
-
-    // placing enemies
-    this._setEnemies();
 
     // Spotlight symbolizing a torch carried by the player
     this._spotLight = new THREE.SpotLight(
@@ -210,9 +208,9 @@ export class Game {
 
     // Temporary Camera
     // TODO: this is only temporary and should be swaped out for the actual implementaiton of the camera
-    // const controls = new OrbitControls(this._camera, this._threejs.domElement);
-    // controls.target.set(0, 0, 0);
-    // controls.update();
+    //const controls = new OrbitControls(this._camera, this._threejs.domElement);
+    //controls.target.set(0, 0, 0);
+    //controls.update();
 
     this._damageTextCallback = (
       animationMixer: AnimationMixer,
@@ -236,6 +234,11 @@ export class Game {
 
     updateProgressBar(100);
     this._requestAnimationFrame();
+  }
+
+  async _initGame() {
+    // placing enemies
+    await this._setEnemies();
   }
 
   private _onWindowResize(): void {
@@ -415,8 +418,8 @@ export class Game {
     this._scene.add(cone);
   }
 
-  private _setEnemies(): void {
-    this._dungeon.rooms.forEach((room) => {
+  private async _setEnemies(): Promise<void> {
+    for (const room of this._dungeon.rooms) {
       if (!room.start) {
         for (let height = 1; height < room.height - 1; height++) {
           for (let width = 1; width < room.width - 1; width++) {
@@ -427,7 +430,9 @@ export class Game {
               if (
                 !(this._goal.position.x === x && this._goal.position.z === z)
               ) {
-                const enemy = new Enemy(x, z);
+                const enemy = new Enemy();
+                await enemy._init(x, z);
+                //enemy.Element.scale.set(0.1, 0.1, 0.1)
                 this._enemies.push(enemy);
                 this._scene.add(enemy.Element);
               }
@@ -435,7 +440,7 @@ export class Game {
           }
         }
       }
-    });
+    }
   }
 
   private _constructAStarGrid(): number[][] {

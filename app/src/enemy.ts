@@ -5,7 +5,12 @@ import { randomRange } from './helper/random';
 import enemiesJson from '../public/txt/enemies.json';
 import { GLOBAL_Y } from './helper/const';
 import { CharacterBase } from './character';
-import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import {
+  GLTF,
+  GLTFLoader,
+  GLTFReference,
+} from 'three/examples/jsm/loaders/GLTFLoader';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 
 export class Enemy extends CharacterBase {
   /** The Statemachine used for animations */
@@ -26,9 +31,9 @@ export class Enemy extends CharacterBase {
    */
   private _active: boolean;
 
-  public _gltf: GLTF;
+  public _something: Group;
 
-  constructor(x: number, z: number) {
+  constructor() {
     const enemyCount = ENEMY_TYPE_LIST.length;
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -45,19 +50,6 @@ export class Enemy extends CharacterBase {
     this._active = false;
     // replace by graphics
 
-    const tmp_gltf = Promise.resolve(
-      new GLTFLoader().loadAsync('models/Soldier.glb')
-    ).then((asdf) => asdf);
-
-    const model = this._gltf.scene;
-    model.traverse((object: any) => {
-      if (object.isMesh) {
-        this._3DElement = object._3DElement;
-        this._3DElement.position.set(x, GLOBAL_Y, z);
-        this._3DElement.name = 'ENEMY';
-        this._3DElement.castShadow = true;
-      }
-    });
     // const geometry = new THREE.ConeGeometry(0.5, 1, 32);
     // const material = new THREE.MeshPhongMaterial({ color: 0xffffff });
     // this._3DElement = new THREE.Mesh(geometry, material);
@@ -67,6 +59,33 @@ export class Enemy extends CharacterBase {
 
     // tbd
     this._state = new StateMachine();
+  }
+
+  async _init(x: number, z: number): Promise<void> {
+    this._something = await new FBXLoader().loadAsync(
+      'assets/goblin_d_shareyko.fbx'
+    );
+    this._something.rotateX(90);
+    this._something.scale.setScalar(0.1);
+    this._something.traverse((c) => {
+      c.castShadow = true;
+    });
+    this._something.position.set(0, 0, 0);
+    this._3DElement = this._something;
+    // const anim = new FBXLoader().loadAsync('assets/')
+    //this._something = await new GLTFLoader().loadAsync('assets/goblin_d_shareyko.gltf')
+    //const model = this._something.scene;
+    //model.children[2].scale.multiplyScalar(0.0000001)
+    //model.traverse((object: any) => {
+    //    if (object.isMesh) {
+    //        object.position.set(x, 0, z
+    //        );
+    //        //object.scale.setSize(THREE.Vector3(0.1, 0.1, 0.1))
+    //        object.name = 'ENEMY';
+    //        object.castShadow = true;
+    //        this._3DElement = object;
+    //    }
+    //});
   }
 
   attack(): number {
