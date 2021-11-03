@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import {
+  AnimationAction,
   AnimationClip,
   AnimationMixer,
   Euler,
@@ -20,8 +21,9 @@ export class DamageText implements Animated {
   /** The Statemachine used for animations */
   private _state: StateMachine;
 
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  _animations!: { [key in DamageTextAnimationTypes]: Animation };
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  _animations: { [key in DamageTextAnimationTypes]: Animation } = {};
 
   private _fontLoader: FontLoader;
 
@@ -125,13 +127,11 @@ export class DamageText implements Animated {
           mesh: this._textMesh,
         };
 
+        window._scene.add(this._textMesh);
         this._state = new DamageTextState(this);
+        this._state.setState('shown');
 
         // animationMixerCallback(animationMixer, animationClip, this._textMesh);
       });
   }
-
-  clip: THREE.AnimationClip;
-  mixer: THREE.AnimationMixer;
-  mesh: THREE.Mesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>;
 }

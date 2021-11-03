@@ -20,13 +20,12 @@ export abstract class State {
 }
 
 export class StateMachine<T> {
-  private _currentState: State;
+  private _currentState: State | null;
   _owner: T; // actually only used to access the animations.
   private _states: { [key: string]: StateConstructor };
 
-  constructor(owner: CharacterBase | DamageText) {
+  constructor(owner: T) {
     this._states = {};
-    // eslint-disable-next-line
     this._owner = owner;
     this._currentState = null as unknown as State;
     // this._currentState = new StartState(this);
@@ -40,10 +39,10 @@ export class StateMachine<T> {
   // sets the new state of the statemachine `f` -> `g`
   setState(key: string): void {
     const previousState = this._currentState;
-    if (previousState.name === key) {
+    if (previousState?.name === key) {
       return;
     }
-    previousState.exit();
+    previousState?.exit();
     const state = new this._states[key](this);
     this._currentState = state;
     state.enter(previousState);

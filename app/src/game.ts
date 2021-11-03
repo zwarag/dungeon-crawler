@@ -73,6 +73,7 @@ export class Game {
 
     this._scene = new THREE.Scene();
     window._scene = this._scene;
+    window._animationMixers = this._animationMixers;
 
     // const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     // directionalLight.position.set(20, 100, 10);
