@@ -2,7 +2,7 @@ import { HiddenState, ShownState, State, StateMachine } from './state-machine';
 import { CharacterBase } from './character';
 import { DamageText } from './damage-text';
 
-export class DamageTextState extends StateMachine {
+export class DamageTextState extends StateMachine<DamageText> {
   constructor(owner: DamageText) {
     super(owner);
     this._init();
@@ -25,7 +25,16 @@ class ShownState extends State {
     // execute these frames.
     // after that
     this.machine.setState('hidden');
-    this.machine._owner._animations;
+    const currAction = this.machine._owner._animations.fadeOut;
+    if (state) {
+      currAction.time = 0.0;
+      currAction.enabled = true;
+      currAction.setEffectiveTimeScale(1.0);
+      currAction.setEffectiveWeight(1.0);
+      currAction.play();
+    } else {
+      currAction.play();
+    }
   }
   exit(): void {
     throw new Error('Method not implemented.');

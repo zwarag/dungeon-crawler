@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { DIRECTION } from './helper/direction';
 import {
   AnimationClip,
   AnimationMixer,
@@ -7,18 +6,22 @@ import {
   FontLoader,
   Mesh,
   MeshBasicMaterial,
-  Object3D,
   TextGeometry,
   Vector3,
 } from 'three';
-import { IdleState, StateMachine } from './state-machine';
+import { DIRECTION } from './helper/direction';
+import { StateMachine } from './state-machine';
 import { DamageTextState } from './damage-text-state';
+import { Animated, Animation } from './helper/animated';
+
+type DamageTextAnimationTypes = 'fadeOut' | 'fadeIn';
 
 export class DamageText implements Animated {
   /** The Statemachine used for animations */
   private _state: StateMachine;
 
-  _animations = {};
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  _animations!: { [key in DamageTextAnimationTypes]: Animation };
 
   private _fontLoader: FontLoader;
 
@@ -127,4 +130,8 @@ export class DamageText implements Animated {
         // animationMixerCallback(animationMixer, animationClip, this._textMesh);
       });
   }
+
+  clip: THREE.AnimationClip;
+  mixer: THREE.AnimationMixer;
+  mesh: THREE.Mesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>;
 }

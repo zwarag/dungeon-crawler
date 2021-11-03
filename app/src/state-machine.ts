@@ -19,9 +19,9 @@ export abstract class State {
   abstract update(timeDelta?: number, input?: unknown): void;
 }
 
-export class StateMachine {
+export class StateMachine<T> {
   private _currentState: State;
-  _owner: CharacterBase | DamageText; // actually only used to access the animations.
+  _owner: T; // actually only used to access the animations.
   private _states: { [key: string]: StateConstructor };
 
   constructor(owner: CharacterBase | DamageText) {

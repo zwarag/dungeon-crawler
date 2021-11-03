@@ -1,5 +1,6 @@
-import { Accuracy, Damage, Experience, Health, Range } from './helper/type';
+import { Accuracy, Experience, Health, Range } from './helper/type';
 import { MinMax } from './helper/interfaces';
+import { Animated } from './helper/animated';
 
 export abstract class CharacterBase implements Animated {
   _animations = {};
