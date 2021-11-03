@@ -63,17 +63,16 @@ export class Enemy extends CharacterBase {
 
   async _init(x: number, z: number): Promise<void> {
     this._model = await new FBXLoader().loadAsync(
-      'assets/nightshade_j_friedrich.fbx'
+      'assets/prisoner_b_styperek.fbx'
     );
     //this._something.rotateX(90);
-    //this._something.scale.setScalar(0.005);
-    //this._something.traverse((c) => {
-    //  c.castShadow = true;
-    //});
-    //this._something.position.set(0, GLOBAL_Y-0.5, 0);
+    this._model.scale.setScalar(0.005);
+    this._model.traverse((c) => {
+      c.castShadow = true;
+    });
     this._model.position.set(x, GLOBAL_Y - 0.5, z);
     this._3DElement = this._model;
-    // this._3DElement.name="swaboi"
+    this._3DElement.name = 'zombie';
     // const anim = new FBXLoader().loadAsync('assets/')
     //this._something = await new GLTFLoader().loadAsync('assets/goblin_d_shareyko.gltf')
     //const model = this._something.scene;

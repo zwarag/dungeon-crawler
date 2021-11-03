@@ -94,8 +94,8 @@ export class Game {
     // directionalLight.shadow.camera.bottom = -100;
     // this._scene.add(directionalLight);
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 4);
-    this._scene.add(ambientLight);
+    //const ambientLight = new THREE.AmbientLight(0xffffff, 4);
+    //this._scene.add(ambientLight);
 
     // Skybox
     const loader = new THREE.CubeTextureLoader();
@@ -172,16 +172,16 @@ export class Game {
     this._player = new Player(this._camera);
 
     // set the character into the first room
-    const playerX = 0.5;
-    //this._dungeon.firstRoom.x +
-    //Math.floor(this._dungeon.firstRoom.width / 2) -
-    //PROPERTIES.GRID_WIDTH / 2 -
-    //0.5;
-    const playerZ = 300;
-    //this._dungeon.firstRoom.z +
-    //Math.floor(this._dungeon.firstRoom.height / 2) -
-    //PROPERTIES.GRID_WIDTH / 2 -
-    //0.5;
+    const playerX =
+      this._dungeon.firstRoom.x +
+      Math.floor(this._dungeon.firstRoom.width / 2) -
+      PROPERTIES.GRID_WIDTH / 2 -
+      0.5;
+    const playerZ =
+      this._dungeon.firstRoom.z +
+      Math.floor(this._dungeon.firstRoom.height / 2) -
+      PROPERTIES.GRID_WIDTH / 2 -
+      0.5;
     this._player.Element.position.set(playerX, GLOBAL_Y, playerZ);
     this._scene.add(this._player.Element);
 
@@ -528,14 +528,14 @@ export class Game {
             nextStep[0] === playerPosition.x && nextStep[1] === playerPosition.y
           )
         ) {
-          // console.log("moved", enemy.Element)
+          // consoled.log("moved", enemy.Element)
           enemy.Element.position.set(
             Game._gridToScene(nextStep[0]),
-            GLOBAL_Y,
+            GLOBAL_Y - 0.5,
             Game._gridToScene(nextStep[1])
           );
         } else {
-          enemy.Element.material.setValues({ color: Math.random() * 0xffffff }); // TODO remove later, just to visualize an enemy attacking
+          //enemy.Element.material.setValues({ color: Math.random() * 0xffffff }); // TODO remove later, just to visualize an enemy attacking
           const damage = enemy.attack();
           this._player.takeHit(damage);
           console.log('your health:', this._player.health);
@@ -580,13 +580,6 @@ export class Game {
     );
   }
 
-  private _positionConversionCheck(): void {
-    const scenePlayerPosition = this._player.Element.position.z;
-    const gridPlayerPosition = Game._sceneToGrid(scenePlayerPosition);
-    console.log('scene to grid', scenePlayerPosition, gridPlayerPosition);
-    console.log('grid to scene', gridPlayerPosition, scenePlayerPosition);
-  }
-
   private _raycast(event: MouseEvent): void {
     this._mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     this._mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -605,29 +598,5 @@ export class Game {
   public stopGame(): number {
     this._stopAnimationFrame = true;
     return this._clock.elapsedTime;
-  }
-
-  addGoblin() {
-    // MODEL WITH ANIMATIONS
-    // var characterControls: CharacterControls
-    new GLTFLoader().load('public/assets/goblin.glb', function (gltf) {
-      const model = gltf.scene;
-      model.traverse(function (object: any) {
-        if (object.isMesh) object.castShadow = true;
-      });
-      window._scene.add(model);
-
-      const gltfAnimations: THREE.AnimationClip[] = gltf.animations;
-      const mixer = new THREE.AnimationMixer(model);
-      const animationsMap: Map<string, THREE.AnimationAction> = new Map();
-      gltfAnimations
-        .filter((a) => a.name != 'TPose')
-        .forEach((a: THREE.AnimationClip) => {
-          animationsMap.set(a.name, mixer.clipAction(a));
-        });
-      console.log(gltfAnimations);
-
-      // characterControls = new CharacterControls(model, mixer, animationsMap, orbitControls, camera,  'Idle')
-    });
   }
 }
