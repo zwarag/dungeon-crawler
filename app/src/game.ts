@@ -21,6 +21,7 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass';
 import { DamageText } from './damage-text';
 import { updateProgressBar } from './dom-controller';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 export class Game {
   private _threejs: THREE.WebGLRenderer;
@@ -599,5 +600,28 @@ export class Game {
   public stopGame(): number {
     this._stopAnimationFrame = true;
     return this._clock.elapsedTime;
+  }
+  addGoblin() {
+    // MODEL WITH ANIMATIONS
+    // var characterControls: CharacterControls
+    new GLTFLoader().load('public/assets/goblin.glb', function (gltf) {
+      const model = gltf.scene;
+      model.traverse(function (object: any) {
+        if (object.isMesh) object.castShadow = true;
+      });
+      window._scene.add(model);
+
+      const gltfAnimations: THREE.AnimationClip[] = gltf.animations;
+      const mixer = new THREE.AnimationMixer(model);
+      const animationsMap: Map<string, THREE.AnimationAction> = new Map();
+      gltfAnimations
+        .filter((a) => a.name != 'TPose')
+        .forEach((a: THREE.AnimationClip) => {
+          animationsMap.set(a.name, mixer.clipAction(a));
+        });
+      console.log(gltfAnimations);
+
+      // characterControls = new CharacterControls(model, mixer, animationsMap, orbitControls, camera,  'Idle')
+    });
   }
 }

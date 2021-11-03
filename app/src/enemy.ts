@@ -5,6 +5,7 @@ import { randomRange } from './helper/random';
 import enemiesJson from '../public/txt/enemies.json';
 import { GLOBAL_Y } from './helper/const';
 import { CharacterBase } from './character';
+import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 export class Enemy extends CharacterBase {
   /** The Statemachine used for animations */
@@ -25,6 +26,8 @@ export class Enemy extends CharacterBase {
    */
   private _active: boolean;
 
+  public _gltf: GLTF;
+
   constructor(x: number, z: number) {
     const enemyCount = ENEMY_TYPE_LIST.length;
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -41,12 +44,26 @@ export class Enemy extends CharacterBase {
     this._type = ENEMY_TYPE_LIST[enemyTypeJsonIndex];
     this._active = false;
     // replace by graphics
-    const geometry = new THREE.ConeGeometry(0.5, 1, 32);
-    const material = new THREE.MeshPhongMaterial({ color: 0xffffff });
-    this._3DElement = new THREE.Mesh(geometry, material);
-    this._3DElement.position.set(x, GLOBAL_Y, z);
-    this._3DElement.name = 'ENEMY';
-    this._3DElement.castShadow = true;
+
+    const tmp_gltf = Promise.resolve(
+      new GLTFLoader().loadAsync('models/Soldier.glb')
+    ).then((asdf) => asdf);
+
+    const model = this._gltf.scene;
+    model.traverse((object: any) => {
+      if (object.isMesh) {
+        this._3DElement = object._3DElement;
+        this._3DElement.position.set(x, GLOBAL_Y, z);
+        this._3DElement.name = 'ENEMY';
+        this._3DElement.castShadow = true;
+      }
+    });
+    // const geometry = new THREE.ConeGeometry(0.5, 1, 32);
+    // const material = new THREE.MeshPhongMaterial({ color: 0xffffff });
+    // this._3DElement = new THREE.Mesh(geometry, material);
+    // this._3DElement.position.set(x, GLOBAL_Y, z);
+    // this._3DElement.name = 'ENEMY';
+    // this._3DElement.castShadow = true;
 
     // tbd
     this._state = new StateMachine();
