@@ -546,7 +546,13 @@ export class Game {
             Game._gridToScene(nextStep[1])
           );
 
-          enemy.move(newEnemyPosition);
+          if (
+            this._scene.children.filter(
+              (value) => value.position === newEnemyPosition
+            ).length === 0
+          ) {
+            enemy.move(newEnemyPosition);
+          }
 
           // enemy.Element.position.set(
           //     Game._gridToScene(nextStep[0]),

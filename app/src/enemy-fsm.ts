@@ -93,7 +93,7 @@ class DieState extends State {
   }
 
   cb = () => {
-    window._scene.remove(this.machine._owner);
+    window._scene.remove(this.machine._owner.Element);
   };
 }
 

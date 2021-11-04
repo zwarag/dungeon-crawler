@@ -10,8 +10,7 @@ import {
   GLTFLoader,
   GLTFReference,
 } from 'three/examples/jsm/loaders/GLTFLoader';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
-import { AnimationClip, AnimationMixer, Group, Vector, Vector3 } from 'three';
+import { AnimationClip, AnimationMixer, Group, Vector3 } from 'three';
 import { Animation } from './helper/animated';
 import { EnemyFsm } from './enemy-fsm';
 
@@ -44,6 +43,8 @@ export class Enemy extends CharacterBase {
 
   public _model: Group;
 
+  private _enemyObject;
+
   constructor() {
     const enemyCount = ENEMY_TYPE_LIST.length;
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -59,6 +60,7 @@ export class Enemy extends CharacterBase {
     );
     this._type = ENEMY_TYPE_LIST[enemyTypeJsonIndex];
     this._active = false;
+    this._enemyObject = enemyObject;
     // replace by graphics
 
     // const geometry = new THREE.ConeGeometry(0.5, 1, 32);
@@ -72,9 +74,7 @@ export class Enemy extends CharacterBase {
   }
 
   async _init(x: number, z: number): Promise<void> {
-    this._gltf = await new GLTFLoader().loadAsync(
-      'assets/Warrok_complete5.glb'
-    );
+    this._gltf = await new GLTFLoader().loadAsync(this._enemyObject.model);
     this._model = this._gltf.scene;
 
     const mixer = new AnimationMixer(this._model);
@@ -88,7 +88,14 @@ export class Enemy extends CharacterBase {
       // this._animations
     }
 
-    this._model.scale.setScalar(0.5);
+    this._model.traverse((item: any) => {
+      if (item.isMaterial) {
+        item.transparent = false;
+        item.opacity = 1;
+      }
+    });
+
+    this._model.scale.setScalar(0.45);
     this._model.traverse((c) => {
       c.castShadow = true;
     });

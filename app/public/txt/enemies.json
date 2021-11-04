@@ -1,5 +1,5 @@
 {
-  "SKELETON": {
+  "ZOMBIE": {
     "health": {
       "min": 20,
       "max": 25
@@ -10,15 +10,10 @@
     },
     "accuracy": 60,
     "awarenessRange": 3,
-    "animations": {
-      "idle": "....",
-      "attack": "....",
-      "walking": "....",
-      "death": "...."
-    },
+    "model": "assets/Zombie_complete.glb",
     "experience": 12
   },
-  "HUMAN": {
+  "WARROK": {
     "health": {
       "min": 25,
       "max": 30
@@ -29,12 +24,7 @@
     },
     "accuracy": 65,
     "awarenessRange": 4,
-    "animations": {
-      "idle": "....",
-      "attack": "....",
-      "walking": "....",
-      "death": "...."
-    },
+    "model": "assets/Warrok_complete.glb",
     "experience": 15
   },
   "DEVIL": {
@@ -48,12 +38,7 @@
     },
     "accuracy": 70,
     "awarenessRange": 5,
-    "animations": {
-      "idle": "....",
-      "attack": "....",
-      "walking": "....",
-      "death": "...."
-    },
+    "model": "assets/Zombie_complete.glb",
     "experience": 20
   }
 }
