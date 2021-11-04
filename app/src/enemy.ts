@@ -11,6 +11,7 @@ import {
   GLTFReference,
 } from 'three/examples/jsm/loaders/GLTFLoader';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+import { Group } from 'three';
 
 export class Enemy extends CharacterBase {
   /** The Statemachine used for animations */
@@ -25,6 +26,8 @@ export class Enemy extends CharacterBase {
    *  The type of enemy
    */
   private _type: ENEMY;
+
+  private _gltf: GLTF;
 
   /**
    * Whether the enemy is activated
@@ -58,21 +61,21 @@ export class Enemy extends CharacterBase {
     // this._3DElement.castShadow = true;
 
     // tbd
-    this._state = new StateMachine();
+    this._state = new StateMachine(this);
   }
 
   async _init(x: number, z: number): Promise<void> {
-    this._model = await new FBXLoader().loadAsync(
-      'assets/prisoner_b_styperek.fbx'
-    );
-    //this._something.rotateX(90);
-    this._model.scale.setScalar(0.005);
+    this._gltf = await new GLTFLoader().loadAsync('assets/Warrok_complete.glb');
+    this._model = this._gltf.scene;
+
+    this._model.scale.setScalar(0.5);
     this._model.traverse((c) => {
       c.castShadow = true;
     });
     this._model.position.set(x, GLOBAL_Y - 0.5, z);
     this._3DElement = this._model;
     this._3DElement.name = 'zombie';
+
     // const anim = new FBXLoader().loadAsync('assets/')
     //this._something = await new GLTFLoader().loadAsync('assets/goblin_d_shareyko.gltf')
     //const model = this._something.scene;

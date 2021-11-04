@@ -271,25 +271,26 @@ export class Game {
     const timeDeltaS = millisecondsToSeconds(timeDeltaMS);
     this._player.update(timeDeltaS);
     // this._setSpotlightPosition()
-    this._handleCharacterMovement();
+
+    if (
+      !this._player.Element.position.equals(this._player.getCharacterMovement())
+    ) {
+      this._handleCharacterMovement();
+    }
     this._handleCharacterAttacking();
   }
 
   private _handleCharacterMovement(): void {
-    const currentPlayerPosition = new Vector3().copy(
-      this._player.Element.position
-    );
     const newPlayerPosition = this._player.getCharacterMovement();
-    if (!newPlayerPosition.equals(currentPlayerPosition)) {
-      // equals -> Wertevergleich, === -> objektvergleich
-      if (this._checkFreeSpace(newPlayerPosition.x, newPlayerPosition.z)) {
-        this._player.Element.position.set(...newPlayerPosition.toArray());
-        // this._camera.position.set(...newPlayerPosition.toArray());
-        this._activateEnemies();
-        this._enemiesMoveOrAttack();
-      } else {
-        this._player.speak('blocked');
-      }
+
+    // equals -> Wertevergleich, === -> objektvergleich
+    if (this._checkFreeSpace(newPlayerPosition.x, newPlayerPosition.z)) {
+      this._player.Element.position.set(...newPlayerPosition.toArray());
+      // this._camera.position.set(...newPlayerPosition.toArray());
+      this._activateEnemies();
+      this._enemiesMoveOrAttack();
+    } else {
+      this._player.speak('blocked');
     }
   }
 
@@ -302,28 +303,28 @@ export class Game {
         case DIRECTION.NORTH:
           enemyPosition = new Vector3(
             playerPosition.x,
-            playerPosition.y,
+            playerPosition.y - 0.5,
             playerPosition.z - 1
           );
           break;
         case DIRECTION.EAST:
           enemyPosition = new Vector3(
             playerPosition.x - 1,
-            playerPosition.y,
+            playerPosition.y - 0.5,
             playerPosition.z
           );
           break;
         case DIRECTION.SOUTH:
           enemyPosition = new Vector3(
             playerPosition.x,
-            playerPosition.y,
+            playerPosition.y - 0.5,
             playerPosition.z + 1
           );
           break;
         case DIRECTION.WEST:
           enemyPosition = new Vector3(
             playerPosition.x + 1,
-            playerPosition.y,
+            playerPosition.y - 0.5,
             playerPosition.z
           );
           break;
@@ -341,12 +342,14 @@ export class Game {
 
         new DamageText(
           damage,
-          this._player.Element.position,
-          this._player.direction,
-          this._player.Element.rotation,
-          enemy.Element.position,
-          enemy.Element.geometry.parameters.height,
-          this._damageTextCallback
+          enemy.Element
+          // this._player.Element.position,
+          // this._player.direction,
+          // this._player.Element.rotation,
+
+          // enemy.Element.position,
+          // enemy.Element.geometry.parameters.height,
+          // this._damageTextCallback
         );
 
         if (enemy.health <= 0) {
@@ -421,6 +424,7 @@ export class Game {
   private async _setEnemies(): Promise<void> {
     for (const room of this._dungeon.rooms) {
       if (!room.start) {
+        // if (room.start) {
         for (let height = 1; height < room.height - 1; height++) {
           for (let width = 1; width < room.width - 1; width++) {
             if (Math.random() <= room.enemyChance) {
@@ -502,6 +506,13 @@ export class Game {
         x: Game._sceneToGrid(this._player.Element.position.x),
         y: Game._sceneToGrid(this._player.Element.position.z),
       };
+      // TODO turn animation?
+      const lookAt = new Vector3(
+        this._player.Element.position.x,
+        -0.5,
+        this._player.Element.position.z
+      );
+      enemy.Element.lookAt(lookAt);
       const enemyPosition = {
         x: Game._sceneToGrid(enemy.Element.position.x),
         y: Game._sceneToGrid(enemy.Element.position.z),
@@ -587,7 +598,7 @@ export class Game {
     const intersects = this._raycaster.intersectObjects(this._scene.children);
     if (intersects.length > 0) {
       const enemy = intersects[0].object;
-      if (enemy.name === ELEMENTS.ENEMY) {
+      if (enemy.name === ELEMENTS.ENEMY || enemy.name == 'zombie') {
         this._outlinePass.selectedObjects = [enemy];
       } else {
         this._outlinePass.selectedObjects = [];
