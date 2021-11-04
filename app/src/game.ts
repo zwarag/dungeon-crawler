@@ -37,7 +37,7 @@ export class Game {
   private _mouse: THREE.Vector2;
   private _composer: EffectComposer;
   private _outlinePass: OutlinePass;
-  private _animationMixers: AnimationMixer[] = [];
+  private _animationMixers: AnimationMixer[] = new Set();
   private _damageTextCallback: (
     animationMixer: AnimationMixer,
     animationClip: AnimationClip,
@@ -212,25 +212,23 @@ export class Game {
     //controls.target.set(0, 0, 0);
     //controls.update();
 
-    this._damageTextCallback = (
-      animationMixer: AnimationMixer,
-      animationClip: AnimationClip,
-      mesh: Mesh
-    ): void => {
-      this._scene.add(mesh);
-      const action: AnimationAction = animationMixer.clipAction(animationClip);
-      action.loop = THREE.LoopOnce;
-      action.clampWhenFinished = true;
-      action.play();
-      this._animationMixers.push(animationMixer);
-      animationMixer.addEventListener('finished', () => {
-        action.stop();
-        this._animationMixers = this._animationMixers.filter(
-          (value) => value !== animationMixer
-        );
-        this._scene.remove(mesh);
-      });
-    };
+    // this._damageTextCallback = (
+    //     animationMixer: AnimationMixer,
+    //     animationClip: AnimationClip,
+    //     mesh: Mesh
+    // ): void => {
+    //     this._scene.add(mesh);
+    //     const action: AnimationAction = animationMixer.clipAction(animationClip);
+    //     action.loop = THREE.LoopOnce;
+    //     action.clampWhenFinished = true;
+    //     action.play();
+    //     this._animationMixers.add(animationMixer);
+    //     animationMixer.addEventListener('finished', () => {
+    //         action.stop();
+    //         this._animationMixers.remove(animationMixer)
+    //         this._scene.remove(mesh);
+    //     });
+    // };
 
     updateProgressBar(100);
     this._requestAnimationFrame();
@@ -354,8 +352,9 @@ export class Game {
 
         if (enemy.health <= 0) {
           this._player.increaseExperience(enemy.experience);
+          enemy.die();
           this._enemies = this._enemies.filter((child) => child !== enemy);
-          this._scene.remove(enemy.Element);
+          // this._scene.remove(enemy.Element);
         }
       }
       this._enemiesMoveOrAttack();
@@ -540,15 +539,32 @@ export class Game {
           )
         ) {
           // consoled.log("moved", enemy.Element)
-          enemy.Element.position.set(
+
+          const newEnemyPosition = new Vector3(
             Game._gridToScene(nextStep[0]),
             GLOBAL_Y - 0.5,
             Game._gridToScene(nextStep[1])
           );
+
+          enemy.move(newEnemyPosition);
+
+          // enemy.Element.position.set(
+          //     Game._gridToScene(nextStep[0]),
+          //     GLOBAL_Y - 0.5,
+          //     Game._gridToScene(nextStep[1])
+          // );
         } else {
           //enemy.Element.material.setValues({ color: Math.random() * 0xffffff }); // TODO remove later, just to visualize an enemy attacking
-          const damage = enemy.attack();
+
+          const lookAt = new Vector3(
+            this._player.Element.position.x,
+            -0.5,
+            this._player.Element.position.z
+          );
+          enemy.attack(lookAt);
+          const damage = enemy.calculateAttackDamage();
           this._player.takeHit(damage);
+
           console.log('your health:', this._player.health);
           if (this._player.health <= 0) {
             console.log('YOU DIED');
@@ -579,16 +595,6 @@ export class Game {
         }
       }
     }
-  }
-
-  addMixer(animationMixer: AnimationMixer) {
-    this._animationMixers.push(animationMixer);
-  }
-
-  removeMixer(animationMixer: AnimationMixer) {
-    this._animationMixers = this._animationMixers.filter(
-      (value) => value !== animationMixer
-    );
   }
 
   private _raycast(event: MouseEvent): void {

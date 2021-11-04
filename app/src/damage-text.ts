@@ -14,11 +14,11 @@ import {
 } from 'three';
 import { DIRECTION } from './helper/direction';
 import { StateMachine } from './state-machine';
-import { DamageTextState } from './damage-text-state';
+import { DamageTextFsm } from './damage-text-fsm';
 import { Animated, Animation } from './helper/animated';
 import { Enemy } from './enemy';
 
-type DamageTextAnimationTypes = 'fadeOut' | 'fadeIn';
+type DamageTextAnimationTypes = 'fadeOut';
 
 export class DamageText implements Animated {
   /** The Statemachine used for animations */
@@ -134,7 +134,7 @@ export class DamageText implements Animated {
         // enemy.add(this._textMesh)
 
         // window._scene.add(this._textMesh);
-        this._state = new DamageTextState(this);
+        this._state = new DamageTextFsm(this);
         this._state.setState('shown');
 
         // animationMixerCallback(animationMixer, animationClip, this._textMesh);

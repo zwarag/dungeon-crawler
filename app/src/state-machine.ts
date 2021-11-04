@@ -15,8 +15,6 @@ export abstract class State {
   abstract enter(state: State): void;
 
   abstract exit(): void;
-
-  abstract update(timeDelta?: number, input?: unknown): void;
 }
 
 export class StateMachine<T> {
@@ -51,10 +49,6 @@ export class StateMachine<T> {
   getCurrentState(): State {
     return this._currentState;
   }
-
-  update(timeDelta?: number, input?: unknown): void {
-    this._currentState.update(timeDelta, input);
-  }
 }
 
 /**
@@ -76,10 +70,6 @@ export class IdleState extends State {
   exit(): void {
     throw new Error('Method not implemented.');
   }
-
-  update(): void {
-    throw new Error('Method not implemented.');
-  }
 }
 
 /**
@@ -95,10 +85,6 @@ class WalkState extends State {
   }
 
   exit(): void {
-    throw new Error('Method not implemented.');
-  }
-
-  update(): void {
     throw new Error('Method not implemented.');
   }
 }
@@ -119,10 +105,6 @@ class TurningState extends State {
   exit(): void {
     throw new Error('Method not implemented.');
   }
-
-  update(): void {
-    throw new Error('Method not implemented.');
-  }
 }
 
 /**
@@ -140,10 +122,6 @@ class AttackState extends State {
   exit(): void {
     throw new Error('Method not implemented.');
   }
-
-  update(): void {
-    throw new Error('Method not implemented.');
-  }
 }
 
 /**
@@ -159,10 +137,6 @@ class HitState extends State {
   }
 
   exit(): void {
-    throw new Error('Method not implemented.');
-  }
-
-  update(): void {
     throw new Error('Method not implemented.');
   }
 }

@@ -11,7 +11,11 @@ import {
   GLTFReference,
 } from 'three/examples/jsm/loaders/GLTFLoader';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
-import { Group } from 'three';
+import { AnimationClip, AnimationMixer, Group, Vector, Vector3 } from 'three';
+import { Animation } from './helper/animated';
+import { EnemyFsm } from './enemy-fsm';
+
+type EnemyAnimationTypes = 'idle' | 'walk' | 'die' | 'attack';
 
 export class Enemy extends CharacterBase {
   /** The Statemachine used for animations */
@@ -20,7 +24,7 @@ export class Enemy extends CharacterBase {
    * The actual redered object.
    * Note: THREE.Mesh extends THREE.Object3D which has `position` property
    */
-  private _3DElement: THREE.Mesh;
+  private _3DElement: Group;
 
   /**
    *  The type of enemy
@@ -28,6 +32,10 @@ export class Enemy extends CharacterBase {
   private _type: ENEMY;
 
   private _gltf: GLTF;
+
+  _targetPosition: Vector3;
+
+  _animations: { [key in EnemyAnimationTypes]: Animation } = {};
 
   /**
    * Whether the enemy is activated
@@ -61,12 +69,24 @@ export class Enemy extends CharacterBase {
     // this._3DElement.castShadow = true;
 
     // tbd
-    this._state = new StateMachine(this);
   }
 
   async _init(x: number, z: number): Promise<void> {
-    this._gltf = await new GLTFLoader().loadAsync('assets/Warrok_complete.glb');
+    this._gltf = await new GLTFLoader().loadAsync(
+      'assets/Warrok_complete5.glb'
+    );
     this._model = this._gltf.scene;
+
+    const mixer = new AnimationMixer(this._model);
+    for (let i = 0; i < this._gltf.animations.length; i++) {
+      const animationClip: AnimationClip = this._gltf.animations[i];
+      this._model.animations[animationClip.name] = {
+        clip: animationClip,
+        mixer: mixer,
+        mesh: this._model,
+      };
+      // this._animations
+    }
 
     this._model.scale.setScalar(0.5);
     this._model.traverse((c) => {
@@ -74,7 +94,10 @@ export class Enemy extends CharacterBase {
     });
     this._model.position.set(x, GLOBAL_Y - 0.5, z);
     this._3DElement = this._model;
-    this._3DElement.name = 'zombie';
+    this._3DElement.name = this._type;
+
+    this._state = new EnemyFsm(this);
+    this._state.setState('idle');
 
     // const anim = new FBXLoader().loadAsync('assets/')
     //this._something = await new GLTFLoader().loadAsync('assets/goblin_d_shareyko.gltf')
@@ -92,7 +115,7 @@ export class Enemy extends CharacterBase {
     //});
   }
 
-  attack(): number {
+  calculateAttackDamage(): number {
     let damage = 0;
     const chance = Math.random() * 100;
     if (chance <= this._accuracy) {
@@ -104,7 +127,7 @@ export class Enemy extends CharacterBase {
     return damage;
   }
 
-  get Element(): THREE.Mesh {
+  get Element(): Group {
     return this._3DElement;
   }
 
@@ -131,5 +154,20 @@ export class Enemy extends CharacterBase {
 
   get experience(): number {
     return this._experience;
+  }
+
+  move(targetPosition: Vector3) {
+    this._targetPosition = targetPosition;
+    this.Element.lookAt(targetPosition);
+    this._state.setState('walk');
+  }
+
+  attack(playerPosition: Vector3) {
+    this.Element.lookAt(playerPosition);
+    this._state.setState('attack');
+  }
+
+  die() {
+    this._state.setState('die');
   }
 }
