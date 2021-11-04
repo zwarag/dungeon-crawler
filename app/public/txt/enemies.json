@@ -13,7 +13,7 @@
     "model": "assets/Zombie_complete.glb",
     "experience": 12
   },
-  "WARROK": {
+  "VAMPIRE": {
     "health": {
       "min": 25,
       "max": 30
@@ -24,10 +24,10 @@
     },
     "accuracy": 65,
     "awarenessRange": 4,
-    "model": "assets/Warrok_complete.glb",
+    "model": "assets/Vampire_complete.glb",
     "experience": 15
   },
-  "DEVIL": {
+  "WARROK": {
     "health": {
       "min": 30,
       "max": 40
@@ -38,7 +38,7 @@
     },
     "accuracy": 70,
     "awarenessRange": 5,
-    "model": "assets/Zombie_complete.glb",
+    "model": "assets/Warrok_complete.glb",
     "experience": 20
   }
 }
