@@ -1,9 +1,11 @@
 import { CharacterBase } from './character';
 import { DamageText } from './damage-text';
+import { AnimationAction } from 'three';
 
 type StateConstructor = new (parent: StateMachine) => State;
 
 export abstract class State {
+  _action: AnimationAction;
   machine: StateMachine;
 
   abstract get name(): string;
@@ -12,7 +14,7 @@ export abstract class State {
     this.machine = machine;
   }
 
-  abstract enter(state: State): void;
+  abstract enter(previousState: State): void;
 
   abstract exit(): void;
 }

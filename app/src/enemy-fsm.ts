@@ -18,13 +18,21 @@ export class EnemyFsm extends StateMachine<Enemy> {
 }
 
 class IdleState extends State {
-  private _action: AnimationAction;
+  _action: AnimationAction;
 
-  enter(state: State): void {
+  enter(previousState: State): void {
     const animation: Animation = this.machine._owner.Element.animations['idle'];
     this._action = animation.mixer.clipAction(animation.clip);
     window._animationMixers.add(animation.mixer);
-    this._action.play();
+
+    if (previousState) {
+      const previousAction = previousState._action;
+      // this._action.reset()
+      this._action.crossFadeFrom(previousAction, 1, true);
+      this._action.play();
+    } else {
+      this._action.play();
+    }
   }
 
   exit(): void {
@@ -37,17 +45,25 @@ class IdleState extends State {
 }
 
 class WalkState extends State {
-  private _action: AnimationAction;
+  _action: AnimationAction;
 
-  enter(state: State): void {
+  enter(previousState: State): void {
     const animation: Animation = this.machine._owner.Element.animations['walk'];
     this._action = animation.mixer.clipAction(animation.clip);
-    this._action.timeScale *= 1.5;
-    this._action.loop = LoopOnce;
-    this._action.clampWhenFinished = true;
     window._animationMixers.add(animation.mixer);
 
-    this._action.play();
+    if (previousState) {
+      const previousAction = previousState._action;
+      // this._action.reset()
+      this._action.timeScale *= 1.5;
+      this._action.loop = LoopOnce;
+      this._action.clampWhenFinished = true;
+      this._action.crossFadeFrom(previousAction, 0.5, true);
+      this._action.play();
+    } else {
+      this._action.play();
+    }
+
     animation.mixer.addEventListener('finished', this.cb);
     // window._player._allowAction = false
   }
@@ -72,20 +88,28 @@ class WalkState extends State {
 }
 
 class DieState extends State {
-  private _action: AnimationAction;
+  _action: AnimationAction;
 
   get name(): string {
     return 'die';
   }
 
-  enter(state: State): void {
+  enter(previousState: State): void {
     const animation: Animation = this.machine._owner.Element.animations['die'];
     this._action = animation.mixer.clipAction(animation.clip);
-    this._action.loop = LoopOnce;
-    this._action.clampWhenFinished = true;
     window._animationMixers.add(animation.mixer);
 
-    this._action.play();
+    if (previousState) {
+      const previousAction = previousState._action;
+      // this._action.reset()
+      this._action.loop = LoopOnce;
+      this._action.clampWhenFinished = true;
+      this._action.crossFadeFrom(previousAction, 0.5, true);
+      this._action.play();
+    } else {
+      this._action.play();
+    }
+
     animation.mixer.addEventListener('finished', this.cb);
   }
 
@@ -101,21 +125,29 @@ class DieState extends State {
 }
 
 class AttackState extends State {
-  private _action: AnimationAction;
+  _action: AnimationAction;
 
   get name(): string {
     return 'attack';
   }
 
-  enter(state: State): void {
+  enter(previousState: State): void {
     const animation: Animation =
       this.machine._owner.Element.animations['attack'];
     this._action = animation.mixer.clipAction(animation.clip);
-    this._action.loop = LoopOnce;
-    this._action.clampWhenFinished = true;
     window._animationMixers.add(animation.mixer);
 
-    this._action.play();
+    if (previousState) {
+      const previousAction = previousState._action;
+      // this._action.reset()
+      this._action.loop = LoopOnce;
+      this._action.clampWhenFinished = true;
+      this._action.crossFadeFrom(previousAction, 0.5, true);
+      this._action.play();
+    } else {
+      this._action.play();
+    }
+
     animation.mixer.addEventListener('finished', this.cb);
     // window._player._allowAction = false
   }
