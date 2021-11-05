@@ -54,7 +54,12 @@ export class Player extends CharacterBase {
    */
   private _camera: PerspectiveCamera;
 
-  constructor(camera: PerspectiveCamera) {
+  /**
+   *  Allows player action
+   */
+  // _allowAction: Array<boolean> = []
+
+  constructor() {
     // character stats
     super(
       initialPlayerStats.health,
@@ -76,7 +81,6 @@ export class Player extends CharacterBase {
     this._velocity = 0;
     this._attacks = false;
     this._direction = DIRECTION.NORTH;
-    this._camera = camera;
     const geometry = new THREE.BoxGeometry(1, 1, 1);
     const loader = new THREE.TextureLoader();
     const material = [
@@ -107,11 +111,9 @@ export class Player extends CharacterBase {
     } else if (keys.left) {
       this._direction = (4 + this._direction - 1) % 4;
       this.Element.rotateY(Math.PI / 2);
-      // this._camera.rotateY(Math.PI / 2);
     } else if (keys.right) {
       this._direction = (this._direction + 1) % 4;
       this.Element.rotateY(-Math.PI / 2);
-      // this._camera.rotateY(-Math.PI / 2);
     } else if (keys.action) {
       this._attacks = true;
     } else {

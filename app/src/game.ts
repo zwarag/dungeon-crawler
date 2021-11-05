@@ -1,7 +1,6 @@
 import { GLOBAL_GROUND_Y, GLOBAL_Y, PROPERTIES } from './helper/const';
 import * as THREE from 'three';
 import {
-  AnimationAction,
   AnimationClip,
   AnimationMixer,
   Group,
@@ -23,7 +22,6 @@ import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass';
 import { DamageText } from './damage-text';
 import { updateProgressBar } from './dom-controller';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { ENEMY_TYPE_LIST } from './helper/enemy';
 
 export class Game {
@@ -79,26 +77,6 @@ export class Game {
     window._scene = this._scene;
     window._animationMixers = this._animationMixers;
 
-    // const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    // directionalLight.position.set(20, 100, 10);
-    // directionalLight.target.position.set(0, 0, 0);
-    // directionalLight.castShadow = true;
-    // directionalLight.shadow.bias = -0.001;
-    // directionalLight.shadow.mapSize.width = 2048;
-    // directionalLight.shadow.mapSize.height = 2048;
-    // directionalLight.shadow.camera.near = 0.1;
-    // directionalLight.shadow.camera.far = 500;
-    // directionalLight.shadow.camera.near = 0.5;
-    // directionalLight.shadow.camera.far = 500;
-    // directionalLight.shadow.camera.left = 100;
-    // directionalLight.shadow.camera.right = -100;
-    // directionalLight.shadow.camera.top = 100;
-    // directionalLight.shadow.camera.bottom = -100;
-    // this._scene.add(directionalLight);
-
-    //const ambientLight = new THREE.AmbientLight(0xffffff, 4);
-    //this._scene.add(ambientLight);
-
     // Skybox
     const loader = new THREE.CubeTextureLoader();
     this._scene.background = loader.load([
@@ -131,7 +109,6 @@ export class Game {
     this._scene.add(ground);
 
     // initialize the first dungeon
-    this._dungeon = new Dungeon();
     this._addDungeonToScene();
 
     // eslint-disable-next-line unicorn/no-null
@@ -169,19 +146,11 @@ export class Game {
 
     // create the character
     this._player = new Player(this._camera);
+    window._player = this._player;
 
     // set the character into the first room
-    const playerX =
-      this._dungeon.firstRoom.x +
-      Math.floor(this._dungeon.firstRoom.width / 2) -
-      PROPERTIES.GRID_WIDTH / 2 -
-      0.5;
-    const playerZ =
-      this._dungeon.firstRoom.z +
-      Math.floor(this._dungeon.firstRoom.height / 2) -
-      PROPERTIES.GRID_WIDTH / 2 -
-      0.5;
-    this._player.Element.position.set(playerX, GLOBAL_Y, playerZ);
+    this._setPlayerPosition();
+
     this._scene.add(this._player.Element);
 
     // axes helper
@@ -211,24 +180,6 @@ export class Game {
     //controls.target.set(0, 0, 0);
     //controls.update();
 
-    // this._damageTextCallback = (
-    //     animationMixer: AnimationMixer,
-    //     animationClip: AnimationClip,
-    //     mesh: Mesh
-    // ): void => {
-    //     this._scene.add(mesh);
-    //     const action: AnimationAction = animationMixer.clipAction(animationClip);
-    //     action.loop = THREE.LoopOnce;
-    //     action.clampWhenFinished = true;
-    //     action.play();
-    //     this._animationMixers.add(animationMixer);
-    //     animationMixer.addEventListener('finished', () => {
-    //         action.stop();
-    //         this._animationMixers.remove(animationMixer)
-    //         this._scene.remove(mesh);
-    //     });
-    // };
-
     updateProgressBar(100);
     this._requestAnimationFrame();
   }
@@ -237,15 +188,15 @@ export class Game {
     // place an object as placeholder in the end room (symbolizing a ladder or such)
     await this._placeEndRoomObject();
     // placing enemies
-    const start = Date.now();
+    // const start = Date.now();
     await this._setEnemies();
-    const end = Date.now();
-    console.log('enemies', this._enemies.length);
-    console.log('load time seconds', (end - start) / 1000);
-    console.log(
-      'seconds per enemy',
-      (end - start) / 1000 / this._enemies.length
-    );
+    // const end = Date.now();
+    // console.log('enemies', this._enemies.length);
+    // console.log('load time seconds', (end - start) / 1000);
+    // console.log(
+    //     'seconds per enemy',
+    //     (end - start) / 1000 / this._enemies.length
+    // );
   }
 
   private _onWindowResize(): void {
@@ -274,7 +225,7 @@ export class Game {
     });
   }
 
-  private _calculateNextState(timeDeltaMS: number): void {
+  private async _calculateNextState(timeDeltaMS: number): void {
     const timeDeltaS = millisecondsToSeconds(timeDeltaMS);
     this._player.update(timeDeltaS);
     // this._setSpotlightPosition()
@@ -284,7 +235,7 @@ export class Game {
     ) {
       this._handleCharacterMovement();
     }
-    this._handleCharacterAttacking();
+    await this._handleCharacterAttacking();
   }
 
   private _handleCharacterMovement(): void {
@@ -301,35 +252,35 @@ export class Game {
     }
   }
 
-  private _handleCharacterAttacking(): void {
+  private async _handleCharacterAttacking() {
     if (this._player.attacks) {
       const playerPosition = this._player.Element.position;
       const playerViewDirection = this._player.direction;
-      let enemyPosition: Vector3;
+      let positionUpFront: Vector3;
       switch (playerViewDirection) {
         case DIRECTION.NORTH:
-          enemyPosition = new Vector3(
+          positionUpFront = new Vector3(
             playerPosition.x,
             playerPosition.y - 0.5,
             playerPosition.z - 1
           );
           break;
         case DIRECTION.EAST:
-          enemyPosition = new Vector3(
+          positionUpFront = new Vector3(
             playerPosition.x - 1,
             playerPosition.y - 0.5,
             playerPosition.z
           );
           break;
         case DIRECTION.SOUTH:
-          enemyPosition = new Vector3(
+          positionUpFront = new Vector3(
             playerPosition.x,
             playerPosition.y - 0.5,
             playerPosition.z + 1
           );
           break;
         case DIRECTION.WEST:
-          enemyPosition = new Vector3(
+          positionUpFront = new Vector3(
             playerPosition.x + 1,
             playerPosition.y - 0.5,
             playerPosition.z
@@ -338,39 +289,49 @@ export class Game {
       }
 
       const enemy = this._enemies
-        .filter((value) => value.Element.position.equals(enemyPosition))
+        .filter((value) => value.Element.position.equals(positionUpFront))
         .pop();
-      const damage = this._player.attack();
-
-      console.log(`PLAYER ATTACKED FOR ${damage} DAMAGE`);
 
       if (enemy !== undefined) {
+        const damage = this._player.attack();
         enemy.takeHit(damage);
 
-        new DamageText(
-          damage,
-          enemy.Element
-          // this._player.Element.position,
-          // this._player.direction,
-          // this._player.Element.rotation,
-
-          // enemy.Element.position,
-          // enemy.Element.geometry.parameters.height,
-          // this._damageTextCallback
-        );
+        new DamageText(damage, enemy.Element);
 
         if (enemy.health <= 0) {
           this._player.increaseExperience(enemy.experience);
           enemy.die();
           this._enemies = this._enemies.filter((child) => child !== enemy);
-          // this._scene.remove(enemy.Element);
         }
+      } else if (
+        positionUpFront.x === this._goal.position.x &&
+        positionUpFront.z === this._goal.position.z
+      ) {
+        this._player.increaseExperience(this._player.getMaxHealth() / 3);
+        await this._generateNewLevel();
       }
       this._enemiesMoveOrAttack();
     }
   }
 
+  private async _generateNewLevel(): Promise<void> {
+    this._cleanScene();
+    this._addDungeonToScene();
+    this._setPlayerPosition();
+    await this._initGame();
+    console.log(this._scene.children.length);
+  }
+
+  private _cleanScene() {
+    while (this._scene.children.length > 0) {
+      this._scene.remove(this._scene.children[0]);
+    }
+    this._scene.add(this._player.Element);
+    this._enemies = [];
+  }
+
   private _addDungeonToScene(): void {
+    this._dungeon = new Dungeon();
     const textureLoader = new THREE.TextureLoader();
     const wallTexture = textureLoader.load('./img/wall.jpg');
     const wallGeometry = new THREE.BoxGeometry(1, 1.5, 1);
@@ -422,12 +383,14 @@ export class Game {
 
     //"Ladder" (https://skfb.ly/6RKqO) by Avelina is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
     const ladderGltf = await new GLTFLoader().loadAsync('assets/ladder.glb');
-    // ladderGltf.scene.position.set(endRoomX, -1, endRoomZ)
-    ladderGltf.scene.position.set(
-      this._player.Element.position.x,
-      -1,
-      this._player.Element.position.z
-    );
+    ladderGltf.scene.position.set(endRoomX, -1, endRoomZ);
+
+    // ladderGltf.scene.position.set(
+    //     this._player.Element.position.x,
+    //     -1,
+    //     this._player.Element.position.z
+    // );
+
     ladderGltf.scene.name = ELEMENTS.GOAL;
     this._goal = ladderGltf.scene;
     this._scene.add(ladderGltf.scene);
@@ -466,7 +429,11 @@ export class Game {
     }
 
     const relevantElements = this._scene.children.filter((child) => {
-      const items = [ELEMENTS.WALL, ELEMENTS.GOAL, ...ENEMY_TYPE_LIST];
+      const items = [
+        ELEMENTS.WALL.toString(),
+        ELEMENTS.GOAL.toString(),
+        ...ENEMY_TYPE_LIST,
+      ];
       return items.includes(child.name);
     });
 
@@ -609,7 +576,7 @@ export class Game {
     const intersects = this._raycaster.intersectObjects(this._scene.children);
     if (intersects.length > 0) {
       const enemy = intersects[0].object;
-      if (enemy.name === ELEMENTS.ENEMY || enemy.name == 'zombie') {
+      if ([...ENEMY_TYPE_LIST.toString()].includes(enemy.name)) {
         this._outlinePass.selectedObjects = [enemy];
       } else {
         this._outlinePass.selectedObjects = [];
@@ -620,5 +587,19 @@ export class Game {
   public stopGame(): number {
     this._stopAnimationFrame = true;
     return this._clock.elapsedTime;
+  }
+
+  private _setPlayerPosition() {
+    const playerX =
+      this._dungeon.firstRoom.x +
+      Math.floor(this._dungeon.firstRoom.width / 2) -
+      PROPERTIES.GRID_WIDTH / 2 -
+      0.5;
+    const playerZ =
+      this._dungeon.firstRoom.z +
+      Math.floor(this._dungeon.firstRoom.height / 2) -
+      PROPERTIES.GRID_WIDTH / 2 -
+      0.5;
+    this._player.Element.position.set(playerX, GLOBAL_Y, playerZ);
   }
 }

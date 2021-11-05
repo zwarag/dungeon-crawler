@@ -42,12 +42,14 @@ class WalkState extends State {
   enter(state: State): void {
     const animation: Animation = this.machine._owner.Element.animations['walk'];
     this._action = animation.mixer.clipAction(animation.clip);
+    this._action.timeScale *= 1.5;
     this._action.loop = LoopOnce;
     this._action.clampWhenFinished = true;
     window._animationMixers.add(animation.mixer);
 
     this._action.play();
     animation.mixer.addEventListener('finished', this.cb);
+    // window._player._allowAction = false
   }
 
   cb = () => {
@@ -61,6 +63,7 @@ class WalkState extends State {
     const animation: Animation = this.machine._owner.Element.animations['walk'];
     this._action.stop();
     animation.mixer.removeEventListener('finished', this.cb);
+    // window._player._allowAction = true
   }
 
   get name(): string {
@@ -114,12 +117,14 @@ class AttackState extends State {
 
     this._action.play();
     animation.mixer.addEventListener('finished', this.cb);
+    // window._player._allowAction = false
   }
 
   exit(): void {
     const animation: Animation = this.machine._owner.Element.animations['walk'];
     this._action.stop();
     animation.mixer.removeEventListener('finished', this.cb);
+    // window._player._allowAction = true
   }
 
   cb = () => {
