@@ -51,11 +51,10 @@ class WalkState extends State {
     const animation: Animation = this.machine._owner.Element.animations['walk'];
     this._action = animation.mixer.clipAction(animation.clip);
     window._animationMixers.add(animation.mixer);
+    animation.mixer.timeScale = 1.5;
 
     if (previousState) {
       const previousAction = previousState._action;
-      // this._action.reset()
-      this._action.timeScale *= 1.5;
       this._action.loop = LoopOnce;
       this._action.clampWhenFinished = true;
       this._action.crossFadeFrom(previousAction, 0.5, true);

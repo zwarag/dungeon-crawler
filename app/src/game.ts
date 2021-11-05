@@ -23,7 +23,6 @@ import { DamageText } from './damage-text';
 import { updateProgressBar } from './dom-controller';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { ENEMY_TYPE_LIST } from './helper/enemy';
-import enemiesJson from '../public/txt/enemies.json';
 import { EnemyFileLoader } from './helper/enemy-file-loader';
 
 export class Game {
@@ -32,19 +31,12 @@ export class Game {
   private _scene: THREE.Scene;
   private _previousRAF: number | null;
   private _player: Player;
-  private _dungeon: Dungeon;
-  private _goal: Group;
+  private _dungeon!: Dungeon;
+  private _goal!: Group;
   private _enemies: Array<Enemy> = [];
-  private _raycaster: THREE.Raycaster;
-  private _mouse: THREE.Vector2;
   private _composer: EffectComposer;
   private _outlinePass: OutlinePass;
   private _animationMixers: AnimationMixer[] = new Set();
-  private _damageTextCallback: (
-    animationMixer: AnimationMixer,
-    animationClip: AnimationClip,
-    mesh: Mesh
-  ) => void;
   private _clock: THREE.Clock;
   private _spotLight: SpotLight;
   private _stopAnimationFrame = false;
@@ -71,10 +63,6 @@ export class Game {
       },
       false
     );
-
-    document.addEventListener('mousemove', (event: MouseEvent) => {
-      this._raycast(event);
-    });
 
     this._scene = new THREE.Scene();
     window._scene = this._scene;
@@ -125,10 +113,6 @@ export class Game {
       1000
     );
 
-    // set up raycaster
-    this._raycaster = new THREE.Raycaster();
-    this._mouse = new Vector2();
-
     // set up composer and outline pass
     this._composer = new EffectComposer(this._threejs);
 
@@ -149,7 +133,7 @@ export class Game {
 
     // create the character
     this._player = new Player(this._camera);
-    window._player = this._player;
+    // window._player = this._player;
 
     // set the character into the first room
     this._setPlayerPosition();
@@ -231,7 +215,6 @@ export class Game {
   private async _calculateNextState(timeDeltaMS: number): void {
     const timeDeltaS = millisecondsToSeconds(timeDeltaMS);
     this._player.update(timeDeltaS);
-    // this._setSpotlightPosition()
 
     if (
       !this._player.Element.position.equals(this._player.getCharacterMovement())
@@ -398,6 +381,7 @@ export class Game {
     const ladderGltf = await new GLTFLoader().loadAsync('assets/Ladder.glb');
     ladderGltf.scene.position.set(endRoomX, -1, endRoomZ);
 
+    // Alternatively set the ladder directly under the player to test the levelling
     // ladderGltf.scene.position.set(
     //     this._player.Element.position.x,
     //     -1,
@@ -412,7 +396,6 @@ export class Game {
   private async _setEnemies(): Promise<void> {
     for (const room of this._dungeon.rooms) {
       if (!room.start) {
-        // if (room.start) {
         for (let height = 1; height < room.height - 1; height++) {
           for (let width = 1; width < room.width - 1; width++) {
             if (Math.random() <= room.enemyChance) {
@@ -424,7 +407,6 @@ export class Game {
               ) {
                 const enemy = new Enemy();
                 await enemy._init(x, z);
-                //enemy.Element.scale.set(0.1, 0.1, 0.1)
                 this._enemies.push(enemy);
                 this._scene.add(enemy.Element);
               }
@@ -557,8 +539,6 @@ export class Game {
         }
       }
     }
-
-    // activeEnemies.forEach((enemy) =>);
   }
 
   private _sceneToGridGridToSceneConversion(): void {
@@ -578,21 +558,6 @@ export class Game {
           cube.position.set(x, GLOBAL_Y, z);
           this._scene.add(cube);
         }
-      }
-    }
-  }
-
-  private _raycast(event: MouseEvent): void {
-    this._mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    this._mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-    this._raycaster.setFromCamera(this._mouse, this._camera);
-    const intersects = this._raycaster.intersectObjects(this._scene.children);
-    if (intersects.length > 0) {
-      const enemy = intersects[0].object;
-      if ([...ENEMY_TYPE_LIST.toString()].includes(enemy.name)) {
-        this._outlinePass.selectedObjects = [enemy];
-      } else {
-        this._outlinePass.selectedObjects = [];
       }
     }
   }
