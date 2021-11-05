@@ -10,7 +10,7 @@ import { GENDER } from './helper/gender';
 import { randomRange } from './helper/random';
 import { CharacterBase } from './character';
 import initialPlayerStats from '../public/txt/initialPlayerStats.json';
-import { ELEMENTS } from './helper/grid-elements';
+import { ELEMENTS } from './helper/elements';
 import { exitOnDeath, updateProgressBar } from './dom-controller';
 
 export class Player extends CharacterBase {

@@ -1,18 +1,15 @@
 import { StateMachine } from './state-machine';
-import * as THREE from 'three';
 import { ENEMY, ENEMY_TYPE_LIST } from './helper/enemy';
 import { randomRange } from './helper/random';
 import enemiesJson from '../public/txt/enemies.json';
 import { GLOBAL_Y } from './helper/const';
 import { CharacterBase } from './character';
-import {
-  GLTF,
-  GLTFLoader,
-  GLTFReference,
-} from 'three/examples/jsm/loaders/GLTFLoader';
+import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import { AnimationClip, AnimationMixer, Group, Vector3 } from 'three';
 import { Animation } from './helper/animated';
 import { EnemyFsm } from './enemy-fsm';
+import { modelLoader } from './helper/model-loader';
+import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils';
 
 type EnemyAnimationTypes = 'idle' | 'walk' | 'die' | 'attack';
 
@@ -61,21 +58,11 @@ export class Enemy extends CharacterBase {
     this._type = ENEMY_TYPE_LIST[enemyTypeJsonIndex];
     this._active = false;
     this._enemyObject = enemyObject;
-    // replace by graphics
-
-    // const geometry = new THREE.ConeGeometry(0.5, 1, 32);
-    // const material = new THREE.MeshPhongMaterial({ color: 0xffffff });
-    // this._3DElement = new THREE.Mesh(geometry, material);
-    // this._3DElement.position.set(x, GLOBAL_Y, z);
-    // this._3DElement.name = 'ENEMY';
-    // this._3DElement.castShadow = true;
-
-    // tbd
   }
 
   async _init(x: number, z: number): Promise<void> {
-    this._gltf = await new GLTFLoader().loadAsync(this._enemyObject.model);
-    this._model = this._gltf.scene;
+    this._gltf = await modelLoader.load(this._type);
+    this._model = SkeletonUtils.clone(this._gltf.scene);
 
     const mixer = new AnimationMixer(this._model);
     for (let i = 0; i < this._gltf.animations.length; i++) {
@@ -85,9 +72,9 @@ export class Enemy extends CharacterBase {
         mixer: mixer,
         mesh: this._model,
       };
-      // this._animations
     }
 
+    // todo
     this._model.traverse((item: any) => {
       if (item.isMaterial) {
         item.transparent = false;

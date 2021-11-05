@@ -4,6 +4,7 @@ import {
   AnimationAction,
   AnimationClip,
   AnimationMixer,
+  Group,
   Mesh,
   SpotLight,
   Vector2,
@@ -12,7 +13,7 @@ import {
 import { Player } from './player';
 import { millisecondsToSeconds } from './helper/time';
 import { Dungeon } from './dungeon';
-import { ELEMENTS } from './helper/grid-elements';
+import { ELEMENTS } from './helper/elements';
 import { Enemy } from './enemy';
 import { AStarFinder } from 'astar-typescript';
 import { DIRECTION } from './helper/direction';
@@ -23,6 +24,7 @@ import { DamageText } from './damage-text';
 import { updateProgressBar } from './dom-controller';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { ENEMY_TYPE_LIST } from './helper/enemy';
 
 export class Game {
   private _threejs: THREE.WebGLRenderer;
@@ -31,7 +33,7 @@ export class Game {
   private _previousRAF: number | null;
   private _player: Player;
   private _dungeon: Dungeon;
-  private _goal: Mesh;
+  private _goal: Group;
   private _enemies: Array<Enemy> = [];
   private _raycaster: THREE.Raycaster;
   private _mouse: THREE.Vector2;
@@ -131,9 +133,6 @@ export class Game {
     // initialize the first dungeon
     this._dungeon = new Dungeon();
     this._addDungeonToScene();
-
-    // place an object as placeholder in the end room (symbolizing a ladder or such)
-    this._placeEndRoomObject();
 
     // eslint-disable-next-line unicorn/no-null
     this._previousRAF = null;
@@ -235,8 +234,18 @@ export class Game {
   }
 
   async _initGame() {
+    // place an object as placeholder in the end room (symbolizing a ladder or such)
+    await this._placeEndRoomObject();
     // placing enemies
+    const start = Date.now();
     await this._setEnemies();
+    const end = Date.now();
+    console.log('enemies', this._enemies.length);
+    console.log('load time seconds', (end - start) / 1000);
+    console.log(
+      'seconds per enemy',
+      (end - start) / 1000 / this._enemies.length
+    );
   }
 
   private _onWindowResize(): void {
@@ -395,7 +404,7 @@ export class Game {
     return intersections.length === 0;
   }
 
-  private _placeEndRoomObject() {
+  private async _placeEndRoomObject() {
     const endRoomX =
       this._dungeon.rooms[this._dungeon.rooms.length - 1].x +
       Math.floor(
@@ -410,14 +419,18 @@ export class Game {
       ) -
       PROPERTIES.GRID_WIDTH / 2 -
       0.5;
-    const endObjectGeometry = new THREE.ConeGeometry(0.5, 4, 32);
-    const endObjectMaterial = new THREE.MeshPhongMaterial({ color: 0xffff00 });
-    const cone = new THREE.Mesh(endObjectGeometry, endObjectMaterial);
-    cone.position.set(endRoomX, GLOBAL_Y, endRoomZ);
-    cone.name = 'GOAL';
-    // todo place ladder
-    this._goal = cone;
-    this._scene.add(cone);
+
+    //"Ladder" (https://skfb.ly/6RKqO) by Avelina is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+    const ladderGltf = await new GLTFLoader().loadAsync('assets/ladder.glb');
+    // ladderGltf.scene.position.set(endRoomX, -1, endRoomZ)
+    ladderGltf.scene.position.set(
+      this._player.Element.position.x,
+      -1,
+      this._player.Element.position.z
+    );
+    ladderGltf.scene.name = ELEMENTS.GOAL;
+    this._goal = ladderGltf.scene;
+    this._scene.add(ladderGltf.scene);
   }
 
   private async _setEnemies(): Promise<void> {
@@ -453,11 +466,7 @@ export class Game {
     }
 
     const relevantElements = this._scene.children.filter((child) => {
-      const items = [
-        ELEMENTS.WALL.valueOf(),
-        ELEMENTS.ENEMY.valueOf(),
-        ELEMENTS.GOAL.valueOf(),
-      ];
+      const items = [ELEMENTS.WALL, ELEMENTS.GOAL, ...ENEMY_TYPE_LIST];
       return items.includes(child.name);
     });
 
@@ -500,7 +509,7 @@ export class Game {
   private _enemiesMoveOrAttack(): void {
     const activeEnemies = this._enemies.filter((enemy) => enemy.active);
 
-    activeEnemies.forEach((enemy) => {
+    for (const enemy of activeEnemies) {
       const playerPosition = {
         x: Game._sceneToGrid(this._player.Element.position.x),
         y: Game._sceneToGrid(this._player.Element.position.z),
@@ -538,8 +547,6 @@ export class Game {
             nextStep[0] === playerPosition.x && nextStep[1] === playerPosition.y
           )
         ) {
-          // consoled.log("moved", enemy.Element)
-
           const newEnemyPosition = new Vector3(
             Game._gridToScene(nextStep[0]),
             GLOBAL_Y - 0.5,
@@ -553,15 +560,7 @@ export class Game {
           ) {
             enemy.move(newEnemyPosition);
           }
-
-          // enemy.Element.position.set(
-          //     Game._gridToScene(nextStep[0]),
-          //     GLOBAL_Y - 0.5,
-          //     Game._gridToScene(nextStep[1])
-          // );
         } else {
-          //enemy.Element.material.setValues({ color: Math.random() * 0xffffff }); // TODO remove later, just to visualize an enemy attacking
-
           const lookAt = new Vector3(
             this._player.Element.position.x,
             -0.5,
@@ -571,15 +570,15 @@ export class Game {
           const damage = enemy.calculateAttackDamage();
           this._player.takeHit(damage);
 
-          console.log('your health:', this._player.health);
           if (this._player.health <= 0) {
-            console.log('YOU DIED');
             this.stopGame();
             this._player.die();
           }
         }
       }
-    });
+    }
+
+    // activeEnemies.forEach((enemy) =>);
   }
 
   private _sceneToGridGridToSceneConversion(): void {

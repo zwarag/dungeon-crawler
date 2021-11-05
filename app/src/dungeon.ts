@@ -1,5 +1,5 @@
 import { randomRange } from './helper/random';
-import { ELEMENTS } from './helper/grid-elements';
+import { ELEMENTS } from './helper/elements';
 import { PROPERTIES } from './helper/const';
 import { Grid } from './helper/type';
 
