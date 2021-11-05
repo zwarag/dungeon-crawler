@@ -69,8 +69,8 @@ export class Game {
       false
     );
 
-    document.addEventListener('mousemove', (ev: MouseEvent) => {
-      this._raycast(ev);
+    document.addEventListener('mousemove', (event: MouseEvent) => {
+      this._raycast(event);
     });
 
     this._scene = new THREE.Scene();
@@ -184,7 +184,7 @@ export class Game {
     this._requestAnimationFrame();
   }
 
-  async _initGame() {
+  async _initGame(): Promise<void> {
     // place an object as placeholder in the end room (symbolizing a ladder or such)
     await this._placeEndRoomObject();
     // placing enemies
@@ -289,7 +289,7 @@ export class Game {
       }
 
       const enemy = this._enemies
-        .filter((value) => value.Element.position.equals(positionUpFront))
+        .filter((enemy) => enemy.Element.position.equals(positionUpFront))
         .pop();
 
       if (enemy !== undefined) {
@@ -360,7 +360,7 @@ export class Game {
 
   private _checkFreeSpace(x: number, z: number): boolean {
     const intersections = this._scene.children.filter(
-      (value) => value.position.z === z && value.position.x === x
+      (object) => object.position.z === z && object.position.x === x
     );
     return intersections.length === 0;
   }
@@ -382,7 +382,7 @@ export class Game {
       0.5;
 
     //"Ladder" (https://skfb.ly/6RKqO) by Avelina is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
-    const ladderGltf = await new GLTFLoader().loadAsync('assets/ladder.glb');
+    const ladderGltf = await new GLTFLoader().loadAsync('assets/Ladder.glb');
     ladderGltf.scene.position.set(endRoomX, -1, endRoomZ);
 
     // ladderGltf.scene.position.set(
@@ -522,7 +522,7 @@ export class Game {
 
           if (
             this._scene.children.filter(
-              (value) => value.position === newEnemyPosition
+              (object) => object.position === newEnemyPosition
             ).length === 0
           ) {
             enemy.move(newEnemyPosition);

@@ -18,7 +18,7 @@ export class Player extends CharacterBase {
   private _input: InputController;
 
   /** The Statemachine used for animations */
-  private _state: StateMachine;
+  private _state: StateMachine<Player>;
   /**
    * The actual redered object.
    * Note: THREE.Mesh extends THREE.Object3D which has `position` property
