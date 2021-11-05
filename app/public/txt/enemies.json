@@ -11,7 +11,23 @@
     "accuracy": 60,
     "awarenessRange": 3,
     "model": "assets/Zombie_complete.glb",
-    "experience": 12
+    "experience": 17,
+    "weight": 30
+  },
+  "SKELETONZOMBIE": {
+    "health": {
+      "min": 25,
+      "max": 30
+    },
+    "damage": {
+      "min": 8,
+      "max": 10
+    },
+    "accuracy": 60,
+    "awarenessRange": 4,
+    "model": "assets/Skeletonzombie_complete.glb",
+    "experience": 20,
+    "weight": 25
   },
   "VAMPIRE": {
     "health": {
@@ -19,26 +35,28 @@
       "max": 30
     },
     "damage": {
-      "min": 5,
-      "max": 9
+      "min": 10,
+      "max": 12
     },
     "accuracy": 65,
-    "awarenessRange": 4,
+    "awarenessRange": 5,
     "model": "assets/Vampire_complete.glb",
-    "experience": 15
+    "experience": 21,
+    "weight": 10
   },
   "WARROK": {
     "health": {
-      "min": 30,
-      "max": 40
+      "min": 40,
+      "max": 50
     },
     "damage": {
-      "min": 6,
-      "max": 12
+      "min": 12,
+      "max": 15
     },
     "accuracy": 70,
-    "awarenessRange": 5,
+    "awarenessRange": 6,
     "model": "assets/Warrok_complete.glb",
-    "experience": 20
+    "experience": 33,
+    "weight": 5
   }
 }

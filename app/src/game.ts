@@ -23,6 +23,8 @@ import { DamageText } from './damage-text';
 import { updateProgressBar } from './dom-controller';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { ENEMY_TYPE_LIST } from './helper/enemy';
+import enemiesJson from '../public/txt/enemies.json';
+import { EnemyFileLoader } from './helper/enemy-file-loader';
 
 export class Game {
   private _threejs: THREE.WebGLRenderer;
@@ -46,6 +48,7 @@ export class Game {
   private _clock: THREE.Clock;
   private _spotLight: SpotLight;
   private _stopAnimationFrame = false;
+  _level = 1;
 
   constructor(element: HTMLCanvasElement) {
     this._threejs = new THREE.WebGLRenderer({
@@ -315,11 +318,21 @@ export class Game {
   }
 
   private async _generateNewLevel(): Promise<void> {
+    this._level += 1;
+    this._updateEnemyDistribution();
     this._cleanScene();
     this._addDungeonToScene();
     this._setPlayerPosition();
     await this._initGame();
-    console.log(this._scene.children.length);
+  }
+
+  private _updateEnemyDistribution() {
+    const file = EnemyFileLoader.load();
+    for (let index = 0; index < Object.keys(file).length; index++) {
+      const weight = file[Object.keys(file)[index]].weight;
+      file[Object.keys(file)[index]].weight = weight + index;
+    }
+    EnemyFileLoader.update(file);
   }
 
   private _cleanScene() {

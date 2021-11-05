@@ -1,7 +1,6 @@
 import { StateMachine } from './state-machine';
 import { ENEMY, ENEMY_TYPE_LIST } from './helper/enemy';
 import { randomRange } from './helper/random';
-import enemiesJson from '../public/txt/enemies.json';
 import { GLOBAL_Y } from './helper/const';
 import { CharacterBase } from './character';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
@@ -10,6 +9,7 @@ import { Animation } from './helper/animated';
 import { EnemyFsm } from './enemy-fsm';
 import { modelLoader } from './helper/model-loader';
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils';
+import { EnemyFileLoader } from './helper/enemy-file-loader';
 
 type EnemyAnimationTypes = 'idle' | 'walk' | 'die' | 'attack';
 
@@ -27,8 +27,14 @@ export class Enemy extends CharacterBase {
    */
   private _type: ENEMY;
 
+  /**
+   * The GLTF element of the enemy
+   */
   private _gltf: GLTF;
 
+  /**
+   * The position to where the enemy will try to walk and look
+   */
   _targetPosition: Vector3;
 
   _animations: { [key in EnemyAnimationTypes]: Animation } = {};
@@ -40,14 +46,12 @@ export class Enemy extends CharacterBase {
 
   public _model: Group;
 
-  private _enemyObject;
+  // private _enemyObject;
 
   constructor() {
-    const enemyCount = ENEMY_TYPE_LIST.length;
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const enemyTypeJsonIndex = randomRange(0, Math.max(enemyCount - 1));
-    const enemyObject = enemiesJson[ENEMY_TYPE_LIST[enemyTypeJsonIndex]];
+    const file = EnemyFileLoader.load();
+    const selection = calculateRandomSelection(); // const enemyTypeJsonIndex = randomRange(0, Math.max(enemyCount - 1));
+    const enemyObject = file[ENEMY_TYPE_LIST[selection]];
     super(
       randomRange(enemyObject.health.min, enemyObject.health.max),
       { min: enemyObject.damage.min, max: enemyObject.damage.max },
@@ -55,9 +59,9 @@ export class Enemy extends CharacterBase {
       enemyObject.experience,
       enemyObject.awarenessRange
     );
-    this._type = ENEMY_TYPE_LIST[enemyTypeJsonIndex];
+    this._type = ENEMY_TYPE_LIST[selection];
     this._active = false;
-    this._enemyObject = enemyObject;
+    // this._enemyObject = enemyObject;
   }
 
   async _init(x: number, z: number): Promise<void> {
@@ -74,14 +78,6 @@ export class Enemy extends CharacterBase {
       };
     }
 
-    // todo
-    this._model.traverse((item: any) => {
-      if (item.isMaterial) {
-        item.transparent = false;
-        item.opacity = 1;
-      }
-    });
-
     this._model.scale.setScalar(0.45);
     this._model.traverse((c) => {
       c.castShadow = true;
@@ -92,21 +88,6 @@ export class Enemy extends CharacterBase {
 
     this._state = new EnemyFsm(this);
     this._state.setState('idle');
-
-    // const anim = new FBXLoader().loadAsync('assets/')
-    //this._something = await new GLTFLoader().loadAsync('assets/goblin_d_shareyko.gltf')
-    //const model = this._something.scene;
-    //model.children[2].scale.multiplyScalar(0.0000001)
-    //model.traverse((object: any) => {
-    //    if (object.isMesh) {
-    //        object.position.set(x, 0, z
-    //        );
-    //        //object.scale.setSize(THREE.Vector3(0.1, 0.1, 0.1))
-    //        object.name = 'ENEMY';
-    //        object.castShadow = true;
-    //        this._3DElement = object;
-    //    }
-    //});
   }
 
   calculateAttackDamage(): number {
@@ -150,18 +131,41 @@ export class Enemy extends CharacterBase {
     return this._experience;
   }
 
-  move(targetPosition: Vector3) {
+  move(targetPosition: Vector3): void {
     this._targetPosition = targetPosition;
     this.Element.lookAt(targetPosition);
     this._state.setState('walk');
   }
 
-  attack(playerPosition: Vector3) {
+  attack(playerPosition: Vector3): void {
     this.Element.lookAt(playerPosition);
     this._state.setState('attack');
   }
 
-  die() {
+  die(): void {
     this._state.setState('die');
   }
+}
+
+function calculateRandomSelection(): number {
+  const file = EnemyFileLoader.load();
+  const weights = [];
+  for (let index = 0; index < Object.keys(file).length; index++) {
+    weights.push(file[Object.keys(file)[index]].weight);
+  }
+  const weightSum = weights.reduce((a, b) => {
+    return a + b;
+  });
+  const distribution = [];
+  for (const [index, weight] of weights.entries()) {
+    distribution[index] = ((100 / weightSum) * weight) / 100;
+  }
+  const cumulativeDistribution = distribution.map(
+    (
+      (sum) => (value) =>
+        (sum += value)
+    )(0)
+  );
+  const r = Math.random();
+  return cumulativeDistribution.filter((el) => r >= el).length;
 }
