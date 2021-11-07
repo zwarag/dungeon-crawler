@@ -10,6 +10,8 @@ import { EnemyFsm } from './enemy-fsm';
 import { modelLoader } from './helper/model-loader';
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils';
 import { EnemyFileLoader } from './helper/enemy-file-loader';
+import { loadGltf } from './helper/file-loader';
+import enemiesJson from '../public/txt/enemies.json';
 
 type EnemyAnimationTypes = 'idle' | 'walk' | 'die' | 'attack';
 
@@ -65,7 +67,8 @@ export class Enemy extends CharacterBase {
   }
 
   async _init(x: number, z: number): Promise<void> {
-    this._gltf = await modelLoader.load(this._type);
+    this._gltf = await loadGltf(enemiesJson, this._type);
+    // this._gltf = await modelLoader.load(this._type);
     this._model = SkeletonUtils.clone(this._gltf.scene);
 
     const mixer = new AnimationMixer(this._model);
