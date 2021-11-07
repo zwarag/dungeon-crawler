@@ -1,10 +1,11 @@
 import { State, StateMachine } from './state-machine';
 import { Enemy } from './enemy';
+import { Player } from './player';
 import { Animation } from './helper/animated';
 import { LoopOnce, AnimationAction } from 'three';
 
-export class EnemyFsm extends StateMachine<Enemy> {
-  constructor(owner: Enemy) {
+export class EnemyFsm extends StateMachine<any> {
+  constructor(owner: any) {
     super(owner);
     this._init();
   }

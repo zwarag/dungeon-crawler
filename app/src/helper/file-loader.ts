@@ -6,7 +6,7 @@ function _load(file: Record<string, unknown>): Record<string, unknown> {
 
 export async function loadGltf(
   jsonFile: Record<string, unknown>,
-  name: string
+  name?: string
 ): Promise<GLTF> {
   const file = _load(jsonFile);
   if (file[name]) {

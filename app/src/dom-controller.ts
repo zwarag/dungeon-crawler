@@ -4,7 +4,6 @@ import { HTMLELEMENTS } from './helper/const';
 import { KEYBOARDMAP } from './helper/keyboard';
 import { storyWriter } from './helper/typewriter';
 import { addToHighscore } from './highscore-controller';
-import { HudAnimation } from './hud-animation';
 
 let _game: Game;
 
@@ -151,6 +150,9 @@ function _endGame(): void {
 export function updateProgressBar(health: number): void {
   if (health < 0) {
     health = 0;
+  }
+  if (health > 100) {
+    health = 100;
   }
   health = Math.round(health);
   HTMLELEMENTS.progressBarFill.style.width = `${health}%`;
