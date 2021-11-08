@@ -1,6 +1,7 @@
 import { DIRECTION } from './helper/direction';
 import { TimeInSeconds } from './helper/time';
 import { InputController, KeyBoardInputController } from './input-controller';
+import * as THREE from 'three';
 
 import { StateMachine } from './state-machine';
 import text from '../public/txt/text.json';
@@ -25,7 +26,7 @@ export class Player extends CharacterBase {
    * The actual redered object.
    * Note: THREE.Mesh extends THREE.Object3D which has `position` property
    */
-  private _3DElement: Group | undefined;
+  private _3DElement: THREE.Group | undefined;
 
   /** The velocity a Charater is moving. Backwards, idle, forwards. */
   private _velocity: -1 | 0 | 1;
@@ -87,6 +88,11 @@ export class Player extends CharacterBase {
 
   async _init(): Promise<void> {
     const gltf = await loadGltf(playerJson);
+    gltf.scene.traverse((child) => {
+      if (child.type == 'SkinnedMesh') {
+        child.frustumCulled = false;
+      }
+    });
     const model = gltf.scene;
     const mixer = new AnimationMixer(model);
     gltf.animations.forEach((clip: AnimationClip) => {
@@ -103,7 +109,6 @@ export class Player extends CharacterBase {
     model.traverse((c: Object3D) => {
       c.castShadow = true;
     });
-    // model.position.set(z, y, x);
 
     this._3DElement = model;
     this._3DElement.name = ELEMENTS.PLAYER;
@@ -112,7 +117,7 @@ export class Player extends CharacterBase {
     this._state.setState('idle');
   }
 
-  get Element(): Group {
+  get Element(): THREE.Group {
     return <Group>this._3DElement;
   }
 

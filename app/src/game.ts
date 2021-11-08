@@ -102,23 +102,15 @@ export class Game {
     // eslint-disable-next-line unicorn/no-null
     this._previousRAF = null;
 
+    // create a camera, which defines where we're looking at.
     this._camera = new THREE.PerspectiveCamera(
-      45,
+      70,
       window.innerWidth / window.innerHeight,
-      1,
+      0.01,
       1000
     );
-    this._camera.position.set(1, 1, -3);
-    this._camera.lookAt(0, 1, 0);
-
-    // create a camera, which defines where we're looking at.
-    // this._camera = new THREE.PerspectiveCamera(
-    //   90,
-    //   window.innerWidth / window.innerHeight,
-    //   0.00001,
-    //   1000
-    // );
-    // this._camera.position.y = 0.1;
+    this._camera.rotation.set(0, 15, 0);
+    this._camera.position.y = 1;
 
     this._player = new Player();
 
@@ -168,8 +160,6 @@ export class Game {
   }
 
   async _initPlayer() {
-    // const [x, y, z] = this._setPlayerPosition();
-    // await this._player._init(x, y, z);
     await this._player._init();
     this._setPlayerPosition();
     this._scene.add(this._player.Element);
@@ -330,7 +320,9 @@ export class Game {
   private _addDungeonToScene(): void {
     this._dungeon = new Dungeon();
     const textureLoader = new THREE.TextureLoader();
-    const wallTexture = textureLoader.load('./img/wall.jpg');
+    const wallTexture = textureLoader.load(
+      'https://threejsfundamentals.org/threejs/resources/images/wall.jpg'
+    );
     const wallGeometry = new THREE.BoxGeometry(1, 1.5, 1);
     const wallMaterial = new THREE.MeshPhongMaterial({
       map: wallTexture,
@@ -581,18 +573,4 @@ export class Game {
       0.5;
     this._player.Element.position.set(playerX, PLAYER_Y, playerZ);
   }
-
-  // private _setPlayerPosition(): number[] {
-  //   const playerX =
-  //     this._dungeon.firstRoom.x +
-  //     Math.floor(this._dungeon.firstRoom.width / 2) -
-  //     PROPERTIES.GRID_WIDTH / 2 -
-  //     0.5;
-  //   const playerZ =
-  //     this._dungeon.firstRoom.z +
-  //     Math.floor(this._dungeon.firstRoom.height / 2) -
-  //     PROPERTIES.GRID_WIDTH / 2 -
-  //     0.5;
-  //   return [playerX, PLAYER_Y, playerZ];
-  // }
 }
