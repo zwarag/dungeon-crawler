@@ -64,7 +64,7 @@ function _toggleClass(
   addToElements.forEach((event) => event.classList.add(cssClass));
 }
 
-export function _startGame(): void {
+export async function _startGame(): Promise<void> {
   _toggleClass(
     [HTMLELEMENTS.app],
     [
@@ -77,6 +77,7 @@ export function _startGame(): void {
   );
   if (HTMLELEMENTS.element) {
     _game = new Game(HTMLELEMENTS.element);
+    await _game._initGame();
     // new HudAnimation(HTMLELEMENTS.hudAnimation);
   }
 }
@@ -147,16 +148,16 @@ function _endGame(): void {
   _resetStoryBox();
 }
 
-export function updateProgressBar(value: number) {
-  if (value < 0) {
-    value = 0;
+export function updateProgressBar(health: number): void {
+  if (health < 0) {
+    health = 0;
   }
-  value = Math.round(value);
-  HTMLELEMENTS.progressBarFill.style.width = `${value}%`;
-  HTMLELEMENTS.progressBarText.textContent = `${value}%`;
+  health = Math.round(health);
+  HTMLELEMENTS.progressBarFill.style.width = `${health}%`;
+  HTMLELEMENTS.progressBarText.textContent = `${health}%`;
 }
 
-export function exitOnDeath() {
+export function exitOnDeath(): void {
   _endGame();
   _toggleClass([HTMLELEMENTS.deathScreen], [HTMLELEMENTS.app], 'd-none');
   setTimeout(_backToStartScreen, 5000);

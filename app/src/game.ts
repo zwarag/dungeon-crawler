@@ -1,9 +1,9 @@
 import { GLOBAL_GROUND_Y, GLOBAL_Y, PROPERTIES } from './helper/const';
 import * as THREE from 'three';
 import {
-  AnimationAction,
   AnimationClip,
   AnimationMixer,
+  Group,
   Mesh,
   SpotLight,
   Vector2,
@@ -12,15 +12,18 @@ import {
 import { Player } from './player';
 import { millisecondsToSeconds } from './helper/time';
 import { Dungeon } from './dungeon';
-import { ELEMENTS } from './helper/grid-elements';
+import { ELEMENTS } from './helper/elements';
 import { Enemy } from './enemy';
 import { AStarFinder } from 'astar-typescript';
 import { DIRECTION } from './helper/direction';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass';
-import { DamageText } from './damageText';
+import { DamageText } from './damage-text';
 import { updateProgressBar } from './dom-controller';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { ENEMY_TYPE_LIST } from './helper/enemy';
+import { EnemyFileLoader } from './helper/enemy-file-loader';
 
 export class Game {
   private _threejs: THREE.WebGLRenderer;
@@ -28,22 +31,16 @@ export class Game {
   private _scene: THREE.Scene;
   private _previousRAF: number | null;
   private _player: Player;
-  private _dungeon: Dungeon;
-  private _goal: Mesh;
+  private _dungeon!: Dungeon;
+  private _goal!: Group;
   private _enemies: Array<Enemy> = [];
-  private _raycaster: THREE.Raycaster;
-  private _mouse: THREE.Vector2;
   private _composer: EffectComposer;
   private _outlinePass: OutlinePass;
-  private _animationMixers: AnimationMixer[] = [];
-  private _damageTextCallback: (
-    animationMixer: AnimationMixer,
-    animationClip: AnimationClip,
-    mesh: Mesh
-  ) => void;
+  private _animationMixers: AnimationMixer[] = new Set();
   private _clock: THREE.Clock;
   private _spotLight: SpotLight;
   private _stopAnimationFrame = false;
+  _level = 1;
 
   constructor(element: HTMLCanvasElement) {
     this._threejs = new THREE.WebGLRenderer({
@@ -67,31 +64,9 @@ export class Game {
       false
     );
 
-    document.addEventListener('mousemove', (ev: MouseEvent) => {
-      this._raycast(ev);
-    });
-
     this._scene = new THREE.Scene();
-
-    // const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    // directionalLight.position.set(20, 100, 10);
-    // directionalLight.target.position.set(0, 0, 0);
-    // directionalLight.castShadow = true;
-    // directionalLight.shadow.bias = -0.001;
-    // directionalLight.shadow.mapSize.width = 2048;
-    // directionalLight.shadow.mapSize.height = 2048;
-    // directionalLight.shadow.camera.near = 0.1;
-    // directionalLight.shadow.camera.far = 500;
-    // directionalLight.shadow.camera.near = 0.5;
-    // directionalLight.shadow.camera.far = 500;
-    // directionalLight.shadow.camera.left = 100;
-    // directionalLight.shadow.camera.right = -100;
-    // directionalLight.shadow.camera.top = 100;
-    // directionalLight.shadow.camera.bottom = -100;
-    // this._scene.add(directionalLight);
-
-    // const ambientLight = new THREE.AmbientLight(0xffffff, 4);
-    // this._scene.add(ambientLight);
+    window._scene = this._scene;
+    window._animationMixers = this._animationMixers;
 
     // Skybox
     const loader = new THREE.CubeTextureLoader();
@@ -125,11 +100,7 @@ export class Game {
     this._scene.add(ground);
 
     // initialize the first dungeon
-    this._dungeon = new Dungeon();
     this._addDungeonToScene();
-
-    // place an object as placeholder in the end room (symbolizing a ladder or such)
-    this._placeEndRoomObject();
 
     // eslint-disable-next-line unicorn/no-null
     this._previousRAF = null;
@@ -141,10 +112,6 @@ export class Game {
       0.1,
       1000
     );
-
-    // set up raycaster
-    this._raycaster = new THREE.Raycaster();
-    this._mouse = new Vector2();
 
     // set up composer and outline pass
     this._composer = new EffectComposer(this._threejs);
@@ -166,19 +133,11 @@ export class Game {
 
     // create the character
     this._player = new Player(this._camera);
+    // window._player = this._player;
 
     // set the character into the first room
-    const playerX =
-      this._dungeon.firstRoom.x +
-      Math.floor(this._dungeon.firstRoom.width / 2) -
-      PROPERTIES.GRID_WIDTH / 2 -
-      0.5;
-    const playerZ =
-      this._dungeon.firstRoom.z +
-      Math.floor(this._dungeon.firstRoom.height / 2) -
-      PROPERTIES.GRID_WIDTH / 2 -
-      0.5;
-    this._player.Element.position.set(playerX, GLOBAL_Y, playerZ);
+    this._setPlayerPosition();
+
     this._scene.add(this._player.Element);
 
     // axes helper
@@ -187,9 +146,6 @@ export class Game {
 
     // set the camera as child of the player element, this ensures that the camera follows the player around
     this._player.Element.add(this._camera);
-
-    // placing enemies
-    this._setEnemies();
 
     // Spotlight symbolizing a torch carried by the player
     this._spotLight = new THREE.SpotLight(
@@ -207,32 +163,27 @@ export class Game {
 
     // Temporary Camera
     // TODO: this is only temporary and should be swaped out for the actual implementaiton of the camera
-    // const controls = new OrbitControls(this._camera, this._threejs.domElement);
-    // controls.target.set(0, 0, 0);
-    // controls.update();
-
-    this._damageTextCallback = (
-      animationMixer: AnimationMixer,
-      animationClip: AnimationClip,
-      mesh: Mesh
-    ): void => {
-      this._scene.add(mesh);
-      const action: AnimationAction = animationMixer.clipAction(animationClip);
-      action.loop = THREE.LoopOnce;
-      action.clampWhenFinished = true;
-      action.play();
-      this._animationMixers.push(animationMixer);
-      animationMixer.addEventListener('finished', () => {
-        action.stop();
-        this._animationMixers = this._animationMixers.filter(
-          (value) => value !== animationMixer
-        );
-        this._scene.remove(mesh);
-      });
-    };
+    //const controls = new OrbitControls(this._camera, this._threejs.domElement);
+    //controls.target.set(0, 0, 0);
+    //controls.update();
 
     updateProgressBar(100);
     this._requestAnimationFrame();
+  }
+
+  async _initGame(): Promise<void> {
+    // place an object as placeholder in the end room (symbolizing a ladder or such)
+    await this._placeEndRoomObject();
+    // placing enemies
+    // const start = Date.now();
+    await this._setEnemies();
+    // const end = Date.now();
+    // console.log('enemies', this._enemies.length);
+    // console.log('load time seconds', (end - start) / 1000);
+    // console.log(
+    //     'seconds per enemy',
+    //     (end - start) / 1000 / this._enemies.length
+    // );
   }
 
   private _onWindowResize(): void {
@@ -261,99 +212,122 @@ export class Game {
     });
   }
 
-  private _calculateNextState(timeDeltaMS: number): void {
+  private async _calculateNextState(timeDeltaMS: number): void {
     const timeDeltaS = millisecondsToSeconds(timeDeltaMS);
     this._player.update(timeDeltaS);
-    // this._setSpotlightPosition()
-    this._handleCharacterMovement();
-    this._handleCharacterAttacking();
+
+    if (
+      !this._player.Element.position.equals(this._player.getCharacterMovement())
+    ) {
+      this._handleCharacterMovement();
+    }
+    await this._handleCharacterAttacking();
   }
 
   private _handleCharacterMovement(): void {
-    const currentPlayerPosition = new Vector3().copy(
-      this._player.Element.position
-    );
     const newPlayerPosition = this._player.getCharacterMovement();
-    if (!newPlayerPosition.equals(currentPlayerPosition)) {
-      // equals -> Wertevergleich, === -> objektvergleich
-      if (this._checkFreeSpace(newPlayerPosition.x, newPlayerPosition.z)) {
-        this._player.Element.position.set(...newPlayerPosition.toArray());
-        // this._camera.position.set(...newPlayerPosition.toArray());
-        this._activateEnemies();
-        this._enemiesMoveOrAttack();
-      } else {
-        this._player.speak('blocked');
-      }
+
+    // equals -> Wertevergleich, === -> objektvergleich
+    if (this._checkFreeSpace(newPlayerPosition.x, newPlayerPosition.z)) {
+      this._player.Element.position.set(...newPlayerPosition.toArray());
+      // this._camera.position.set(...newPlayerPosition.toArray());
+      this._activateEnemies();
+      this._enemiesMoveOrAttack();
+    } else {
+      this._player.speak('blocked');
     }
   }
 
-  private _handleCharacterAttacking(): void {
+  private async _handleCharacterAttacking() {
     if (this._player.attacks) {
       const playerPosition = this._player.Element.position;
       const playerViewDirection = this._player.direction;
-      let enemyPosition: Vector3;
+      let positionUpFront: Vector3;
       switch (playerViewDirection) {
         case DIRECTION.NORTH:
-          enemyPosition = new Vector3(
+          positionUpFront = new Vector3(
             playerPosition.x,
-            playerPosition.y,
+            playerPosition.y - 0.5,
             playerPosition.z - 1
           );
           break;
         case DIRECTION.EAST:
-          enemyPosition = new Vector3(
+          positionUpFront = new Vector3(
             playerPosition.x - 1,
-            playerPosition.y,
+            playerPosition.y - 0.5,
             playerPosition.z
           );
           break;
         case DIRECTION.SOUTH:
-          enemyPosition = new Vector3(
+          positionUpFront = new Vector3(
             playerPosition.x,
-            playerPosition.y,
+            playerPosition.y - 0.5,
             playerPosition.z + 1
           );
           break;
         case DIRECTION.WEST:
-          enemyPosition = new Vector3(
+          positionUpFront = new Vector3(
             playerPosition.x + 1,
-            playerPosition.y,
+            playerPosition.y - 0.5,
             playerPosition.z
           );
           break;
       }
 
       const enemy = this._enemies
-        .filter((value) => value.Element.position.equals(enemyPosition))
+        .filter((enemy) => enemy.Element.position.equals(positionUpFront))
         .pop();
-      const damage = this._player.attack();
-
-      console.log(`PLAYER ATTACKED FOR ${damage} DAMAGE`);
 
       if (enemy !== undefined) {
+        const damage = this._player.attack();
         enemy.takeHit(damage);
 
-        new DamageText(
-          damage,
-          this._player.Element.position,
-          this._player.direction,
-          this._player.Element.rotation,
-          enemy.Element.position,
-          enemy.Element.geometry.parameters.height,
-          this._damageTextCallback
-        );
+        new DamageText(damage, enemy.Element);
 
         if (enemy.health <= 0) {
           this._player.increaseExperience(enemy.experience);
+          enemy.die();
           this._enemies = this._enemies.filter((child) => child !== enemy);
-          this._scene.remove(enemy.Element);
         }
+      } else if (
+        positionUpFront.x === this._goal.position.x &&
+        positionUpFront.z === this._goal.position.z
+      ) {
+        this._player.increaseExperience(this._player.getMaxHealth() / 3);
+        await this._generateNewLevel();
       }
       this._enemiesMoveOrAttack();
     }
   }
 
+  private async _generateNewLevel(): Promise<void> {
+    this._level += 1;
+    this._updateEnemyDistribution();
+    this._cleanScene();
+    this._addDungeonToScene();
+    this._setPlayerPosition();
+    await this._initGame();
+  }
+
+  private _updateEnemyDistribution() {
+    const file = EnemyFileLoader.load();
+    for (let index = 0; index < Object.keys(file).length; index++) {
+      const weight = file[Object.keys(file)[index]].weight;
+      file[Object.keys(file)[index]].weight = weight + index;
+    }
+    EnemyFileLoader.update(file);
+  }
+
+  private _cleanScene() {
+    while (this._scene.children.length > 0) {
+      this._scene.remove(this._scene.children[0]);
+    }
+    this._scene.add(this._player.Element);
+    this._enemies = [];
+  }
+
   private _addDungeonToScene(): void {
+    this._dungeon = new Dungeon();
     const textureLoader = new THREE.TextureLoader();
     const wallTexture = textureLoader.load('./img/wall.jpg');
     const wallGeometry = new THREE.BoxGeometry(1, 1.5, 1);
@@ -382,12 +356,12 @@ export class Game {
 
   private _checkFreeSpace(x: number, z: number): boolean {
     const intersections = this._scene.children.filter(
-      (value) => value.position.z === z && value.position.x === x
+      (object) => object.position.z === z && object.position.x === x
     );
     return intersections.length === 0;
   }
 
-  private _placeEndRoomObject() {
+  private async _placeEndRoomObject() {
     const endRoomX =
       this._dungeon.rooms[this._dungeon.rooms.length - 1].x +
       Math.floor(
@@ -402,18 +376,25 @@ export class Game {
       ) -
       PROPERTIES.GRID_WIDTH / 2 -
       0.5;
-    const endObjectGeometry = new THREE.ConeGeometry(0.5, 4, 32);
-    const endObjectMaterial = new THREE.MeshPhongMaterial({ color: 0xffff00 });
-    const cone = new THREE.Mesh(endObjectGeometry, endObjectMaterial);
-    cone.position.set(endRoomX, GLOBAL_Y, endRoomZ);
-    cone.name = 'GOAL';
-    // todo place ladder
-    this._goal = cone;
-    this._scene.add(cone);
+
+    //"Ladder" (https://skfb.ly/6RKqO) by Avelina is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+    const ladderGltf = await new GLTFLoader().loadAsync('assets/Ladder.glb');
+    ladderGltf.scene.position.set(endRoomX, -1, endRoomZ);
+
+    // Alternatively set the ladder directly under the player to test the levelling
+    // ladderGltf.scene.position.set(
+    //     this._player.Element.position.x,
+    //     -1,
+    //     this._player.Element.position.z
+    // );
+
+    ladderGltf.scene.name = ELEMENTS.GOAL;
+    this._goal = ladderGltf.scene;
+    this._scene.add(ladderGltf.scene);
   }
 
-  private _setEnemies(): void {
-    this._dungeon.rooms.forEach((room) => {
+  private async _setEnemies(): Promise<void> {
+    for (const room of this._dungeon.rooms) {
       if (!room.start) {
         for (let height = 1; height < room.height - 1; height++) {
           for (let width = 1; width < room.width - 1; width++) {
@@ -424,7 +405,8 @@ export class Game {
               if (
                 !(this._goal.position.x === x && this._goal.position.z === z)
               ) {
-                const enemy = new Enemy(x, z);
+                const enemy = new Enemy();
+                await enemy._init(x, z);
                 this._enemies.push(enemy);
                 this._scene.add(enemy.Element);
               }
@@ -432,7 +414,7 @@ export class Game {
           }
         }
       }
-    });
+    }
   }
 
   private _constructAStarGrid(): number[][] {
@@ -443,9 +425,9 @@ export class Game {
 
     const relevantElements = this._scene.children.filter((child) => {
       const items = [
-        ELEMENTS.WALL.valueOf(),
-        ELEMENTS.ENEMY.valueOf(),
-        ELEMENTS.GOAL.valueOf(),
+        ELEMENTS.WALL.toString(),
+        ELEMENTS.GOAL.toString(),
+        ...ENEMY_TYPE_LIST,
       ];
       return items.includes(child.name);
     });
@@ -489,11 +471,18 @@ export class Game {
   private _enemiesMoveOrAttack(): void {
     const activeEnemies = this._enemies.filter((enemy) => enemy.active);
 
-    activeEnemies.forEach((enemy) => {
+    for (const enemy of activeEnemies) {
       const playerPosition = {
         x: Game._sceneToGrid(this._player.Element.position.x),
         y: Game._sceneToGrid(this._player.Element.position.z),
       };
+      // TODO turn animation?
+      const lookAt = new Vector3(
+        this._player.Element.position.x,
+        -0.5,
+        this._player.Element.position.z
+      );
+      enemy.Element.lookAt(lookAt);
       const enemyPosition = {
         x: Game._sceneToGrid(enemy.Element.position.x),
         y: Game._sceneToGrid(enemy.Element.position.z),
@@ -520,25 +509,36 @@ export class Game {
             nextStep[0] === playerPosition.x && nextStep[1] === playerPosition.y
           )
         ) {
-          // console.log("moved", enemy.Element)
-          enemy.Element.position.set(
+          const newEnemyPosition = new Vector3(
             Game._gridToScene(nextStep[0]),
-            GLOBAL_Y,
+            GLOBAL_Y - 0.5,
             Game._gridToScene(nextStep[1])
           );
+
+          if (
+            this._scene.children.filter(
+              (object) => object.position === newEnemyPosition
+            ).length === 0
+          ) {
+            enemy.move(newEnemyPosition);
+          }
         } else {
-          enemy.Element.material.setValues({ color: Math.random() * 0xffffff }); // TODO remove later, just to visualize an enemy attacking
-          const damage = enemy.attack();
+          const lookAt = new Vector3(
+            this._player.Element.position.x,
+            -0.5,
+            this._player.Element.position.z
+          );
+          enemy.attack(lookAt);
+          const damage = enemy.calculateAttackDamage();
           this._player.takeHit(damage);
-          console.log('your health:', this._player.health);
+
           if (this._player.health <= 0) {
-            console.log('YOU DIED');
             this.stopGame();
             this._player.die();
           }
         }
       }
-    });
+    }
   }
 
   private _sceneToGridGridToSceneConversion(): void {
@@ -562,30 +562,22 @@ export class Game {
     }
   }
 
-  private _positionConversionCheck(): void {
-    const scenePlayerPosition = this._player.Element.position.z;
-    const gridPlayerPosition = Game._sceneToGrid(scenePlayerPosition);
-    console.log('scene to grid', scenePlayerPosition, gridPlayerPosition);
-    console.log('grid to scene', gridPlayerPosition, scenePlayerPosition);
-  }
-
-  private _raycast(event: MouseEvent): void {
-    this._mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    this._mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-    this._raycaster.setFromCamera(this._mouse, this._camera);
-    const intersects = this._raycaster.intersectObjects(this._scene.children);
-    if (intersects.length > 0) {
-      const enemy = intersects[0].object;
-      if (enemy.name === ELEMENTS.ENEMY) {
-        this._outlinePass.selectedObjects = [enemy];
-      } else {
-        this._outlinePass.selectedObjects = [];
-      }
-    }
-  }
-
   public stopGame(): number {
     this._stopAnimationFrame = true;
     return this._clock.elapsedTime;
+  }
+
+  private _setPlayerPosition() {
+    const playerX =
+      this._dungeon.firstRoom.x +
+      Math.floor(this._dungeon.firstRoom.width / 2) -
+      PROPERTIES.GRID_WIDTH / 2 -
+      0.5;
+    const playerZ =
+      this._dungeon.firstRoom.z +
+      Math.floor(this._dungeon.firstRoom.height / 2) -
+      PROPERTIES.GRID_WIDTH / 2 -
+      0.5;
+    this._player.Element.position.set(playerX, GLOBAL_Y, playerZ);
   }
 }

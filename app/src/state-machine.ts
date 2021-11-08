@@ -1,38 +1,48 @@
-import { KeyBoardInputController } from './input-controller';
+import { CharacterBase } from './character';
+import { DamageText } from './damage-text';
+import { AnimationAction } from 'three';
 
 type StateConstructor = new (parent: StateMachine) => State;
+
 export abstract class State {
-  parent: StateMachine;
+  _action: AnimationAction;
+  machine: StateMachine;
+
   abstract get name(): string;
 
-  constructor(parent: StateMachine) {
-    this.parent = parent;
+  constructor(machine: StateMachine) {
+    this.machine = machine;
   }
 
-  abstract enter(state: State): void;
+  abstract enter(previousState: State): void;
+
   abstract exit(): void;
-  abstract update(timeDelta?: number, input?: unknown): void;
 }
 
-export class StateMachine {
-  private _currentState: State;
+export class StateMachine<T> {
+  private _currentState: State | null;
+  _owner: T; // actually only used to access the animations.
   private _states: { [key: string]: StateConstructor };
-  constructor() {
+
+  constructor(owner: T) {
     this._states = {};
-    // eslint-disable-next-line unicorn/no-null
-    this._currentState = new IdleState(this);
+    this._owner = owner;
+    this._currentState = null as unknown as State;
+    // this._currentState = new StartState(this);
   }
 
+  // creates the meta for a new state, defines all `f`
   addState(key: string, state: StateConstructor): void {
     this._states[key] = state;
   }
 
+  // sets the new state of the statemachine `f` -> `g`
   setState(key: string): void {
     const previousState = this._currentState;
-    if (previousState.name === key) {
+    if (previousState?.name === key) {
       return;
     }
-    previousState.exit();
+    previousState?.exit();
     const state = new this._states[key](this);
     this._currentState = state;
     state.enter(previousState);
@@ -41,29 +51,25 @@ export class StateMachine {
   getCurrentState(): State {
     return this._currentState;
   }
-
-  update(timeDelta?: number, input?: unknown): void {
-    this._currentState.update(timeDelta, input);
-  }
 }
 
 /**
  * A Character is just standing around.
  */
-class IdleState extends State {
+export class IdleState extends State {
   get name(): string {
     return 'idle';
   }
+
   constructor(parent: StateMachine) {
     super(parent);
   }
+
   enter(state: State): void {
     throw new Error('Method not implemented.');
   }
+
   exit(): void {
-    throw new Error('Method not implemented.');
-  }
-  update(): void {
     throw new Error('Method not implemented.');
   }
 }
@@ -75,13 +81,12 @@ class WalkState extends State {
   get name(): string {
     throw new Error('Method not implemented.');
   }
+
   enter(state: State): void {
     throw new Error('Method not implemented.');
   }
+
   exit(): void {
-    throw new Error('Method not implemented.');
-  }
-  update(): void {
     throw new Error('Method not implemented.');
   }
 }
@@ -94,13 +99,12 @@ class TurningState extends State {
   get name(): string {
     throw new Error('Method not implemented.');
   }
+
   enter(state: State): void {
     throw new Error('Method not implemented.');
   }
+
   exit(): void {
-    throw new Error('Method not implemented.');
-  }
-  update(): void {
     throw new Error('Method not implemented.');
   }
 }
@@ -112,13 +116,12 @@ class AttackState extends State {
   get name(): string {
     throw new Error('Method not implemented.');
   }
+
   enter(state: State): void {
     throw new Error('Method not implemented.');
   }
+
   exit(): void {
-    throw new Error('Method not implemented.');
-  }
-  update(): void {
     throw new Error('Method not implemented.');
   }
 }
@@ -130,13 +133,12 @@ class HitState extends State {
   get name(): string {
     throw new Error('Method not implemented.');
   }
+
   enter(state: State): void {
     throw new Error('Method not implemented.');
   }
+
   exit(): void {
-    throw new Error('Method not implemented.');
-  }
-  update(): void {
     throw new Error('Method not implemented.');
   }
 }

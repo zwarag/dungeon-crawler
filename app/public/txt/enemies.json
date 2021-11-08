@@ -1,5 +1,5 @@
 {
-  "SKELETON": {
+  "ZOMBIE": {
     "health": {
       "min": 20,
       "max": 25
@@ -10,50 +10,53 @@
     },
     "accuracy": 60,
     "awarenessRange": 3,
-    "animations": {
-      "idle": "....",
-      "attack": "....",
-      "walking": "....",
-      "death": "...."
-    },
-    "experience": 12
+    "model": "assets/Zombie_complete.glb",
+    "experience": 17,
+    "weight": 30
   },
-  "HUMAN": {
+  "SKELETONZOMBIE": {
     "health": {
       "min": 25,
       "max": 30
     },
     "damage": {
-      "min": 5,
-      "max": 9
+      "min": 8,
+      "max": 10
     },
-    "accuracy": 65,
+    "accuracy": 60,
     "awarenessRange": 4,
-    "animations": {
-      "idle": "....",
-      "attack": "....",
-      "walking": "....",
-      "death": "...."
-    },
-    "experience": 15
+    "model": "assets/Skeletonzombie_complete.glb",
+    "experience": 20,
+    "weight": 25
   },
-  "DEVIL": {
+  "VAMPIRE": {
     "health": {
-      "min": 30,
-      "max": 40
+      "min": 25,
+      "max": 30
     },
     "damage": {
-      "min": 6,
+      "min": 10,
       "max": 12
     },
-    "accuracy": 70,
+    "accuracy": 65,
     "awarenessRange": 5,
-    "animations": {
-      "idle": "....",
-      "attack": "....",
-      "walking": "....",
-      "death": "...."
+    "model": "assets/Vampire_complete.glb",
+    "experience": 21,
+    "weight": 10
+  },
+  "WARROK": {
+    "health": {
+      "min": 40,
+      "max": 50
     },
-    "experience": 20
+    "damage": {
+      "min": 12,
+      "max": 15
+    },
+    "accuracy": 70,
+    "awarenessRange": 6,
+    "model": "assets/Warrok_complete.glb",
+    "experience": 33,
+    "weight": 5
   }
 }

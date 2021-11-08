@@ -10,7 +10,7 @@ import { GENDER } from './helper/gender';
 import { randomRange } from './helper/random';
 import { CharacterBase } from './character';
 import initialPlayerStats from '../public/txt/initialPlayerStats.json';
-import { ELEMENTS } from './helper/grid-elements';
+import { ELEMENTS } from './helper/elements';
 import { exitOnDeath, updateProgressBar } from './dom-controller';
 
 export class Player extends CharacterBase {
@@ -18,7 +18,7 @@ export class Player extends CharacterBase {
   private _input: InputController;
 
   /** The Statemachine used for animations */
-  private _state: StateMachine;
+  private _state: StateMachine<Player>;
   /**
    * The actual redered object.
    * Note: THREE.Mesh extends THREE.Object3D which has `position` property
@@ -54,7 +54,12 @@ export class Player extends CharacterBase {
    */
   private _camera: PerspectiveCamera;
 
-  constructor(camera: PerspectiveCamera) {
+  /**
+   *  Allows player action
+   */
+  // _allowAction: Array<boolean> = []
+
+  constructor() {
     // character stats
     super(
       initialPlayerStats.health,
@@ -76,7 +81,6 @@ export class Player extends CharacterBase {
     this._velocity = 0;
     this._attacks = false;
     this._direction = DIRECTION.NORTH;
-    this._camera = camera;
     const geometry = new THREE.BoxGeometry(1, 1, 1);
     const loader = new THREE.TextureLoader();
     const material = [
@@ -107,11 +111,9 @@ export class Player extends CharacterBase {
     } else if (keys.left) {
       this._direction = (4 + this._direction - 1) % 4;
       this.Element.rotateY(Math.PI / 2);
-      // this._camera.rotateY(Math.PI / 2);
     } else if (keys.right) {
       this._direction = (this._direction + 1) % 4;
       this.Element.rotateY(-Math.PI / 2);
-      // this._camera.rotateY(-Math.PI / 2);
     } else if (keys.action) {
       this._attacks = true;
     } else {
