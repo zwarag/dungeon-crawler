@@ -35,6 +35,10 @@ export function initDom(): void {
     _backToStartScreen
   );
   addEventListener(HTMLELEMENTS.nameInputOkButton, 'click', async () => {
+    if (HTMLELEMENTS.element) {
+      _game = new Game(HTMLELEMENTS.element);
+      _game._initGame();
+    }
     await _displayStoryBox();
     _startGame();
   });
@@ -64,21 +68,7 @@ function _toggleClass(
 }
 
 export async function _startGame(): Promise<void> {
-  _toggleClass(
-    [HTMLELEMENTS.app],
-    [
-      HTMLELEMENTS.startScreen,
-      HTMLELEMENTS.highscore,
-      HTMLELEMENTS.nameInput,
-      HTMLELEMENTS.storyBox,
-    ],
-    'd-none'
-  );
-  if (HTMLELEMENTS.element) {
-    _game = new Game(HTMLELEMENTS.element);
-    await _game._initGame();
-    // new HudAnimation(HTMLELEMENTS.hudAnimation);
-  }
+  _toggleClass([HTMLELEMENTS.app], [HTMLELEMENTS.storyBox], 'd-none');
 }
 
 function _displayExitOverlay(): void {
@@ -114,12 +104,7 @@ function _enableButton(): void {
 
 async function _displayStoryBox(): Promise<void> {
   _toggleClass([HTMLELEMENTS.storyBox], [HTMLELEMENTS.nameInput], 'd-none');
-  await storyWriter(story.story, 'story-box', 1);
-  // for (const lineNumber in story.intro) {
-  //   await storyWriter(story.intro[lineNumber], 'story-box', 1);
-  //   await new Promise((resolve) => setTimeout(resolve, 1));
-  //   _resetStoryBox();
-  // }
+  await storyWriter(story.story, 'story-box', 90);
 }
 
 function _getPlayerName(): string {

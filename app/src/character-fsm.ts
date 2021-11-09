@@ -1,7 +1,8 @@
-import { AnimationAction, LoopOnce } from 'three';
-
-import { Animation } from './helper/animated';
 import { State, StateMachine } from './state-machine';
+import { Enemy } from './enemy';
+import { Player } from './player';
+import { Animation } from './helper/animated';
+import { LoopOnce, AnimationAction } from 'three';
 
 export class CharacterFsm<T> extends StateMachine<T> {
   constructor(owner: T) {
@@ -50,7 +51,7 @@ class WalkState extends State {
   enter(previousState: State): void {
     const animation: Animation = this.machine._owner.Element.animations['walk'];
     this._action = animation.mixer.clipAction(animation.clip);
-    window._animationMixers.add(animation.mixer);
+    (window as any)._animationMixers.add(animation.mixer);
     animation.mixer.timeScale = 1.5;
 
     if (previousState) {
@@ -96,7 +97,7 @@ class DieState extends State {
   enter(previousState: State): void {
     const animation: Animation = this.machine._owner.Element.animations['die'];
     this._action = animation.mixer.clipAction(animation.clip);
-    window._animationMixers.add(animation.mixer);
+    (window as any)._animationMixers.add(animation.mixer);
 
     if (previousState) {
       const previousAction = previousState._action;
@@ -119,7 +120,7 @@ class DieState extends State {
   }
 
   cb = () => {
-    window._scene.remove(this.machine._owner.Element);
+    (window as any)._scene.remove(this.machine._owner.Element);
   };
 }
 
@@ -134,7 +135,7 @@ class AttackState extends State {
     const animation: Animation =
       this.machine._owner.Element.animations['attack'];
     this._action = animation.mixer.clipAction(animation.clip);
-    window._animationMixers.add(animation.mixer);
+    (window as any)._animationMixers.add(animation.mixer);
 
     if (previousState) {
       const previousAction = previousState._action;

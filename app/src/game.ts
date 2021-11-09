@@ -21,6 +21,7 @@ import { displayLoadingScreen, updateProgressBar } from './dom-controller';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { ENEMY_TYPE_LIST } from './helper/enemy';
 import { EnemyFileLoader } from './helper/enemy-file-loader';
+import { EnemyFsm } from './enemy-fsm';
 
 export class Game {
   private _threejs: THREE.WebGLRenderer;
@@ -33,7 +34,7 @@ export class Game {
   private _enemies: Array<Enemy> = [];
   private _composer: EffectComposer;
   private _outlinePass: OutlinePass;
-  private _animationMixers: AnimationMixer[] = new Set();
+  private _animationMixers: Set<any> = new Set();
   private _clock: THREE.Clock;
   private _spotLight: SpotLight;
   private _stopAnimationFrame = false;
@@ -62,8 +63,8 @@ export class Game {
     );
 
     this._scene = new THREE.Scene();
-    window._scene = this._scene;
-    window._animationMixers = this._animationMixers;
+    (window as any)._scene = this._scene;
+    (window as any)._animationMixers = this._animationMixers;
 
     // Skybox
     const loader = new THREE.CubeTextureLoader();
@@ -220,7 +221,6 @@ export class Game {
     // equals -> Wertevergleich, === -> objektvergleich
     if (this._checkFreeSpace(newPlayerPosition.x, newPlayerPosition.z)) {
       this._player.Element.position.set(...newPlayerPosition.toArray());
-      // this._camera.position.set(...newPlayerPosition.toArray());
       this._activateEnemies();
       this._enemiesMoveOrAttack();
     } else {
@@ -231,7 +231,6 @@ export class Game {
   private async _handleCharacterAttacking() {
     if (this._player.attacks) {
       const playerPosition = this._player.Element.position;
-      console.log(this._player.direction);
       const playerViewDirection = this._player.direction;
       let positionUpFront: Vector3;
       switch (playerViewDirection) {
@@ -269,7 +268,6 @@ export class Game {
         .filter((enemy) => enemy.Element.position.equals(positionUpFront))
         .pop();
 
-      console.log('enemy', enemy);
       if (enemy !== undefined) {
         const damage = this._player.attack();
         enemy.takeHit(damage);
@@ -298,7 +296,6 @@ export class Game {
     this._updateEnemyDistribution();
     this._cleanScene();
     this._addDungeonToScene();
-    console.log('first-room x', this._dungeon.firstRoom.x);
     await this._continueGame();
   }
 
@@ -388,13 +385,6 @@ export class Game {
     //"Ladder" (https://skfb.ly/6RKqO) by Avelina is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
     const ladderGltf = await new GLTFLoader().loadAsync('assets/Ladder.glb');
     ladderGltf.scene.position.set(endRoomX, -1, endRoomZ);
-
-    // Alternatively set the ladder directly under the player to test the levelling
-    // ladderGltf.scene.position.set(
-    //     this._player.Element.position.x,
-    //     -1,
-    //     this._player.Element.position.z
-    // );
 
     ladderGltf.scene.name = ELEMENTS.GOAL;
     this._goal = ladderGltf.scene;
@@ -549,35 +539,12 @@ export class Game {
     }
   }
 
-  private _sceneToGridGridToSceneConversion(): void {
-    const grid = this._constructAStarGrid();
-
-    const geometry = new THREE.BoxGeometry(1, 3, 1);
-    const material = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
-
-    for (let i = 0; i < grid.length; i++) {
-      for (let j = 0; j < grid.length; j++) {
-        console.log(i, j);
-        if (grid[i][j] == 1) {
-          const x = Game._gridToScene(j);
-          const z = Game._gridToScene(i);
-
-          const cube = new THREE.Mesh(geometry, material);
-          cube.position.set(x, GLOBAL_Y, z);
-          this._scene.add(cube);
-        }
-      }
-    }
-  }
-
   public stopGame(): number {
     this._stopAnimationFrame = true;
     return this._clock.elapsedTime;
   }
 
   private _setPlayerPosition() {
-    console.log('set player');
-    console.log('x: ', this._dungeon.firstRoom.x);
     const playerX =
       this._dungeon.firstRoom.x +
       Math.floor(this._dungeon.firstRoom.width / 2) -
