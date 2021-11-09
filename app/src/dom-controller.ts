@@ -4,6 +4,7 @@ import { HTMLELEMENTS } from './helper/const';
 import { KEYBOARDMAP } from './helper/keyboard';
 import { storyWriter } from './helper/typewriter';
 import { addToHighscore } from './highscore-controller';
+import { InputController, KeyBoardInputController } from './input-controller';
 
 let _game: Game;
 
@@ -83,10 +84,10 @@ export async function _startGame(): Promise<void> {
 
 function _displayExitOverlay(): void {
   //TODO: logic to freeze game
-  if (!HTMLELEMENTS.app?.classList.contains('d-none')) {
+  if (!HTMLELEMENTS.app.classList.contains('d-none')) {
     if (HTMLELEMENTS.element) {
       HTMLELEMENTS.element.style.opacity = '80%';
-      HTMLELEMENTS.overlay?.classList.remove('d-none');
+      HTMLELEMENTS.overlay.classList.remove('d-none');
     }
   }
 }
@@ -163,6 +164,13 @@ export function exitOnDeath(): void {
   _endGame();
   _toggleClass([HTMLELEMENTS.deathScreen], [HTMLELEMENTS.app], 'd-none');
   setTimeout(_backToStartScreen, 5000);
+}
+
+export function displayLoadingScreen(duration: number) {
+  _toggleClass([HTMLELEMENTS.loadingScreen], [HTMLELEMENTS.app], 'd-none');
+  setTimeout(() => {
+    _toggleClass([HTMLELEMENTS.app], [HTMLELEMENTS.loadingScreen], 'd-none');
+  }, duration);
 }
 
 function _backToStartScreen(): void {

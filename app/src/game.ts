@@ -17,7 +17,7 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass';
 import { DamageText } from './damage-text';
-import { updateProgressBar } from './dom-controller';
+import { displayLoadingScreen, updateProgressBar } from './dom-controller';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { ENEMY_TYPE_LIST } from './helper/enemy';
 import { EnemyFileLoader } from './helper/enemy-file-loader';
@@ -293,20 +293,21 @@ export class Game {
   }
 
   private async _generateNewLevel(): Promise<void> {
+    displayLoadingScreen(10000);
     this._level += 1;
     this._updateEnemyDistribution();
     this._cleanScene();
     this._addDungeonToScene();
+    console.log('first-room x', this._dungeon.firstRoom.x);
     await this._continueGame();
-    console.log('HIGHSCORE: ', this._level);
   }
 
   async _continueGame() {
+    this._setPlayerPosition();
     // place an object as placeholder in the end room (symbolizing a ladder or such)
     await this._placeEndRoomObject();
     // placing enemies
     await this._setEnemies();
-    this._setPlayerPosition();
     this._requestAnimationFrame();
   }
 
@@ -575,6 +576,8 @@ export class Game {
   }
 
   private _setPlayerPosition() {
+    console.log('set player');
+    console.log('x: ', this._dungeon.firstRoom.x);
     const playerX =
       this._dungeon.firstRoom.x +
       Math.floor(this._dungeon.firstRoom.width / 2) -

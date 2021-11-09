@@ -71,6 +71,9 @@ const hudAnimation = document.querySelector<HTMLCanvasElement>(
 const deathScreen = document.querySelector<HTMLDivElement>(
   '#death-screen'
 ) as HTMLDivElement;
+const loadingScreen = document.querySelector<HTMLDivElement>(
+  '#loading-screen'
+) as HTMLDivElement;
 export const HTMLELEMENTS = {
   app,
   highscore,
@@ -93,6 +96,7 @@ export const HTMLELEMENTS = {
   hudAnimationDisplay,
   hudAnimation,
   deathScreen,
+  loadingScreen,
 };
 
 // Highscore Div Elements
