@@ -20,11 +20,5 @@ export function milliToHMS(
 }
 
 export function secToHMS(sec: TimeInSeconds): TimeInHoursMinutesSeconds {
-  return (
-    (Math.floor(Math.floor(sec) / 3600) % 60) +
-    ':' +
-    (Math.floor(Math.floor(sec) / 60) % 60) +
-    ':' +
-    (Math.floor(sec) % 60)
-  );
+  return new Date(sec * 1000).toISOString().substr(11, 8);
 }

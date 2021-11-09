@@ -140,7 +140,7 @@ function _endGame(): void {
   const playTime = _game.stopGame();
   addToHighscore({
     name: _getPlayerName(),
-    floor: Math.floor(Math.random() * 100) + 1,
+    floor: _game.level,
     time: playTime,
   });
   _resetNameInput();

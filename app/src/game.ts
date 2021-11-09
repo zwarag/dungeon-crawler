@@ -297,7 +297,21 @@ export class Game {
     this._updateEnemyDistribution();
     this._cleanScene();
     this._addDungeonToScene();
-    await this._initGame();
+    await this._continueGame();
+    console.log('HIGHSCORE: ', this._level);
+  }
+
+  async _continueGame() {
+    // place an object as placeholder in the end room (symbolizing a ladder or such)
+    await this._placeEndRoomObject();
+    // placing enemies
+    await this._setEnemies();
+    this._setPlayerPosition();
+    this._requestAnimationFrame();
+  }
+
+  public get level() {
+    return this._level;
   }
 
   private _updateEnemyDistribution() {
