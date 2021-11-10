@@ -26,7 +26,7 @@ export class Player extends CharacterBase {
    * The actual redered object.
    * Note: THREE.Mesh extends THREE.Object3D which has `position` property
    */
-  private _3DElement: THREE.Group | undefined;
+  private _3DElement!: THREE.Group;
 
   /** The velocity a Charater is moving. Backwards, idle, forwards. */
   private _velocity: -1 | 0 | 1;
@@ -86,6 +86,10 @@ export class Player extends CharacterBase {
     this._direction = DIRECTION.NORTH;
   }
 
+  /**
+   * This is used like a "late" constructor.
+   * Variables what get initialized here should have the be declared as `variable!`.
+   */
   async _init(): Promise<void> {
     const gltf = await loadGltf(playerJson);
     gltf.scene.traverse((child) => {
