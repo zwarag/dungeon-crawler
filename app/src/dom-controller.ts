@@ -50,6 +50,23 @@ export function initDom(): void {
   });
 }
 
+export async function startGameForDevelopment() {
+  _toggleClass(
+    [HTMLELEMENTS.app],
+    [
+      HTMLELEMENTS.startScreen,
+      HTMLELEMENTS.highscore,
+      HTMLELEMENTS.nameInput,
+      HTMLELEMENTS.storyBox,
+    ],
+    'd-none'
+  );
+  if (HTMLELEMENTS.element) {
+    _game = new Game(HTMLELEMENTS.element);
+    await _game._initGame();
+  }
+}
+
 function addEventListener(
   element: HTMLElement,
   key: string,
