@@ -1,16 +1,16 @@
-import { State, StateMachine } from './state-machine';
-import { Enemy } from './enemy';
-import { Player } from './player';
-import { Animation } from './helper/animated';
-import { LoopOnce, AnimationAction } from 'three';
+import { AnimationAction, LoopOnce } from 'three';
 
-export class EnemyFsm extends StateMachine<any> {
-  constructor(owner: any) {
+import { Enemy } from './enemy';
+import { Animation } from './helper/animated';
+import { State, StateMachine } from './state-machine';
+
+export class EnemyFsm extends StateMachine<Enemy> {
+  constructor(owner: Enemy) {
     super(owner);
     this._init();
   }
 
-  _init() {
+  _init(): void {
     this.addState('idle', IdleState);
     this.addState('walk', WalkState);
     this.addState('die', DieState);
@@ -19,7 +19,7 @@ export class EnemyFsm extends StateMachine<any> {
 }
 
 class IdleState extends State {
-  _action: AnimationAction;
+  declare _action: AnimationAction;
 
   enter(previousState: State): void {
     const animation: Animation = this.machine._owner.Element.animations['idle'];
@@ -46,7 +46,7 @@ class IdleState extends State {
 }
 
 class WalkState extends State {
-  _action: AnimationAction;
+  declare _action: AnimationAction;
 
   enter(previousState: State): void {
     const animation: Animation = this.machine._owner.Element.animations['walk'];
@@ -88,7 +88,7 @@ class WalkState extends State {
 }
 
 class DieState extends State {
-  _action: AnimationAction;
+  declare _action: AnimationAction;
 
   get name(): string {
     return 'die';
@@ -125,7 +125,7 @@ class DieState extends State {
 }
 
 class AttackState extends State {
-  _action: AnimationAction;
+  declare _action: AnimationAction;
 
   get name(): string {
     return 'attack';
