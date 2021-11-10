@@ -95,7 +95,7 @@ export class DamageText implements Animated {
         // Place the text above the enemy
         // TODO does not work properly yet, the offset isn't fully correct
 
-        this._textMesh.position.set(0, 2.5, 0);
+        this._textMesh.position.set(0, 2.2, 0);
 
         // const yDelta = box.getSize(this._textMesh.position).y;
         // const xDelta = (xModifier * (box.max.x - box.min.x)) / 2;

@@ -4,7 +4,6 @@ import { HTMLELEMENTS } from './helper/const';
 import { KEYBOARDMAP } from './helper/keyboard';
 import { storyWriter } from './helper/typewriter';
 import { addToHighscore } from './highscore-controller';
-import { HudAnimation } from './hud-animation';
 
 let _game: Game;
 
@@ -84,10 +83,10 @@ export async function _startGame(): Promise<void> {
 
 function _displayExitOverlay(): void {
   //TODO: logic to freeze game
-  if (!HTMLELEMENTS.app?.classList.contains('d-none')) {
+  if (!HTMLELEMENTS.app.classList.contains('d-none')) {
     if (HTMLELEMENTS.element) {
       HTMLELEMENTS.element.style.opacity = '80%';
-      HTMLELEMENTS.overlay?.classList.remove('d-none');
+      HTMLELEMENTS.overlay.classList.remove('d-none');
     }
   }
 }
@@ -141,7 +140,7 @@ function _endGame(): void {
   const playTime = _game.stopGame();
   addToHighscore({
     name: _getPlayerName(),
-    floor: Math.floor(Math.random() * 100) + 1,
+    floor: _game.level,
     time: playTime,
   });
   _resetNameInput();
@@ -151,6 +150,9 @@ function _endGame(): void {
 export function updateProgressBar(health: number): void {
   if (health < 0) {
     health = 0;
+  }
+  if (health > 100) {
+    health = 100;
   }
   health = Math.round(health);
   HTMLELEMENTS.progressBarFill.style.width = `${health}%`;
@@ -163,28 +165,42 @@ export function exitOnDeath(): void {
   setTimeout(_backToStartScreen, 5000);
 }
 
+export function displayLoadingScreen(duration: number) {
+  _toggleClass([HTMLELEMENTS.loadingScreen], [HTMLELEMENTS.app], 'd-none');
+  setTimeout(() => {
+    _toggleClass([HTMLELEMENTS.app], [HTMLELEMENTS.loadingScreen], 'd-none');
+  }, duration);
+}
+
 function _backToStartScreen(): void {
   //TODO: some logic to end the game (i.e. destroy scene, create highscore, etc)
-  if (!HTMLELEMENTS.app.classList.contains('d-none')) {
+  const appElementIsDisplayed = !HTMLELEMENTS.app.classList.contains('d-none');
+  const highcoreElementIsDisplayed =
+    !HTMLELEMENTS.highscore.classList.contains('d-none');
+  const nameInputElementIsDisplayed =
+    !HTMLELEMENTS.nameInput.classList.contains('d-none');
+  const deadScreenElementIsDisplayed =
+    !HTMLELEMENTS.deathScreen.classList.contains('d-none');
+  if (appElementIsDisplayed) {
     _endGame();
     _toggleClass(
       [HTMLELEMENTS.highscore],
       [HTMLELEMENTS.app, HTMLELEMENTS.overlay],
       'd-none'
     );
-  } else if (!HTMLELEMENTS.highscore.classList.contains('d-none')) {
+  } else if (highcoreElementIsDisplayed) {
     _toggleClass(
       [HTMLELEMENTS.startScreen],
       [HTMLELEMENTS.highscore],
       'd-none'
     );
-  } else if (!HTMLELEMENTS.nameInput.classList.contains('d-none')) {
+  } else if (nameInputElementIsDisplayed) {
     _toggleClass(
       [HTMLELEMENTS.startScreen],
       [HTMLELEMENTS.nameInput],
       'd-none'
     );
-  } else if (!HTMLELEMENTS.deathScreen.classList.contains('d-none')) {
+  } else if (deadScreenElementIsDisplayed) {
     _toggleClass(
       [HTMLELEMENTS.highscore],
       [HTMLELEMENTS.app, HTMLELEMENTS.deathScreen, HTMLELEMENTS.startScreen],

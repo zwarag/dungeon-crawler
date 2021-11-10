@@ -1,5 +1,3 @@
-import { CharacterBase } from './character';
-import { DamageText } from './damage-text';
 import { AnimationAction } from 'three';
 
 type StateConstructor = new (parent: StateMachine) => State;

@@ -1,5 +1,5 @@
 export const GLOBAL_Y = 0;
-export const PLAYER_Y = 0.5;
+export const PLAYER_Y = -0.5;
 export const GLOBAL_GROUND_Y = -0.5;
 
 export const GAME_NAME = 'DUNGEON CRAWLER';
@@ -71,6 +71,9 @@ const hudAnimation = document.querySelector<HTMLCanvasElement>(
 const deathScreen = document.querySelector<HTMLDivElement>(
   '#death-screen'
 ) as HTMLDivElement;
+const loadingScreen = document.querySelector<HTMLDivElement>(
+  '#loading-screen'
+) as HTMLDivElement;
 export const HTMLELEMENTS = {
   app,
   highscore,
@@ -93,6 +96,7 @@ export const HTMLELEMENTS = {
   hudAnimationDisplay,
   hudAnimation,
   deathScreen,
+  loadingScreen,
 };
 
 // Highscore Div Elements

@@ -1,14 +1,11 @@
-import { GLOBAL_GROUND_Y, GLOBAL_Y, PROPERTIES } from './helper/const';
-import * as THREE from 'three';
 import {
-  AnimationClip,
-  AnimationMixer,
-  Group,
-  Mesh,
-  SpotLight,
-  Vector2,
-  Vector3,
-} from 'three';
+  GLOBAL_GROUND_Y,
+  GLOBAL_Y,
+  PLAYER_Y,
+  PROPERTIES,
+} from './helper/const';
+import * as THREE from 'three';
+import { AnimationMixer, Group, SpotLight, Vector3 } from 'three';
 import { Player } from './player';
 import { millisecondsToSeconds } from './helper/time';
 import { Dungeon } from './dungeon';
@@ -20,7 +17,7 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass';
 import { DamageText } from './damage-text';
-import { updateProgressBar } from './dom-controller';
+import { displayLoadingScreen, updateProgressBar } from './dom-controller';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { ENEMY_TYPE_LIST } from './helper/enemy';
 import { EnemyFileLoader } from './helper/enemy-file-loader';
@@ -107,11 +104,15 @@ export class Game {
 
     // create a camera, which defines where we're looking at.
     this._camera = new THREE.PerspectiveCamera(
-      90,
+      70,
       window.innerWidth / window.innerHeight,
-      0.1,
+      0.01,
       1000
     );
+    this._camera.rotation.set(0, 15, 0);
+    this._camera.position.y = 1;
+
+    this._player = new Player();
 
     // set up composer and outline pass
     this._composer = new EffectComposer(this._threejs);
@@ -131,21 +132,9 @@ export class Game {
     this._outlinePass.pulsePeriod = 2;
     this._composer.addPass(this._outlinePass);
 
-    // create the character
-    this._player = new Player(this._camera);
-    // window._player = this._player;
-
-    // set the character into the first room
-    this._setPlayerPosition();
-
-    this._scene.add(this._player.Element);
-
     // axes helper
     const axesHelper = new THREE.AxesHelper(10);
     this._scene.add(axesHelper);
-
-    // set the camera as child of the player element, this ensures that the camera follows the player around
-    this._player.Element.add(this._camera);
 
     // Spotlight symbolizing a torch carried by the player
     this._spotLight = new THREE.SpotLight(
@@ -163,27 +152,28 @@ export class Game {
 
     // Temporary Camera
     // TODO: this is only temporary and should be swaped out for the actual implementaiton of the camera
-    //const controls = new OrbitControls(this._camera, this._threejs.domElement);
-    //controls.target.set(0, 0, 0);
-    //controls.update();
+    // const controls = new OrbitControls(this._camera, this._threejs.domElement);
+    // controls.target.set(0, 0, 0);
+    // controls.update();
 
     updateProgressBar(100);
-    this._requestAnimationFrame();
+  }
+
+  async _initPlayer() {
+    await this._player._init();
+    this._setPlayerPosition();
+    this._scene.add(this._player.Element);
+    this._player.Element.add(this._camera);
   }
 
   async _initGame(): Promise<void> {
     // place an object as placeholder in the end room (symbolizing a ladder or such)
     await this._placeEndRoomObject();
+    // init the player
+    await this._initPlayer();
     // placing enemies
-    // const start = Date.now();
     await this._setEnemies();
-    // const end = Date.now();
-    // console.log('enemies', this._enemies.length);
-    // console.log('load time seconds', (end - start) / 1000);
-    // console.log(
-    //     'seconds per enemy',
-    //     (end - start) / 1000 / this._enemies.length
-    // );
+    this._requestAnimationFrame();
   }
 
   private _onWindowResize(): void {
@@ -212,7 +202,7 @@ export class Game {
     });
   }
 
-  private async _calculateNextState(timeDeltaMS: number): void {
+  private async _calculateNextState(timeDeltaMS: number): Promise<void> {
     const timeDeltaS = millisecondsToSeconds(timeDeltaMS);
     this._player.update(timeDeltaS);
 
@@ -241,34 +231,35 @@ export class Game {
   private async _handleCharacterAttacking() {
     if (this._player.attacks) {
       const playerPosition = this._player.Element.position;
+      console.log(this._player.direction);
       const playerViewDirection = this._player.direction;
       let positionUpFront: Vector3;
       switch (playerViewDirection) {
         case DIRECTION.NORTH:
           positionUpFront = new Vector3(
             playerPosition.x,
-            playerPosition.y - 0.5,
+            playerPosition.y,
             playerPosition.z - 1
           );
           break;
         case DIRECTION.EAST:
           positionUpFront = new Vector3(
             playerPosition.x - 1,
-            playerPosition.y - 0.5,
+            playerPosition.y,
             playerPosition.z
           );
           break;
         case DIRECTION.SOUTH:
           positionUpFront = new Vector3(
             playerPosition.x,
-            playerPosition.y - 0.5,
+            playerPosition.y,
             playerPosition.z + 1
           );
           break;
         case DIRECTION.WEST:
           positionUpFront = new Vector3(
             playerPosition.x + 1,
-            playerPosition.y - 0.5,
+            playerPosition.y,
             playerPosition.z
           );
           break;
@@ -278,6 +269,7 @@ export class Game {
         .filter((enemy) => enemy.Element.position.equals(positionUpFront))
         .pop();
 
+      console.log('enemy', enemy);
       if (enemy !== undefined) {
         const damage = this._player.attack();
         enemy.takeHit(damage);
@@ -301,12 +293,26 @@ export class Game {
   }
 
   private async _generateNewLevel(): Promise<void> {
+    displayLoadingScreen(10000);
     this._level += 1;
     this._updateEnemyDistribution();
     this._cleanScene();
     this._addDungeonToScene();
+    console.log('first-room x', this._dungeon.firstRoom.x);
+    await this._continueGame();
+  }
+
+  async _continueGame() {
     this._setPlayerPosition();
-    await this._initGame();
+    // place an object as placeholder in the end room (symbolizing a ladder or such)
+    await this._placeEndRoomObject();
+    // placing enemies
+    await this._setEnemies();
+    this._requestAnimationFrame();
+  }
+
+  public get level() {
+    return this._level;
   }
 
   private _updateEnemyDistribution() {
@@ -329,7 +335,9 @@ export class Game {
   private _addDungeonToScene(): void {
     this._dungeon = new Dungeon();
     const textureLoader = new THREE.TextureLoader();
-    const wallTexture = textureLoader.load('./img/wall.jpg');
+    const wallTexture = textureLoader.load(
+      'https://threejsfundamentals.org/threejs/resources/images/wall.jpg'
+    );
     const wallGeometry = new THREE.BoxGeometry(1, 1.5, 1);
     const wallMaterial = new THREE.MeshPhongMaterial({
       map: wallTexture,
@@ -568,6 +576,8 @@ export class Game {
   }
 
   private _setPlayerPosition() {
+    console.log('set player');
+    console.log('x: ', this._dungeon.firstRoom.x);
     const playerX =
       this._dungeon.firstRoom.x +
       Math.floor(this._dungeon.firstRoom.width / 2) -
@@ -578,6 +588,6 @@ export class Game {
       Math.floor(this._dungeon.firstRoom.height / 2) -
       PROPERTIES.GRID_WIDTH / 2 -
       0.5;
-    this._player.Element.position.set(playerX, GLOBAL_Y, playerZ);
+    this._player.Element.position.set(playerX, PLAYER_Y, playerZ);
   }
 }

@@ -7,5 +7,6 @@
   "level": 1,
   "accuracy": 80,
   "experience": 0,
-  "level2experience": 100
+  "level2experience": 100,
+  "model": "assets/arm_and_sword.glb"
 }

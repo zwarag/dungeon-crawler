@@ -57,7 +57,6 @@ class ShownState extends State {
     this.machine._owner._enemy.add(mesh);
 
     mixer.addEventListener('finished', () => {
-      console.info('AAA');
       this.cb;
     });
 

@@ -1,17 +1,20 @@
 import { DIRECTION } from './helper/direction';
 import { TimeInSeconds } from './helper/time';
-import * as THREE from 'three';
 import { InputController, KeyBoardInputController } from './input-controller';
+import * as THREE from 'three';
 
 import { StateMachine } from './state-machine';
 import text from '../public/txt/text.json';
-import { PerspectiveCamera, Vector3 } from 'three';
+import { AnimationClip, AnimationMixer, Group, Object3D, Vector3 } from 'three';
 import { GENDER } from './helper/gender';
 import { randomRange } from './helper/random';
 import { CharacterBase } from './character';
 import initialPlayerStats from '../public/txt/initialPlayerStats.json';
 import { ELEMENTS } from './helper/elements';
 import { exitOnDeath, updateProgressBar } from './dom-controller';
+import { loadGltf } from './helper/file-loader';
+import playerJson from '../public/txt/initialPlayerStats.json';
+import { CharacterFsm } from './character-fsm';
 
 export class Player extends CharacterBase {
   /** A InputController for Keyboard or AI Controlled inputs. */
@@ -23,7 +26,7 @@ export class Player extends CharacterBase {
    * The actual redered object.
    * Note: THREE.Mesh extends THREE.Object3D which has `position` property
    */
-  private _3DElement: THREE.Mesh;
+  private _3DElement!: THREE.Group;
 
   /** The velocity a Charater is moving. Backwards, idle, forwards. */
   private _velocity: -1 | 0 | 1;
@@ -52,7 +55,7 @@ export class Player extends CharacterBase {
   /**
    * The camera following the player around.
    */
-  private _camera: PerspectiveCamera;
+  // private _camera: PerspectiveCamera;
 
   /**
    *  Allows player action
@@ -77,26 +80,49 @@ export class Player extends CharacterBase {
 
     // threejs parts
     this._input = new KeyBoardInputController();
-    this._state = new StateMachine();
+    this._state = new StateMachine(this);
     this._velocity = 0;
     this._attacks = false;
     this._direction = DIRECTION.NORTH;
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const loader = new THREE.TextureLoader();
-    const material = [
-      new THREE.MeshBasicMaterial({ map: loader.load('./img/player_ft.jpg') }),
-      new THREE.MeshBasicMaterial({ map: loader.load('./img/player_bk.jpg') }),
-      new THREE.MeshBasicMaterial({ map: loader.load('./img/player_up.jpg') }),
-      new THREE.MeshBasicMaterial({ map: loader.load('./img/player_dn.jpg') }),
-      new THREE.MeshBasicMaterial({ map: loader.load('./img/player_rt.jpg') }),
-      new THREE.MeshBasicMaterial({ map: loader.load('./img/player_lf.jpg') }),
-    ];
-    this._3DElement = new THREE.Mesh(geometry, material);
-    this._3DElement.name = ELEMENTS.PLAYER;
   }
 
-  get Element(): THREE.Mesh {
-    return this._3DElement;
+  /**
+   * This is used like a "late" constructor.
+   * Variables what get initialized here should have the be declared as `variable!`.
+   */
+  async _init(): Promise<void> {
+    const gltf = await loadGltf(playerJson);
+    gltf.scene.traverse((child) => {
+      if (child.type == 'SkinnedMesh') {
+        child.frustumCulled = false;
+      }
+    });
+    const model = gltf.scene;
+    const mixer = new AnimationMixer(model);
+    gltf.animations.forEach((clip: AnimationClip) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      model.animations[clip.name] = {
+        clip: clip,
+        mixer: mixer,
+        mesh: model,
+      };
+    });
+    model.rotation.set(0, -15, 0);
+    model.scale.setScalar(0.45);
+    model.traverse((c: Object3D) => {
+      c.castShadow = true;
+    });
+
+    this._3DElement = model;
+    this._3DElement.name = ELEMENTS.PLAYER;
+
+    this._state = new CharacterFsm(this);
+    this._state.setState('idle');
+  }
+
+  get Element(): THREE.Group {
+    return <Group>this._3DElement;
   }
 
   /** This function shall be called after every drawn AnimationFrame. */
@@ -116,6 +142,7 @@ export class Player extends CharacterBase {
       this.Element.rotateY(-Math.PI / 2);
     } else if (keys.action) {
       this._attacks = true;
+      this._state.setState('attack');
     } else {
       this._attacks = false;
       this._velocity = 0;
@@ -173,7 +200,7 @@ export class Player extends CharacterBase {
   }
 
   takeHit(damage: number): void {
-    this._health -= damage;
+    // this._health -= damage;
     updateProgressBar(this._health);
     console.log(`The player has ${this._health} left`);
   }

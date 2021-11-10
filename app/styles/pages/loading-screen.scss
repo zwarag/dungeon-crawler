@@ -1,0 +1,11 @@
+@import '../abstracts/mixins';
+@import '../abstracts/variables';
+
+.loading-screen {
+  @include fantasy-Text;
+  font-size: xxx-large;
+  position: absolute;
+  top: 40%;
+  text-align: center;
+  width: 100%;
+}

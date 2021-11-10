@@ -1,26 +1,28 @@
-import { StateMachine } from './state-machine';
-import { ENEMY, ENEMY_TYPE_LIST } from './helper/enemy';
-import { randomRange } from './helper/random';
-import { GLOBAL_Y } from './helper/const';
-import { CharacterBase } from './character';
+import { AnimationMixer, Group, Object3D, Vector3 } from 'three';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
-import { AnimationClip, AnimationMixer, Group, Vector3 } from 'three';
-import { Animation } from './helper/animated';
-import { EnemyFsm } from './enemy-fsm';
-import { modelLoader } from './helper/model-loader';
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils';
+
+import enemiesJson from '../public/txt/enemies.json';
+import { CharacterBase } from './character';
+import { CharacterFsm } from './character-fsm';
+import { Animation } from './helper/animated';
+import { GLOBAL_Y } from './helper/const';
+import { ENEMY, ENEMY_TYPE_LIST } from './helper/enemy';
 import { EnemyFileLoader } from './helper/enemy-file-loader';
+import { loadGltf } from './helper/file-loader';
+import { randomRange } from './helper/random';
+import { StateMachine } from './state-machine';
 
 type EnemyAnimationTypes = 'idle' | 'walk' | 'die' | 'attack';
 
 export class Enemy extends CharacterBase {
   /** The Statemachine used for animations */
-  private _state: StateMachine;
+  private _state!: StateMachine<Enemy>;
   /**
    * The actual redered object.
    * Note: THREE.Mesh extends THREE.Object3D which has `position` property
    */
-  private _3DElement: Group;
+  private _3DElement!: Group;
 
   /**
    *  The type of enemy
@@ -30,7 +32,7 @@ export class Enemy extends CharacterBase {
   /**
    * The GLTF element of the enemy
    */
-  private _gltf: GLTF;
+  private _gltf!: GLTF;
 
   /**
    * The position to where the enemy will try to walk and look
@@ -65,28 +67,26 @@ export class Enemy extends CharacterBase {
   }
 
   async _init(x: number, z: number): Promise<void> {
-    this._gltf = await modelLoader.load(this._type);
-    this._model = SkeletonUtils.clone(this._gltf.scene);
-
-    const mixer = new AnimationMixer(this._model);
-    for (let i = 0; i < this._gltf.animations.length; i++) {
-      const animationClip: AnimationClip = this._gltf.animations[i];
-      this._model.animations[animationClip.name] = {
-        clip: animationClip,
+    const gltf = await loadGltf(enemiesJson, this._type);
+    const model = SkeletonUtils.clone(gltf.scene);
+    const mixer = new AnimationMixer(model);
+    gltf.animations.forEach((clip) => {
+      model.animations[clip.name] = {
+        clip: clip,
         mixer: mixer,
-        mesh: this._model,
+        mesh: model,
       };
-    }
+    });
 
-    this._model.scale.setScalar(0.45);
-    this._model.traverse((c) => {
+    model.scale.setScalar(0.45);
+    model.traverse((c: Object3D) => {
       c.castShadow = true;
     });
-    this._model.position.set(x, GLOBAL_Y - 0.5, z);
-    this._3DElement = this._model;
+    model.position.set(x, GLOBAL_Y - 0.5, z);
+    this._3DElement = model;
     this._3DElement.name = this._type;
 
-    this._state = new EnemyFsm(this);
+    this._state = new CharacterFsm(this);
     this._state.setState('idle');
   }
 
