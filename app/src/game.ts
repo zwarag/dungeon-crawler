@@ -5,7 +5,7 @@ import {
   PROPERTIES,
 } from './helper/const';
 import * as THREE from 'three';
-import { AnimationMixer, Group, SpotLight, Vector3 } from 'three';
+import { Group, SpotLight, Vector3 } from 'three';
 import { Player } from './player';
 import { millisecondsToSeconds } from './helper/time';
 import { Dungeon } from './dungeon';
@@ -21,7 +21,6 @@ import { displayLoadingScreen, updateProgressBar } from './dom-controller';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { ENEMY_TYPE_LIST } from './helper/enemy';
 import { EnemyFileLoader } from './helper/enemy-file-loader';
-import { EnemyFsm } from './enemy-fsm';
 
 export class Game {
   private _threejs: THREE.WebGLRenderer;

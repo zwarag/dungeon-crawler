@@ -1,17 +1,15 @@
 import { StateMachine } from './state-machine';
 import { ENEMY, ENEMY_TYPE_LIST } from './helper/enemy';
 import { randomRange } from './helper/random';
-import { GLOBAL_Y } from './helper/const';
 import { CharacterBase } from './character';
-import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
-import { AnimationClip, AnimationMixer, Group, Object3D, Vector3 } from 'three';
+import { AnimationMixer, Group, Object3D, Vector3 } from 'three';
 import { Animation } from './helper/animated';
-import { EnemyFsm } from './enemy-fsm';
-import { modelLoader } from './helper/model-loader';
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils';
 import { EnemyFileLoader } from './helper/enemy-file-loader';
 import { loadGltf } from './helper/file-loader';
 import enemiesJson from '../public/txt/enemies.json';
+import { PLAYER_Y } from './helper/const';
+import { CharacterFsm } from './character-fsm';
 
 type EnemyAnimationTypes = 'idle' | 'walk' | 'die' | 'attack';
 
@@ -30,14 +28,9 @@ export class Enemy extends CharacterBase {
   private _type: ENEMY;
 
   /**
-   * The GLTF element of the enemy
-   */
-  private _gltf!: GLTF;
-
-  /**
    * The position to where the enemy will try to walk and look
    */
-  _targetPosition: Vector3;
+  _targetPosition: Vector3 | undefined;
 
   _animations: { [key in EnemyAnimationTypes]: Animation } = {};
 
@@ -45,10 +38,6 @@ export class Enemy extends CharacterBase {
    * Whether the enemy is activated
    */
   private _active: boolean;
-
-  public _model: Group;
-
-  // private _enemyObject;
 
   constructor() {
     const file = EnemyFileLoader.load();
@@ -63,7 +52,6 @@ export class Enemy extends CharacterBase {
     );
     this._type = ENEMY_TYPE_LIST[selection];
     this._active = false;
-    // this._enemyObject = enemyObject;
   }
 
   async _init(x: number, z: number): Promise<void> {
