@@ -14,7 +14,7 @@ import { ELEMENTS } from './helper/elements';
 import { exitOnDeath, updateProgressBar } from './dom-controller';
 import { loadGltf } from './helper/file-loader';
 import playerJson from '../public/txt/initialPlayerStats.json';
-import { EnemyFsm } from './enemy-fsm';
+import { CharacterFsm } from './character-fsm';
 
 export class Player extends CharacterBase {
   /** A InputController for Keyboard or AI Controlled inputs. */
@@ -117,7 +117,7 @@ export class Player extends CharacterBase {
     this._3DElement = model;
     this._3DElement.name = ELEMENTS.PLAYER;
 
-    this._state = new EnemyFsm(this);
+    this._state = new CharacterFsm(this);
     this._state.setState('idle');
   }
 

@@ -1,28 +1,28 @@
-import { StateMachine } from './state-machine';
-import { ENEMY, ENEMY_TYPE_LIST } from './helper/enemy';
-import { randomRange } from './helper/random';
-import { GLOBAL_Y } from './helper/const';
-import { CharacterBase } from './character';
+import { AnimationMixer, Group, Object3D, Vector3 } from 'three';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
-import { AnimationClip, AnimationMixer, Group, Object3D, Vector3 } from 'three';
-import { Animation } from './helper/animated';
-import { EnemyFsm } from './enemy-fsm';
-import { modelLoader } from './helper/model-loader';
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils';
+
+import enemiesJson from '../public/txt/enemies.json';
+import { CharacterBase } from './character';
+import { CharacterFsm } from './character-fsm';
+import { Animation } from './helper/animated';
+import { GLOBAL_Y } from './helper/const';
+import { ENEMY, ENEMY_TYPE_LIST } from './helper/enemy';
 import { EnemyFileLoader } from './helper/enemy-file-loader';
 import { loadGltf } from './helper/file-loader';
-import enemiesJson from '../public/txt/enemies.json';
+import { randomRange } from './helper/random';
+import { StateMachine } from './state-machine';
 
 type EnemyAnimationTypes = 'idle' | 'walk' | 'die' | 'attack';
 
 export class Enemy extends CharacterBase {
   /** The Statemachine used for animations */
-  private _state: StateMachine;
+  private _state!: StateMachine<Enemy>;
   /**
    * The actual redered object.
    * Note: THREE.Mesh extends THREE.Object3D which has `position` property
    */
-  private _3DElement: Group;
+  private _3DElement!: Group;
 
   /**
    *  The type of enemy
@@ -32,7 +32,7 @@ export class Enemy extends CharacterBase {
   /**
    * The GLTF element of the enemy
    */
-  private _gltf: GLTF;
+  private _gltf!: GLTF;
 
   /**
    * The position to where the enemy will try to walk and look
@@ -86,7 +86,7 @@ export class Enemy extends CharacterBase {
     this._3DElement = model;
     this._3DElement.name = this._type;
 
-    this._state = new EnemyFsm(this);
+    this._state = new CharacterFsm(this);
     this._state.setState('idle');
   }
 
