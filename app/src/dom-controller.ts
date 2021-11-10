@@ -4,7 +4,6 @@ import { HTMLELEMENTS } from './helper/const';
 import { KEYBOARDMAP } from './helper/keyboard';
 import { storyWriter } from './helper/typewriter';
 import { addToHighscore } from './highscore-controller';
-import { InputController, KeyBoardInputController } from './input-controller';
 
 let _game: Game;
 
@@ -175,26 +174,33 @@ export function displayLoadingScreen(duration: number) {
 
 function _backToStartScreen(): void {
   //TODO: some logic to end the game (i.e. destroy scene, create highscore, etc)
-  if (!HTMLELEMENTS.app.classList.contains('d-none')) {
+  const appElementIsDisplayed = !HTMLELEMENTS.app.classList.contains('d-none');
+  const highcoreElementIsDisplayed =
+    !HTMLELEMENTS.highscore.classList.contains('d-none');
+  const nameInputElementIsDisplayed =
+    !HTMLELEMENTS.nameInput.classList.contains('d-none');
+  const deadScreenElementIsDisplayed =
+    !HTMLELEMENTS.deathScreen.classList.contains('d-none');
+  if (appElementIsDisplayed) {
     _endGame();
     _toggleClass(
       [HTMLELEMENTS.highscore],
       [HTMLELEMENTS.app, HTMLELEMENTS.overlay],
       'd-none'
     );
-  } else if (!HTMLELEMENTS.highscore.classList.contains('d-none')) {
+  } else if (highcoreElementIsDisplayed) {
     _toggleClass(
       [HTMLELEMENTS.startScreen],
       [HTMLELEMENTS.highscore],
       'd-none'
     );
-  } else if (!HTMLELEMENTS.nameInput.classList.contains('d-none')) {
+  } else if (nameInputElementIsDisplayed) {
     _toggleClass(
       [HTMLELEMENTS.startScreen],
       [HTMLELEMENTS.nameInput],
       'd-none'
     );
-  } else if (!HTMLELEMENTS.deathScreen.classList.contains('d-none')) {
+  } else if (deadScreenElementIsDisplayed) {
     _toggleClass(
       [HTMLELEMENTS.highscore],
       [HTMLELEMENTS.app, HTMLELEMENTS.deathScreen, HTMLELEMENTS.startScreen],
