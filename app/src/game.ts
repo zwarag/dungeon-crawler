@@ -14,9 +14,6 @@ import { ELEMENTS } from './helper/elements';
 import { Enemy } from './enemy';
 import { AStarFinder } from 'astar-typescript';
 import { DIRECTION } from './helper/direction';
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
-import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass';
 import { DamageText } from './damage-text';
 import { displayLoadingScreen, updateProgressBar } from './dom-controller';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
@@ -32,8 +29,6 @@ export class Game {
   private _dungeon!: Dungeon;
   private _goal!: Group;
   private _enemies: Array<Enemy> = [];
-  private _composer: EffectComposer;
-  private _outlinePass: OutlinePass;
   private _animationMixers: Set<any> = new Set();
   private _clock: THREE.Clock;
   private _spotLight: SpotLight;
@@ -78,35 +73,11 @@ export class Game {
     // ]);
     // this._scene.background = new THREE.Color("black")
 
-    // Create the ground
-    const groundTexture = new THREE.TextureLoader().load('./img/ground.jpg');
-    const ground = new THREE.Mesh(
-      new THREE.PlaneGeometry(PROPERTIES.GRID_WIDTH, PROPERTIES.GRID_HEIGHT),
-      new THREE.MeshStandardMaterial({
-        map: groundTexture,
-      })
-    );
-    ground.castShadow = false;
-    ground.receiveShadow = true;
-    ground.rotation.x = -Math.PI / 2;
-    ground.position.setY(GLOBAL_GROUND_Y);
-    this._scene.add(ground);
+    // ground
+    this._addGround();
 
-    // Create the roof
-    const roofTexture = new THREE.TextureLoader().load('./img/ground.jpg');
-    const roof = new THREE.Mesh(
-      new THREE.PlaneGeometry(PROPERTIES.GRID_WIDTH, PROPERTIES.GRID_HEIGHT),
-      new THREE.MeshStandardMaterial({
-        map: roofTexture,
-        lightMap: roofTexture,
-        lightMapIntensity: 0.5,
-      })
-    );
-    roof.castShadow = false;
-    roof.receiveShadow = true;
-    roof.rotation.x = Math.PI / 2;
-    roof.position.setY(GLOBAL_ROOF_Y);
-    this._scene.add(roof);
+    // roof
+    this._addRoof();
 
     // initialize the first dungeon
     this._addDungeonToScene();
@@ -174,6 +145,45 @@ export class Game {
     // controls.update();
 
     updateProgressBar(this._player.getMaxHealth(), this._player.health);
+  }
+
+  _addGround(): void {
+    // Create the ground
+    const groundTexture = new THREE.TextureLoader().load('./img/ground.jpg');
+    const ground = new THREE.Mesh(
+      new THREE.PlaneGeometry(PROPERTIES.GRID_WIDTH, PROPERTIES.GRID_HEIGHT),
+      new THREE.MeshStandardMaterial({
+        map: groundTexture,
+      })
+    );
+    ground.castShadow = false;
+    ground.receiveShadow = true;
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.setY(GLOBAL_GROUND_Y);
+    ground.name = 'GROUND';
+    this._scene.add(ground);
+  }
+
+  _addRoof(): void {
+    // Create the roof
+    const roofTexture = new THREE.TextureLoader().load('./img/ground.jpg');
+    const roof = new THREE.Mesh(
+      new THREE.PlaneGeometry(
+        PROPERTIES.GRID_WIDTH * 1.5,
+        PROPERTIES.GRID_HEIGHT * 1.5
+      ),
+      new THREE.MeshStandardMaterial({
+        map: roofTexture,
+        lightMap: roofTexture,
+        lightMapIntensity: 0.5,
+      })
+    );
+    roof.castShadow = false;
+    roof.receiveShadow = true;
+    roof.rotation.x = Math.PI / 2;
+    roof.name = 'ROOF';
+    roof.position.setY(GLOBAL_ROOF_Y);
+    this._scene.add(roof);
   }
 
   async _initPlayer() {
@@ -343,6 +353,8 @@ export class Game {
       this._scene.remove(this._scene.children[0]);
     }
     this._scene.add(this._player.Element);
+    this._addGround();
+    this._addRoof();
     this._enemies = [];
   }
 
