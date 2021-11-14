@@ -21,7 +21,7 @@ export class Player extends CharacterBase {
   private _input: InputController;
 
   /** The Statemachine used for animations */
-  private _state: StateMachine<Player>;
+  _state: StateMachine<Player>;
   /**
    * The actual redered object.
    * Note: THREE.Mesh extends THREE.Object3D which has `position` property
@@ -55,6 +55,7 @@ export class Player extends CharacterBase {
   /**
    * The camera following the player around.
    */
+
   // private _camera: PerspectiveCamera;
 
   /**
@@ -142,7 +143,6 @@ export class Player extends CharacterBase {
       this.Element.rotateY(-Math.PI / 2);
     } else if (keys.action) {
       this._attacks = true;
-      this._state.setState('attack');
     } else {
       this._attacks = false;
       this._velocity = 0;
@@ -201,7 +201,7 @@ export class Player extends CharacterBase {
 
   takeHit(damage: number): void {
     this._health -= damage;
-    updateProgressBar(this._health);
+    updateProgressBar(this.getMaxHealth(), this._health);
     console.log(`The player has ${this._health} left`);
   }
 
@@ -240,6 +240,7 @@ export class Player extends CharacterBase {
     // level up the player if he gathered enough experience
     if (this._experience >= this._requiredExperience) {
       this._levelUp();
+      updateProgressBar(this.getMaxHealth(), this._health);
     }
   }
 
@@ -269,7 +270,8 @@ export class Player extends CharacterBase {
 
   getMaxHealth(): number {
     return (
-      initialPlayerStats.health + this._level * 0.05 * initialPlayerStats.health
+      initialPlayerStats.health +
+      (this._level - 1) * 0.05 * initialPlayerStats.health
     );
   }
 

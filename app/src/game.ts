@@ -126,24 +126,6 @@ export class Game {
 
     this._player = new Player();
 
-    // set up composer and outline pass
-    this._composer = new EffectComposer(this._threejs);
-
-    const renderPass = new RenderPass(this._scene, this._camera);
-    this._composer.addPass(renderPass);
-
-    this._outlinePass = new OutlinePass(
-      new THREE.Vector2(window.innerWidth, window.innerHeight),
-      this._scene,
-      this._camera,
-      []
-    );
-    this._outlinePass.edgeStrength = 20;
-    this._outlinePass.edgeGlow = 2;
-    this._outlinePass.edgeThickness = 1;
-    this._outlinePass.pulsePeriod = 2;
-    this._composer.addPass(this._outlinePass);
-
     // axes helper
     const axesHelper = new THREE.AxesHelper(10);
     this._scene.add(axesHelper);
@@ -168,7 +150,7 @@ export class Game {
     // controls.target.set(0, 0, 0);
     // controls.update();
 
-    updateProgressBar(100);
+    updateProgressBar(this._player.getMaxHealth(), this._player.health);
   }
 
   async _initPlayer() {
@@ -209,7 +191,7 @@ export class Game {
         mixer.update(delta);
       });
       this._calculateNextState(timeElapsedMS - this._previousRAF);
-      this._composer.render();
+      this._threejs.render(this._scene, this._camera);
       this._previousRAF = timeElapsedMS;
     });
   }
@@ -280,6 +262,7 @@ export class Game {
         .pop();
 
       if (enemy !== undefined) {
+        this._player._state.setState('attack');
         const damage = this._player.attack();
         enemy.takeHit(damage);
 
@@ -486,7 +469,6 @@ export class Game {
         x: Game._sceneToGrid(this._player.Element.position.x),
         y: Game._sceneToGrid(this._player.Element.position.z),
       };
-      // TODO turn animation?
       const lookAt = new Vector3(
         this._player.Element.position.x,
         -0.5,
@@ -567,6 +549,12 @@ export class Game {
       Math.floor(this._dungeon.firstRoom.height / 2) -
       PROPERTIES.GRID_WIDTH / 2 -
       0.5;
+    this._player.Element.children.filter((value) => {
+      if (value.name === 'Armature') {
+        value.position.z = -0.3;
+        value.position.y = -0.8;
+      }
+    });
     this._player.Element.position.set(playerX, PLAYER_Y, playerZ);
   }
 }
