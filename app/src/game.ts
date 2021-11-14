@@ -549,6 +549,12 @@ export class Game {
       Math.floor(this._dungeon.firstRoom.height / 2) -
       PROPERTIES.GRID_WIDTH / 2 -
       0.5;
+    this._player.Element.children.filter((value) => {
+      if (value.name === 'Armature') {
+        value.position.z = -0.3;
+        value.position.y = -0.8;
+      }
+    });
     this._player.Element.position.set(playerX, PLAYER_Y, playerZ);
   }
 }
