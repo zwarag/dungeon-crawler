@@ -1,12 +1,12 @@
 @import 'variables';
 
 @mixin largeScreen() {
-  @media (min-width: 1700px) {
+  @media (min-width: 1700px) and (min-height: 1000px) {
     @content;
   }
 }
 @mixin mediumScreen() {
-  @media (max-width: 1700px) {
+  @media (max-width: 1700px) and (max-height: 1000px) {
     @content;
   }
 }
