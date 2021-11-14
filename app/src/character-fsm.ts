@@ -1,7 +1,6 @@
-import { AnimationAction, LoopOnce } from 'three';
-
-import { Animation } from './helper/animated';
 import { State, StateMachine } from './state-machine';
+import { Animation } from './helper/animated';
+import { AnimationAction, LoopOnce } from 'three';
 
 export class CharacterFsm<T> extends StateMachine<T> {
   constructor(owner: T) {
@@ -23,11 +22,10 @@ class IdleState extends State {
   enter(previousState: State): void {
     const animation: Animation = this.machine._owner.Element.animations['idle'];
     this._action = animation.mixer.clipAction(animation.clip);
-    window._animationMixers.add(animation.mixer);
+    (window as any)._animationMixers.add(animation.mixer);
 
     if (previousState) {
       const previousAction = previousState._action;
-      // this._action.reset()
       this._action.crossFadeFrom(previousAction, 1, true);
       this._action.play();
     } else {
@@ -50,7 +48,7 @@ class WalkState extends State {
   enter(previousState: State): void {
     const animation: Animation = this.machine._owner.Element.animations['walk'];
     this._action = animation.mixer.clipAction(animation.clip);
-    window._animationMixers.add(animation.mixer);
+    (window as any)._animationMixers.add(animation.mixer);
     animation.mixer.timeScale = 1.5;
 
     if (previousState) {
@@ -64,7 +62,6 @@ class WalkState extends State {
     }
 
     animation.mixer.addEventListener('finished', this.cb);
-    // window._player._allowAction = false
   }
 
   cb = () => {
@@ -78,7 +75,6 @@ class WalkState extends State {
     const animation: Animation = this.machine._owner.Element.animations['walk'];
     this._action.stop();
     animation.mixer.removeEventListener('finished', this.cb);
-    // window._player._allowAction = true
   }
 
   get name(): string {
@@ -96,11 +92,10 @@ class DieState extends State {
   enter(previousState: State): void {
     const animation: Animation = this.machine._owner.Element.animations['die'];
     this._action = animation.mixer.clipAction(animation.clip);
-    window._animationMixers.add(animation.mixer);
+    (window as any)._animationMixers.add(animation.mixer);
 
     if (previousState) {
       const previousAction = previousState._action;
-      // this._action.reset()
       this._action.loop = LoopOnce;
       this._action.clampWhenFinished = true;
       this._action.crossFadeFrom(previousAction, 0.5, true);
@@ -119,7 +114,7 @@ class DieState extends State {
   }
 
   cb = () => {
-    window._scene.remove(this.machine._owner.Element);
+    (window as any)._scene.remove(this.machine._owner.Element);
   };
 }
 
@@ -134,11 +129,10 @@ class AttackState extends State {
     const animation: Animation =
       this.machine._owner.Element.animations['attack'];
     this._action = animation.mixer.clipAction(animation.clip);
-    window._animationMixers.add(animation.mixer);
+    (window as any)._animationMixers.add(animation.mixer);
 
     if (previousState) {
       const previousAction = previousState._action;
-      // this._action.reset()
       this._action.loop = LoopOnce;
       this._action.clampWhenFinished = true;
       this._action.crossFadeFrom(previousAction, 0.5, true);
@@ -148,7 +142,6 @@ class AttackState extends State {
     }
 
     animation.mixer.addEventListener('finished', this.cb);
-    // window._player._allowAction = false
   }
 
   exit(): void {

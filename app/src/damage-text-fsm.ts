@@ -1,13 +1,6 @@
-import { HiddenState, ShownState, State, StateMachine } from './state-machine';
-import { CharacterBase } from './character';
+import { State, StateMachine } from './state-machine';
 import { DamageText } from './damage-text';
-import {
-  LoopOnce,
-  AnimationAction,
-  AnimationClip,
-  AnimationMixer,
-  Mesh,
-} from 'three';
+import { AnimationClip, AnimationMixer, LoopOnce, Mesh } from 'three';
 
 export class DamageTextFsm extends StateMachine<DamageText> {
   constructor(owner: DamageText) {
@@ -26,7 +19,7 @@ class ShownState extends State {
     return 'shown';
   }
 
-  constructor(parent: StateMachine) {
+  constructor(parent: StateMachine<any>) {
     super(parent);
   }
 
@@ -46,7 +39,7 @@ class ShownState extends State {
     });
   }
 
-  enter(state: State): void {
+  enter(): void {
     const fadeOutAnimation = this.machine._owner._animations.fadeOut;
     const mesh: Mesh = fadeOutAnimation.mesh;
     const mixer: AnimationMixer = fadeOutAnimation.mixer;
@@ -60,12 +53,8 @@ class ShownState extends State {
       this.cb;
     });
 
-    // if (!state) {
-    window._animationMixers.add(mixer);
+    (window as any)._animationMixers.add(mixer);
     action.play();
-    // } else {
-    //   action.play();
-    // }
   }
 
   exit(): void {
@@ -82,20 +71,16 @@ class HiddenState extends State {
     return 'hidden';
   }
 
-  constructor(parent: StateMachine) {
+  constructor(parent: StateMachine<any>) {
     super(parent);
   }
 
-  enter(state: State): void {
-    // IS shown, and shall be hidden.
-
+  enter(): void {
     const fadeOutAnimation = this.machine._owner._animations.fadeOut;
     const mixer: AnimationMixer = fadeOutAnimation.mixer;
     const mesh: Mesh = fadeOutAnimation.mesh;
     this.machine._owner._enemy.remove(mesh);
-    window._animationMixers.remove(mixer);
-
-    // TODO: execute the keyframes to hide the text
+    (window as any)._animationMixers.remove(mixer);
   }
 
   exit(): void {

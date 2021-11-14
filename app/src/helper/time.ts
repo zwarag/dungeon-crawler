@@ -1,6 +1,7 @@
 export type TimeInSeconds = number;
 export type TimeInMilliseconds = number;
 export type TimeInHoursMinutesSeconds = string;
+
 export function millisecondsToSeconds(
   seconds: TimeInSeconds
 ): TimeInMilliseconds {

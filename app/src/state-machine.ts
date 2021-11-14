@@ -1,14 +1,14 @@
 import { AnimationAction } from 'three';
 
-type StateConstructor = new (parent: StateMachine) => State;
+type StateConstructor = new (parent: StateMachine<any>) => State;
 
 export abstract class State {
-  _action: AnimationAction;
-  machine: StateMachine;
+  declare _action: AnimationAction;
+  machine: StateMachine<any>;
 
   abstract get name(): string;
 
-  constructor(machine: StateMachine) {
+  constructor(machine: StateMachine<any>) {
     this.machine = machine;
   }
 
@@ -26,7 +26,6 @@ export class StateMachine<T> {
     this._states = {};
     this._owner = owner;
     this._currentState = null as unknown as State;
-    // this._currentState = new StartState(this);
   }
 
   // creates the meta for a new state, defines all `f`
@@ -43,100 +42,10 @@ export class StateMachine<T> {
     previousState?.exit();
     const state = new this._states[key](this);
     this._currentState = state;
-    state.enter(previousState);
+    state.enter(previousState!);
   }
 
   getCurrentState(): State {
-    return this._currentState;
-  }
-}
-
-/**
- * A Character is just standing around.
- */
-export class IdleState extends State {
-  get name(): string {
-    return 'idle';
-  }
-
-  constructor(parent: StateMachine) {
-    super(parent);
-  }
-
-  enter(state: State): void {
-    throw new Error('Method not implemented.');
-  }
-
-  exit(): void {
-    throw new Error('Method not implemented.');
-  }
-}
-
-/**
- * A Character is walking towards something.
- */
-class WalkState extends State {
-  get name(): string {
-    throw new Error('Method not implemented.');
-  }
-
-  enter(state: State): void {
-    throw new Error('Method not implemented.');
-  }
-
-  exit(): void {
-    throw new Error('Method not implemented.');
-  }
-}
-
-/**
- * A Character is turning towards something.
- * AKA is changing direction.
- */
-class TurningState extends State {
-  get name(): string {
-    throw new Error('Method not implemented.');
-  }
-
-  enter(state: State): void {
-    throw new Error('Method not implemented.');
-  }
-
-  exit(): void {
-    throw new Error('Method not implemented.');
-  }
-}
-
-/**
- * A Character is attacking something.
- */
-class AttackState extends State {
-  get name(): string {
-    throw new Error('Method not implemented.');
-  }
-
-  enter(state: State): void {
-    throw new Error('Method not implemented.');
-  }
-
-  exit(): void {
-    throw new Error('Method not implemented.');
-  }
-}
-
-/**
- * A Character is hit by something.
- */
-class HitState extends State {
-  get name(): string {
-    throw new Error('Method not implemented.');
-  }
-
-  enter(state: State): void {
-    throw new Error('Method not implemented.');
-  }
-
-  exit(): void {
-    throw new Error('Method not implemented.');
+    return this._currentState!;
   }
 }

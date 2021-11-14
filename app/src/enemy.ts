@@ -1,17 +1,15 @@
-import { AnimationMixer, Group, Object3D, Vector3 } from 'three';
-import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
-import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils';
-
-import enemiesJson from '../public/txt/enemies.json';
-import { CharacterBase } from './character';
-import { CharacterFsm } from './character-fsm';
-import { Animation } from './helper/animated';
-import { GLOBAL_Y } from './helper/const';
+import { StateMachine } from './state-machine';
 import { ENEMY, ENEMY_TYPE_LIST } from './helper/enemy';
+import { randomRange } from './helper/random';
+import { CharacterBase } from './character';
+import { AnimationMixer, Group, Object3D, Vector3 } from 'three';
+import { Animation } from './helper/animated';
+import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils';
 import { EnemyFileLoader } from './helper/enemy-file-loader';
 import { loadGltf } from './helper/file-loader';
-import { randomRange } from './helper/random';
-import { StateMachine } from './state-machine';
+import enemiesJson from '../public/txt/enemies.json';
+import { PLAYER_Y } from './helper/const';
+import { CharacterFsm } from './character-fsm';
 
 type EnemyAnimationTypes = 'idle' | 'walk' | 'die' | 'attack';
 
@@ -30,14 +28,9 @@ export class Enemy extends CharacterBase {
   private _type: ENEMY;
 
   /**
-   * The GLTF element of the enemy
-   */
-  private _gltf!: GLTF;
-
-  /**
    * The position to where the enemy will try to walk and look
    */
-  _targetPosition: Vector3;
+  _targetPosition: Vector3 | undefined;
 
   _animations: { [key in EnemyAnimationTypes]: Animation } = {};
 
@@ -46,14 +39,10 @@ export class Enemy extends CharacterBase {
    */
   private _active: boolean;
 
-  public _model: Group;
-
-  // private _enemyObject;
-
   constructor() {
     const file = EnemyFileLoader.load();
     const selection = calculateRandomSelection(); // const enemyTypeJsonIndex = randomRange(0, Math.max(enemyCount - 1));
-    const enemyObject = file[ENEMY_TYPE_LIST[selection]];
+    const enemyObject: any = file[ENEMY_TYPE_LIST[selection]];
     super(
       randomRange(enemyObject.health.min, enemyObject.health.max),
       { min: enemyObject.damage.min, max: enemyObject.damage.max },
@@ -63,7 +52,6 @@ export class Enemy extends CharacterBase {
     );
     this._type = ENEMY_TYPE_LIST[selection];
     this._active = false;
-    // this._enemyObject = enemyObject;
   }
 
   async _init(x: number, z: number): Promise<void> {
@@ -82,9 +70,11 @@ export class Enemy extends CharacterBase {
     model.traverse((c: Object3D) => {
       c.castShadow = true;
     });
-    model.position.set(x, GLOBAL_Y - 0.5, z);
-    this._3DElement = model;
-    this._3DElement.name = this._type;
+    model.position.set(x, PLAYER_Y, z);
+    if (model instanceof Group) {
+      this._3DElement = model;
+    }
+    this._3DElement!.name = this._type;
 
     this._state = new CharacterFsm(this);
     this._state.setState('idle');
@@ -162,7 +152,7 @@ function calculateRandomSelection(): number {
   }
   const cumulativeDistribution = distribution.map(
     (
-      (sum) => (value) =>
+      (sum) => (value: number) =>
         (sum += value)
     )(0)
   );
