@@ -21,7 +21,7 @@ export class Player extends CharacterBase {
   private _input: InputController;
 
   /** The Statemachine used for animations */
-  private _state: StateMachine<Player>;
+  _state: StateMachine<Player>;
   /**
    * The actual redered object.
    * Note: THREE.Mesh extends THREE.Object3D which has `position` property
@@ -142,7 +142,6 @@ export class Player extends CharacterBase {
       this.Element.rotateY(-Math.PI / 2);
     } else if (keys.action) {
       this._attacks = true;
-      this._state.setState('attack');
     } else {
       this._attacks = false;
       this._velocity = 0;

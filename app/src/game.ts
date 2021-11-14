@@ -280,6 +280,7 @@ export class Game {
         .pop();
 
       if (enemy !== undefined) {
+        this._player._state.setState('attack');
         const damage = this._player.attack();
         enemy.takeHit(damage);
 
@@ -486,7 +487,6 @@ export class Game {
         x: Game._sceneToGrid(this._player.Element.position.x),
         y: Game._sceneToGrid(this._player.Element.position.z),
       };
-      // TODO turn animation?
       const lookAt = new Vector3(
         this._player.Element.position.x,
         -0.5,
