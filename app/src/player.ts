@@ -55,6 +55,7 @@ export class Player extends CharacterBase {
   /**
    * The camera following the player around.
    */
+
   // private _camera: PerspectiveCamera;
 
   /**
@@ -200,7 +201,7 @@ export class Player extends CharacterBase {
 
   takeHit(damage: number): void {
     this._health -= damage;
-    updateProgressBar(this._health);
+    updateProgressBar(this.getMaxHealth(), this._health);
     console.log(`The player has ${this._health} left`);
   }
 
@@ -239,6 +240,7 @@ export class Player extends CharacterBase {
     // level up the player if he gathered enough experience
     if (this._experience >= this._requiredExperience) {
       this._levelUp();
+      updateProgressBar(this.getMaxHealth(), this._health);
     }
   }
 
@@ -268,7 +270,8 @@ export class Player extends CharacterBase {
 
   getMaxHealth(): number {
     return (
-      initialPlayerStats.health + this._level * 0.05 * initialPlayerStats.health
+      initialPlayerStats.health +
+      (this._level - 1) * 0.05 * initialPlayerStats.health
     );
   }
 

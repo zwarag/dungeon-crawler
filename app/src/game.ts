@@ -168,7 +168,7 @@ export class Game {
     // controls.target.set(0, 0, 0);
     // controls.update();
 
-    updateProgressBar(100);
+    updateProgressBar(this._player.getMaxHealth(), this._player.health);
   }
 
   async _initPlayer() {
