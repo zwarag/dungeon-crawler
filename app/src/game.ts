@@ -33,6 +33,7 @@ export class Game {
   private _clock: THREE.Clock;
   private _spotLight: SpotLight;
   private _stopAnimationFrame = false;
+  private _sound: THREE.Audio;
   _level = 1;
 
   constructor(element: HTMLCanvasElement) {
@@ -118,26 +119,15 @@ export class Game {
     // Audio Stuff
     const audioListener = new THREE.AudioListener();
     this._camera.add(audioListener);
-    const sound = new THREE.Audio(audioListener);
+    this._sound = new THREE.Audio(audioListener);
     const audioLoader = new THREE.AudioLoader();
-    audioLoader.load(
-      'audio/background.mp3',
-      function (buffer) {
-        sound.setBuffer(buffer);
-        sound.setLoop(true);
-        sound.setVolume(0.5);
-        sound.play();
-      },
-      // onProgress callback
-      function (xhr) {
-        console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
-      },
-
-      // onError callback
-      function (err) {
-        console.log('Un error ha ocurrido');
-      }
-    );
+    audioLoader.loadAsync('audio/background.mp3').then((buffer) => {
+      this._sound.setBuffer(buffer);
+      this._sound.setLoop(true);
+      this._sound.setVolume(0.5);
+      this._sound.play();
+    });
+    // onProgress callback
     // Temporary Camera
     // TODO: this is only temporary and should be swaped out for the actual implementaiton of the camera
     // const controls = new OrbitControls(this._camera, this._threejs.domElement);
@@ -570,6 +560,8 @@ export class Game {
 
   public stopGame(): number {
     this._stopAnimationFrame = true;
+    this._sound.stop();
+    this._sound.clear();
     return this._clock.elapsedTime;
   }
 
