@@ -6,7 +6,7 @@ import {
   PROPERTIES,
 } from './helper/const';
 import * as THREE from 'three';
-import { Group, SpotLight, Vector3 } from 'three';
+import { Camera, Group, SpotLight, Vector3 } from 'three';
 import { Player } from './player';
 import { millisecondsToSeconds } from './helper/time';
 import { Dungeon } from './dungeon';
@@ -144,6 +144,29 @@ export class Game {
     this._spotLight.position.set(0, 0, 1);
     this._spotLight.target = this._camera;
 
+    // Audio Stuff
+    const audioListener = new THREE.AudioListener();
+    this._camera.add(audioListener);
+    const sound = new THREE.Audio(audioListener);
+    const audioLoader = new THREE.AudioLoader();
+    audioLoader.load(
+      'audio/background.mp3',
+      function (buffer) {
+        sound.setBuffer(buffer);
+        sound.setLoop(true);
+        sound.setVolume(0.5);
+        sound.play();
+      },
+      // onProgress callback
+      function (xhr) {
+        console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+      },
+
+      // onError callback
+      function (err) {
+        console.log('Un error ha ocurrido');
+      }
+    );
     // Temporary Camera
     // TODO: this is only temporary and should be swaped out for the actual implementaiton of the camera
     // const controls = new OrbitControls(this._camera, this._threejs.domElement);
