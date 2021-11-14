@@ -15,7 +15,7 @@
 
 ## Auto Fix linting Errors
 
-To fix linting errors, run `yarn lint:fix`.  
+To fix linting errors, run `yarn lint:fix`.
 
 # Build for production
 
@@ -26,5 +26,14 @@ Creates the **dist** folder where the bundled, minified project can be found.
 # Attributions
 
 ## Skyboxes
+
 created by Zachery "skiingpenguins" Slocum
 http://www.freezurbern.com
+
+## Wall Image
+
+Photo by <a href="https://freeimages.com/photographer/xRaDx-43260">Radoslaw Wyjadlowski</a> from <a href="https://freeimages.com">FreeImages</a>
+
+## Textures  
+
+https://polyhaven.com

@@ -1,5 +1,6 @@
 import {
   GLOBAL_GROUND_Y,
+  GLOBAL_ROOF_Y,
   GLOBAL_Y,
   PLAYER_Y,
   PROPERTIES,
@@ -66,28 +67,23 @@ export class Game {
     (window as any)._animationMixers = this._animationMixers;
 
     // Skybox
-    const loader = new THREE.CubeTextureLoader();
-    this._scene.background = loader.load([
-      './img/cocoa_ft_.jpg',
-      './img/cocoa_bk_.jpg',
-      './img/cocoa_up_.jpg',
-      './img/cocoa_dn_.jpg',
-      './img/cocoa_rt_.jpg',
-      './img/cocoa_lf_.jpg',
-    ]);
+    // const loader = new THREE.CubeTextureLoader();
+    // this._scene.background = loader.load([
+    //   './img/cocoa_ft_.jpg',
+    //   './img/cocoa_bk_.jpg',
+    //   './img/cocoa_up_.jpg',
+    //   './img/cocoa_dn_.jpg',
+    //   './img/cocoa_rt_.jpg',
+    //   './img/cocoa_lf_.jpg',
+    // ]);
     // this._scene.background = new THREE.Color("black")
 
     // Create the ground
+    const groundTexture = new THREE.TextureLoader().load('./img/ground.jpg');
     const ground = new THREE.Mesh(
-      new THREE.PlaneGeometry(
-        PROPERTIES.GRID_WIDTH,
-        PROPERTIES.GRID_HEIGHT,
-        PROPERTIES.GRID_WIDTH,
-        PROPERTIES.GRID_HEIGHT
-      ),
+      new THREE.PlaneGeometry(PROPERTIES.GRID_WIDTH, PROPERTIES.GRID_HEIGHT),
       new THREE.MeshStandardMaterial({
-        color: 0x202020,
-        wireframe: true,
+        map: groundTexture,
       })
     );
     ground.castShadow = false;
@@ -95,6 +91,22 @@ export class Game {
     ground.rotation.x = -Math.PI / 2;
     ground.position.setY(GLOBAL_GROUND_Y);
     this._scene.add(ground);
+
+    // Create the roof
+    const roofTexture = new THREE.TextureLoader().load('./img/ground.jpg');
+    const roof = new THREE.Mesh(
+      new THREE.PlaneGeometry(PROPERTIES.GRID_WIDTH, PROPERTIES.GRID_HEIGHT),
+      new THREE.MeshStandardMaterial({
+        map: roofTexture,
+        lightMap: roofTexture,
+        lightMapIntensity: 0.5,
+      })
+    );
+    roof.castShadow = false;
+    roof.receiveShadow = true;
+    roof.rotation.x = Math.PI / 2;
+    roof.position.setY(GLOBAL_ROOF_Y);
+    this._scene.add(roof);
 
     // initialize the first dungeon
     this._addDungeonToScene();
@@ -328,31 +340,33 @@ export class Game {
     this._enemies = [];
   }
 
-  private _addDungeonToScene(): void {
-    this._dungeon = new Dungeon();
+  private _textureCube(imgPath: string): THREE.Mesh {
     const textureLoader = new THREE.TextureLoader();
-    const wallTexture = textureLoader.load(
-      'https://threejsfundamentals.org/threejs/resources/images/wall.jpg'
-    );
-    const wallGeometry = new THREE.BoxGeometry(1, 1.5, 1);
-    const wallMaterial = new THREE.MeshPhongMaterial({
-      map: wallTexture,
+    const texture = textureLoader.load(imgPath);
+    const geometry = new THREE.BoxGeometry(1, 1.5, 1);
+    const material = new THREE.MeshPhongMaterial({
+      map: texture,
       // opacity: 0.6,
       transparent: true,
-    }); // img source: https://www.pinterest.at/pin/376402481328234967/
+    });
+    return new THREE.Mesh(geometry, material);
+  }
+
+  private _addDungeonToScene(): void {
+    this._dungeon = new Dungeon();
     for (let height = 0; height < this._dungeon.grid.length; height++) {
       for (let width = 0; width < this._dungeon.grid[height].length; width++) {
         if (this._dungeon.grid[height][width] == ELEMENTS.WALL) {
-          const cube = new THREE.Mesh(wallGeometry, wallMaterial);
-          cube.receiveShadow = true;
-          cube.name = ELEMENTS.WALL;
+          const wallCube = this._textureCube('./img/brick-lion.jpg');
+          wallCube.receiveShadow = true;
+          wallCube.name = ELEMENTS.WALL;
           // offset by half the size of the grid, since 0,0,0 is in the center of it. Furthermore offset by 0.5, as otherwise the center of each box is used and not the corner.
-          cube.position.set(
+          wallCube.position.set(
             width - (PROPERTIES.GRID_WIDTH / 2 - 0.5),
             GLOBAL_Y + 0.25,
             height - (PROPERTIES.GRID_HEIGHT / 2 - 0.5)
           );
-          this._scene.add(cube);
+          this._scene.add(wallCube);
         }
       }
     }
