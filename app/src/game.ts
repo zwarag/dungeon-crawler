@@ -397,8 +397,7 @@ export class Game {
 
     //"Ladder" (https://skfb.ly/6RKqO) by Avelina is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
     const ladderGltf = await new GLTFLoader().loadAsync('assets/Ladder.glb');
-    ladderGltf.scene.position.set(endRoomX, -1, endRoomZ);
-
+    ladderGltf.scene.position.set(endRoomX, -0.5, endRoomZ);
     ladderGltf.scene.name = ELEMENTS.GOAL;
     this._goal = ladderGltf.scene;
     this._scene.add(ladderGltf.scene);
