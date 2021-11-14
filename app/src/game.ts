@@ -126,24 +126,6 @@ export class Game {
 
     this._player = new Player();
 
-    // set up composer and outline pass
-    this._composer = new EffectComposer(this._threejs);
-
-    const renderPass = new RenderPass(this._scene, this._camera);
-    this._composer.addPass(renderPass);
-
-    this._outlinePass = new OutlinePass(
-      new THREE.Vector2(window.innerWidth, window.innerHeight),
-      this._scene,
-      this._camera,
-      []
-    );
-    this._outlinePass.edgeStrength = 20;
-    this._outlinePass.edgeGlow = 2;
-    this._outlinePass.edgeThickness = 1;
-    this._outlinePass.pulsePeriod = 2;
-    this._composer.addPass(this._outlinePass);
-
     // axes helper
     const axesHelper = new THREE.AxesHelper(10);
     this._scene.add(axesHelper);
@@ -209,7 +191,7 @@ export class Game {
         mixer.update(delta);
       });
       this._calculateNextState(timeElapsedMS - this._previousRAF);
-      this._composer.render();
+      this._threejs.render(this._scene, this._camera);
       this._previousRAF = timeElapsedMS;
     });
   }
