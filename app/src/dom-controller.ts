@@ -37,6 +37,8 @@ export function initDom(): void {
   );
   addEventListener(HTMLELEMENTS.exitButton, 'click', _backToStartScreen);
   addEventListener(HTMLELEMENTS.continueButton, 'click', _continueGame);
+  addEventListener(HTMLELEMENTS.pauseAudioButton, 'click', _pauseAudio);
+  addEventListener(HTMLELEMENTS.startAudioButton, 'click', _startAudio);
   addEventListener(
     HTMLELEMENTS.nameInputBackButton,
     'click',
@@ -101,11 +103,28 @@ function _displayExitOverlay(): void {
 }
 
 function _continueGame(): void {
-  //TODO: logic to "unfreeze" game
   HTMLELEMENTS.overlay?.classList.add('d-none');
   if (HTMLELEMENTS.element) {
     HTMLELEMENTS.element.style.opacity = '100%';
   }
+}
+
+function _pauseAudio(): void {
+  _game.pauseAudio();
+  _toggleClass(
+    [HTMLELEMENTS.startAudioButton],
+    [HTMLELEMENTS.pauseAudioButton],
+    'd-none'
+  );
+}
+
+function _startAudio(): void {
+  _game.startAudio();
+  _toggleClass(
+    [HTMLELEMENTS.pauseAudioButton],
+    [HTMLELEMENTS.startAudioButton],
+    'd-none'
+  );
 }
 
 function _enableButton(): void {

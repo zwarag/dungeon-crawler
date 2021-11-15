@@ -42,6 +42,12 @@ const continueButton = document.querySelector<HTMLButtonElement>(
 const exitButton = document.querySelector<HTMLButtonElement>(
   '#exit-overlay-exitButton'
 ) as HTMLButtonElement;
+const startAudioButton = document.querySelector<HTMLButtonElement>(
+  '#exit-overlay-start-music'
+) as HTMLButtonElement;
+const pauseAudioButton = document.querySelector<HTMLButtonElement>(
+  '#exit-overlay-pause-music'
+) as HTMLButtonElement;
 const nameInputBackButton = document.querySelector<HTMLButtonElement>(
   '#name-input-backButton'
 ) as HTMLButtonElement;
@@ -102,6 +108,8 @@ export const HTMLELEMENTS = {
   overlay,
   continueButton,
   exitButton,
+  startAudioButton,
+  pauseAudioButton,
   nameInputBackButton,
   nameInputOkButton,
   formInput,

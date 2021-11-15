@@ -142,6 +142,18 @@ export class Game {
     updateHealthBar(this._player.getMaxHealth(), this._player.health);
   }
 
+  startAudio() {
+    this._sound.play();
+  }
+
+  pauseAudio() {
+    this._sound.pause();
+  }
+
+  stopAudio() {
+    this._sound.stop();
+  }
+
   _addGround(): void {
     // Create the ground
     const groundTexture = new THREE.TextureLoader().load('./img/ground.jpg');
