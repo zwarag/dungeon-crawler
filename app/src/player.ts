@@ -11,7 +11,12 @@ import { randomRange } from './helper/random';
 import { CharacterBase } from './character';
 import initialPlayerStats from '../public/txt/initialPlayerStats.json';
 import { ELEMENTS } from './helper/elements';
-import { exitOnDeath, updateProgressBar } from './dom-controller';
+import {
+  displayLevelUpMsg,
+  exitOnDeath,
+  updateHUDPlayerLevel,
+  updateProgressBar,
+} from './dom-controller';
 import { loadGltf } from './helper/file-loader';
 import playerJson from '../public/txt/initialPlayerStats.json';
 import { CharacterFsm } from './character-fsm';
@@ -246,6 +251,8 @@ export class Player extends CharacterBase {
 
   private _levelUp(): void {
     this._level += 1;
+    updateHUDPlayerLevel(this._level);
+    displayLevelUpMsg(2000);
     console.log(`You've leveled up to level ${this._level}`);
     this._experience = this._experience - this._requiredExperience;
     // stats are increased by 5 percent per level up

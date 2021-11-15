@@ -117,11 +117,16 @@
     }
   }
 
-  &__placeholder {
-    //max-width: 200px;
-    //&__canvas {
-    //  width: 100%;
-    //  height: 100%;
-    //}
+  &__player-info {
+    @include fantasy-Text();
+    text-align: left;
+    font-weight: bolder;
+    @include mediumScreen() {
+      margin: auto 0px auto 4px;
+    }
+    @include largeScreen() {
+      margin: auto 0px auto 16px;
+      font-size: xx-large;
+    }
   }
 }

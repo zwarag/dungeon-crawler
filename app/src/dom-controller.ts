@@ -8,6 +8,14 @@ import { addToHighscore } from './highscore-controller';
 let _game: Game;
 
 export function initDom(): void {
+  function addEventListener(
+    element: HTMLElement,
+    key: string,
+    event: () => void
+  ) {
+    element.addEventListener(key, event);
+  }
+
   addEventListener(HTMLELEMENTS.startButton, 'click', () => {
     _toggleClass(
       [HTMLELEMENTS.nameInput],
@@ -51,6 +59,7 @@ export function initDom(): void {
 }
 
 export async function startGameForDevelopment() {
+  _setHUDPlayerInfo();
   _toggleClass(
     [HTMLELEMENTS.app],
     [
@@ -67,14 +76,6 @@ export async function startGameForDevelopment() {
   }
 }
 
-function addEventListener(
-  element: HTMLElement,
-  key: string,
-  event: () => void
-) {
-  element.addEventListener(key, event);
-}
-
 function _toggleClass(
   removeFromElements: HTMLElement[],
   addToElements: HTMLElement[],
@@ -86,6 +87,7 @@ function _toggleClass(
 
 export async function _startGame(): Promise<void> {
   _toggleClass([HTMLELEMENTS.app], [HTMLELEMENTS.storyBox], 'd-none');
+  _setHUDPlayerInfo();
 }
 
 function _displayExitOverlay(): void {
@@ -125,7 +127,9 @@ async function _displayStoryBox(): Promise<void> {
 }
 
 function _getPlayerName(): string {
-  return HTMLELEMENTS.formInput ? HTMLELEMENTS.formInput.value : 'default';
+  return HTMLELEMENTS.formInput.value
+    ? HTMLELEMENTS.formInput.value
+    : 'default';
 }
 
 function _resetNameInput(): void {
@@ -173,6 +177,26 @@ export function displayLoadingScreen(duration: number) {
   setTimeout(() => {
     _toggleClass([HTMLELEMENTS.app], [HTMLELEMENTS.loadingScreen], 'd-none');
   }, duration);
+}
+
+export function displayLevelUpMsg(duration: number): void {
+  HTMLELEMENTS.levelUpMsg.classList.remove('d-none');
+  setTimeout(() => {
+    HTMLELEMENTS.levelUpMsg.classList.add('d-none');
+  }, duration);
+}
+
+function _setHUDPlayerInfo(): void {
+  HTMLELEMENTS.hudPlayerName.innerHTML = _getPlayerName();
+  HTMLELEMENTS.hudPlayerLevel.innerHTML = '1';
+  HTMLELEMENTS.hudDungeonFloor.innerHTML = '1';
+}
+
+export function updateHUDPlayerLevel(playerLevel: number): void {
+  HTMLELEMENTS.hudPlayerLevel.innerHTML = playerLevel.toString();
+}
+export function updateHUDDungeonFloor(dungeonFloor: number): void {
+  HTMLELEMENTS.hudDungeonFloor.innerHTML = dungeonFloor.toString();
 }
 
 function _backToStartScreen(): void {

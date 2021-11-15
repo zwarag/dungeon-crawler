@@ -63,17 +63,23 @@ const progressBarFill = document.querySelector<HTMLDivElement>(
 const progressBarText = document.querySelector<HTMLDivElement>(
   '#progress-bar-text'
 ) as HTMLDivElement;
-const hudAnimationDisplay = document.querySelector<HTMLDivElement>(
-  '#hud-animation'
-) as HTMLDivElement;
-const hudAnimation = document.querySelector<HTMLCanvasElement>(
-  '#hud-animation'
-) as HTMLCanvasElement;
 const deathScreen = document.querySelector<HTMLDivElement>(
   '#death-screen'
 ) as HTMLDivElement;
 const loadingScreen = document.querySelector<HTMLDivElement>(
   '#loading-screen'
+) as HTMLDivElement;
+const hudPlayerName = document.querySelector<HTMLSpanElement>(
+  '#hud-player-name'
+) as HTMLSpanElement;
+const hudPlayerLevel = document.querySelector<HTMLSpanElement>(
+  '#hud-player-level'
+) as HTMLSpanElement;
+const hudDungeonFloor = document.querySelector<HTMLSpanElement>(
+  '#hud-dungeon-floor'
+) as HTMLSpanElement;
+const levelUpMsg = document.querySelector<HTMLDivElement>(
+  '#level-up-msg'
 ) as HTMLDivElement;
 export const HTMLELEMENTS = {
   app,
@@ -94,10 +100,12 @@ export const HTMLELEMENTS = {
   progressBar,
   progressBarFill,
   progressBarText,
-  hudAnimationDisplay,
-  hudAnimation,
   deathScreen,
   loadingScreen,
+  hudPlayerName,
+  hudPlayerLevel,
+  hudDungeonFloor,
+  levelUpMsg,
 };
 
 // Highscore Div Elements

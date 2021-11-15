@@ -67,11 +67,25 @@
             </div>
           </div>
         </div>
-        <div id="hud-animation-display" class="hud__placeholder">
-          <!--          <canvas id="hud-animation" class="hud__placeholder__canvas"></canvas>-->
+        <div id="hud-animation-display" class="hud__player-info">
+          <p>
+            Player Name:
+            <span id="hud-player-name"></span>
+          </p>
+          <p>
+            Player Level:
+            <span id="hud-player-level"></span>
+          </p>
+          <p>
+            Dungeon Floor:
+            <span id="hud-dungeon-floor"></span>
+          </p>
         </div>
       </div>
     </div>
+
+    <!--    level up message-->
+    <div id="level-up-msg" class="level-up-message d-none">Level UP!!</div>
 
     <!-- start-screen -->
     <div id="start-screen" class="start-screen">
@@ -141,7 +155,7 @@
     <!--    story-->
     <div id="story-box" class="story-box d-none"></div>
 
-<!--    loading screen-->
+    <!--    loading screen-->
     <div id="loading-screen" class="loading-screen d-none">
       <p style="">LOADING...</p>
     </div>
@@ -316,7 +330,7 @@
       </div>
     </div>
 
-<!--    death-screen-->
+    <!--    death-screen-->
     <div id="death-screen" class="death-screen d-none">
       <p>YOU DIED</p>
     </div>
