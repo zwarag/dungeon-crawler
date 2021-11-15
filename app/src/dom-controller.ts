@@ -142,7 +142,7 @@ function _enableButton(): void {
 
 async function _displayStoryBox(): Promise<void> {
   _toggleClass([HTMLELEMENTS.storyBox], [HTMLELEMENTS.nameInput], 'd-none');
-  await storyWriter(story.story, 'story-box', 90);
+  await storyWriter(story.story, 'story-box', 20);
 }
 
 function _getPlayerName(): string {
