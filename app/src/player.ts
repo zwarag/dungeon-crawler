@@ -222,7 +222,7 @@ export class Player extends CharacterBase {
       const voices = window.speechSynthesis.getVoices();
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      const sentences = text[type]; // <-- @harrys, eventuell hast du dazu eine Idee, typescript meckert beim dynamsichen Zugriff mittels string, da das json file nicht getyped ist.
+      const sentences = text[type];
       const sentence = sentences[Math.floor(Math.random() * sentences.length)]; // select a random sentence
       const utterThis = new SpeechSynthesisUtterance(sentence);
       utterThis.voice = voices[this._gender];
