@@ -54,14 +54,23 @@ const formInput = document.querySelector<HTMLInputElement>(
 const storyBox = document.querySelector<HTMLDivElement>(
   '#story-box'
 ) as HTMLDivElement;
-const progressBar = document.querySelector<HTMLDivElement>(
-  '#progress-bar'
+const healthBar = document.querySelector<HTMLDivElement>(
+  '#health-bar'
 ) as HTMLDivElement;
-const progressBarFill = document.querySelector<HTMLDivElement>(
-  '#progress-bar-fill'
+const healthBarFill = document.querySelector<HTMLDivElement>(
+  '#health-bar-fill'
 ) as HTMLDivElement;
-const progressBarText = document.querySelector<HTMLDivElement>(
-  '#progress-bar-text'
+const healthBarText = document.querySelector<HTMLDivElement>(
+  '#health-bar-text'
+) as HTMLDivElement;
+const experienceBar = document.querySelector<HTMLDivElement>(
+  '#experience-bar'
+) as HTMLDivElement;
+const experienceBarFill = document.querySelector<HTMLDivElement>(
+  '#experience-bar-fill'
+) as HTMLDivElement;
+const experienceBarText = document.querySelector<HTMLDivElement>(
+  '#experience-bar-text'
 ) as HTMLDivElement;
 const deathScreen = document.querySelector<HTMLDivElement>(
   '#death-screen'
@@ -97,9 +106,12 @@ export const HTMLELEMENTS = {
   nameInputOkButton,
   formInput,
   storyBox,
-  progressBar,
-  progressBarFill,
-  progressBarText,
+  healthBar,
+  healthBarFill,
+  healthBarText,
+  experienceBar,
+  experienceBarFill,
+  experienceBarText,
   deathScreen,
   loadingScreen,
   hudPlayerName,

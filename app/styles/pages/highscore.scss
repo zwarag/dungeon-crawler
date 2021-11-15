@@ -2,7 +2,7 @@
 
 /*higescore*/
 .highscore {
-  @include fantasy-body(off);
+  @include fantasy-body(auto);
 
   &__title {
     @include title(84px);
@@ -37,6 +37,9 @@
   }
 
   &__backbutton {
+    @include largeScreen() {
+      margin-top: 300px;
+    }
     float: left;
     @include button(10px, 200px, 400);
   }

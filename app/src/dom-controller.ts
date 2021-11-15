@@ -153,7 +153,7 @@ function _endGame(): void {
   _resetStoryBox();
 }
 
-export function updateProgressBar(maxHealth: number, health: number): void {
+export function updateHealthBar(maxHealth: number, health: number): void {
   let healthPercent = Math.round((100 / maxHealth) * health);
 
   if (healthPercent < 0) {
@@ -162,8 +162,17 @@ export function updateProgressBar(maxHealth: number, health: number): void {
   if (healthPercent > 100) {
     healthPercent = 100;
   }
-  HTMLELEMENTS.progressBarFill.style.width = `${healthPercent}%`;
-  HTMLELEMENTS.progressBarText.textContent = `${healthPercent}%`;
+  HTMLELEMENTS.healthBarFill.style.width = `${healthPercent}%`;
+  HTMLELEMENTS.healthBarText.textContent = `${healthPercent}%`;
+}
+
+export function updateExperienceBar(currentExp: number): void {
+  let experiencePercent = Math.round(currentExp);
+  if (experiencePercent > 100) {
+    experiencePercent = 99;
+  }
+  HTMLELEMENTS.experienceBarFill.style.width = `${experiencePercent}%`;
+  HTMLELEMENTS.experienceBarText.textContent = `${experiencePercent}%`;
 }
 
 export function exitOnDeath(): void {

@@ -19,7 +19,7 @@ import {
   displayLoadingScreen,
   updateHUDDungeonFloor,
   updateHUDPlayerLevel,
-  updateProgressBar,
+  updateHealthBar,
 } from './dom-controller';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { ENEMY_TYPE_LIST } from './helper/enemy';
@@ -139,7 +139,7 @@ export class Game {
     // controls.target.set(0, 0, 0);
     // controls.update();
 
-    updateProgressBar(this._player.getMaxHealth(), this._player.health);
+    updateHealthBar(this._player.getMaxHealth(), this._player.health);
   }
 
   _addGround(): void {
