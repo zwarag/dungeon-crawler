@@ -42,6 +42,12 @@ const continueButton = document.querySelector<HTMLButtonElement>(
 const exitButton = document.querySelector<HTMLButtonElement>(
   '#exit-overlay-exitButton'
 ) as HTMLButtonElement;
+const startAudioButton = document.querySelector<HTMLButtonElement>(
+  '#exit-overlay-start-music'
+) as HTMLButtonElement;
+const pauseAudioButton = document.querySelector<HTMLButtonElement>(
+  '#exit-overlay-pause-music'
+) as HTMLButtonElement;
 const nameInputBackButton = document.querySelector<HTMLButtonElement>(
   '#name-input-backButton'
 ) as HTMLButtonElement;
@@ -54,26 +60,41 @@ const formInput = document.querySelector<HTMLInputElement>(
 const storyBox = document.querySelector<HTMLDivElement>(
   '#story-box'
 ) as HTMLDivElement;
-const progressBar = document.querySelector<HTMLDivElement>(
-  '#progress-bar'
+const healthBar = document.querySelector<HTMLDivElement>(
+  '#health-bar'
 ) as HTMLDivElement;
-const progressBarFill = document.querySelector<HTMLDivElement>(
-  '#progress-bar-fill'
+const healthBarFill = document.querySelector<HTMLDivElement>(
+  '#health-bar-fill'
 ) as HTMLDivElement;
-const progressBarText = document.querySelector<HTMLDivElement>(
-  '#progress-bar-text'
+const healthBarText = document.querySelector<HTMLDivElement>(
+  '#health-bar-text'
 ) as HTMLDivElement;
-const hudAnimationDisplay = document.querySelector<HTMLDivElement>(
-  '#hud-animation'
+const experienceBar = document.querySelector<HTMLDivElement>(
+  '#experience-bar'
 ) as HTMLDivElement;
-const hudAnimation = document.querySelector<HTMLCanvasElement>(
-  '#hud-animation'
-) as HTMLCanvasElement;
+const experienceBarFill = document.querySelector<HTMLDivElement>(
+  '#experience-bar-fill'
+) as HTMLDivElement;
+const experienceBarText = document.querySelector<HTMLDivElement>(
+  '#experience-bar-text'
+) as HTMLDivElement;
 const deathScreen = document.querySelector<HTMLDivElement>(
   '#death-screen'
 ) as HTMLDivElement;
 const loadingScreen = document.querySelector<HTMLDivElement>(
   '#loading-screen'
+) as HTMLDivElement;
+const hudPlayerName = document.querySelector<HTMLSpanElement>(
+  '#hud-player-name'
+) as HTMLSpanElement;
+const hudPlayerLevel = document.querySelector<HTMLSpanElement>(
+  '#hud-player-level'
+) as HTMLSpanElement;
+const hudDungeonFloor = document.querySelector<HTMLSpanElement>(
+  '#hud-dungeon-floor'
+) as HTMLSpanElement;
+const levelUpMsg = document.querySelector<HTMLDivElement>(
+  '#level-up-msg'
 ) as HTMLDivElement;
 export const HTMLELEMENTS = {
   app,
@@ -87,17 +108,24 @@ export const HTMLELEMENTS = {
   overlay,
   continueButton,
   exitButton,
+  startAudioButton,
+  pauseAudioButton,
   nameInputBackButton,
   nameInputOkButton,
   formInput,
   storyBox,
-  progressBar,
-  progressBarFill,
-  progressBarText,
-  hudAnimationDisplay,
-  hudAnimation,
+  healthBar,
+  healthBarFill,
+  healthBarText,
+  experienceBar,
+  experienceBarFill,
+  experienceBarText,
   deathScreen,
   loadingScreen,
+  hudPlayerName,
+  hudPlayerLevel,
+  hudDungeonFloor,
+  levelUpMsg,
 };
 
 // Highscore Div Elements

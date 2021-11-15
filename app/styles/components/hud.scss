@@ -63,14 +63,14 @@
       }
       font-weight: bolder;
     }
-    &__progress {
+    &__health {
       display: grid;
       grid-template-columns: 10% 90%;
       @include largeScreen() {
-        margin-top: 80px;
+        margin-top: 50px;
       }
       @include mediumScreen() {
-        margin-top: 10px;
+        margin-top: 8px;
       }
       margin-left: 16px;
 
@@ -115,13 +115,71 @@
         }
       }
     }
+    &__experience {
+      display: grid;
+      grid-template-columns: 10% 90%;
+      margin-left: 16px;
+      @include largeScreen() {
+        margin-top: 25px;
+      }
+      @include mediumScreen() {
+        margin-top: 12px;
+        margin-bottom: 4px;
+      }
+
+      &__description {
+        @include fantasy-Text();
+        @include largeScreen() {
+          font-size: 32px;
+        }
+        @include mediumScreen() {
+          font-size: 22px;
+        }
+        align-self: center;
+        font-weight: bolder;
+      }
+      &__bar {
+        @include border();
+        @include largeScreen() {
+          height: 30px;
+        }
+        @include mediumScreen() {
+          height: 15px;
+        }
+        position: relative;
+        margin-right: 32px;
+        margin-left: 16px;
+        border-radius: 5px;
+        overflow: hidden;
+
+        &__fill {
+          width: 0%;
+          height: 100%;
+          background: blue;
+          transition: all 0.2s;
+        }
+
+        &__text {
+          @include fantasy-Text();
+          position: absolute;
+          top: 50%;
+          right: 5px;
+          transform: translateY(-50%);
+        }
+      }
+    }
   }
 
-  &__placeholder {
-    //max-width: 200px;
-    //&__canvas {
-    //  width: 100%;
-    //  height: 100%;
-    //}
+  &__player-info {
+    @include fantasy-Text();
+    text-align: left;
+    font-weight: bolder;
+    @include mediumScreen() {
+      margin: auto 0px auto 12px;
+    }
+    @include largeScreen() {
+      margin: auto 0px auto 26px;
+      font-size: xx-large;
+    }
   }
 }

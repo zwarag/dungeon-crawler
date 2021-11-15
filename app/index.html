@@ -51,27 +51,56 @@
         </div>
         <div class="hud__player-status">
           <p class="hud__player-status__title">PLAYER STATUS</p>
-          <div class="hud__player-status__progress">
-            <div class="hud__player-status__progress__description">HP</div>
-            <div id="progress-bar" class="hud__player-status__progress__bar">
+          <div class="hud__player-status__health">
+            <div class="hud__player-status__health__description">HP</div>
+            <div id="health-bar" class="hud__player-status__health__bar">
               <div
-                id="progress-bar-fill"
-                class="hud__player-status__progress__bar__fill"
+                id="health-bar-fill"
+                class="hud__player-status__health__bar__fill"
               ></div>
               <span
-                id="progress-bar-text"
-                class="hud__player-status__progress__bar__text"
+                id="health-bar-text"
+                class="hud__player-status__health__bar__text"
+              >
+                0%
+              </span>
+            </div>
+          </div>
+          <div class="hud__player-status__experience">
+            <div class="hud__player-status__experience__description">XP</div>
+            <div id="experience-bar" class="hud__player-status__experience__bar">
+              <div
+                      id="experience-bar-fill"
+                      class="hud__player-status__experience__bar__fill"
+              ></div>
+              <span
+                      id="experience-bar-text"
+                      class="hud__player-status__experience__bar__text"
               >
                 0%
               </span>
             </div>
           </div>
         </div>
-        <div id="hud-animation-display" class="hud__placeholder">
-          <!--          <canvas id="hud-animation" class="hud__placeholder__canvas"></canvas>-->
+        <div id="hud-animation-display" class="hud__player-info">
+          <p>
+            Player Name:
+            <span id="hud-player-name"></span>
+          </p>
+          <p>
+            Player Level:
+            <span id="hud-player-level"></span>
+          </p>
+          <p>
+            Dungeon Floor:
+            <span id="hud-dungeon-floor"></span>
+          </p>
         </div>
       </div>
     </div>
+
+    <!--    level up message-->
+    <div id="level-up-msg" class="level-up-message d-none">Level UP!!</div>
 
     <!-- start-screen -->
     <div id="start-screen" class="start-screen">
@@ -96,6 +125,18 @@
           id="exit-overlay-continueButton"
         >
           CONTINUE
+        </button>
+        <button
+                class="exit-overlay__button-bar__button"
+                id="exit-overlay-pause-music"
+        >
+          PAUSE MUSIC
+        </button>
+        <button
+                class="exit-overlay__button-bar__button d-none"
+                id="exit-overlay-start-music"
+        >
+          START MUSIC
         </button>
         <button
           class="exit-overlay__button-bar__button"
@@ -141,7 +182,7 @@
     <!--    story-->
     <div id="story-box" class="story-box d-none"></div>
 
-<!--    loading screen-->
+    <!--    loading screen-->
     <div id="loading-screen" class="loading-screen d-none">
       <p style="">LOADING...</p>
     </div>
@@ -316,7 +357,7 @@
       </div>
     </div>
 
-<!--    death-screen-->
+    <!--    death-screen-->
     <div id="death-screen" class="death-screen d-none">
       <p>YOU DIED</p>
     </div>

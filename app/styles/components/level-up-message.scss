@@ -1,8 +1,9 @@
 @import '../abstracts/mixins';
 
-.loading-screen {
-  @include fantasy-Text;
+.level-up-message {
+  @include fantasy-Text();
   font-size: xxx-large;
+  font-weight: bolder;
   position: absolute;
   top: 40%;
   text-align: center;

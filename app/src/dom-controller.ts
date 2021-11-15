@@ -8,6 +8,14 @@ import { addToHighscore } from './highscore-controller';
 let _game: Game;
 
 export function initDom(): void {
+  function addEventListener(
+    element: HTMLElement,
+    key: string,
+    event: () => void
+  ) {
+    element.addEventListener(key, event);
+  }
+
   addEventListener(HTMLELEMENTS.startButton, 'click', () => {
     _toggleClass(
       [HTMLELEMENTS.nameInput],
@@ -29,6 +37,8 @@ export function initDom(): void {
   );
   addEventListener(HTMLELEMENTS.exitButton, 'click', _backToStartScreen);
   addEventListener(HTMLELEMENTS.continueButton, 'click', _continueGame);
+  addEventListener(HTMLELEMENTS.pauseAudioButton, 'click', _pauseAudio);
+  addEventListener(HTMLELEMENTS.startAudioButton, 'click', _startAudio);
   addEventListener(
     HTMLELEMENTS.nameInputBackButton,
     'click',
@@ -51,6 +61,7 @@ export function initDom(): void {
 }
 
 export async function startGameForDevelopment() {
+  _setHUDPlayerInfo();
   _toggleClass(
     [HTMLELEMENTS.app],
     [
@@ -67,14 +78,6 @@ export async function startGameForDevelopment() {
   }
 }
 
-function addEventListener(
-  element: HTMLElement,
-  key: string,
-  event: () => void
-) {
-  element.addEventListener(key, event);
-}
-
 function _toggleClass(
   removeFromElements: HTMLElement[],
   addToElements: HTMLElement[],
@@ -86,6 +89,7 @@ function _toggleClass(
 
 export async function _startGame(): Promise<void> {
   _toggleClass([HTMLELEMENTS.app], [HTMLELEMENTS.storyBox], 'd-none');
+  _setHUDPlayerInfo();
 }
 
 function _displayExitOverlay(): void {
@@ -99,11 +103,28 @@ function _displayExitOverlay(): void {
 }
 
 function _continueGame(): void {
-  //TODO: logic to "unfreeze" game
   HTMLELEMENTS.overlay?.classList.add('d-none');
   if (HTMLELEMENTS.element) {
     HTMLELEMENTS.element.style.opacity = '100%';
   }
+}
+
+function _pauseAudio(): void {
+  _game.pauseAudio();
+  _toggleClass(
+    [HTMLELEMENTS.startAudioButton],
+    [HTMLELEMENTS.pauseAudioButton],
+    'd-none'
+  );
+}
+
+function _startAudio(): void {
+  _game.startAudio();
+  _toggleClass(
+    [HTMLELEMENTS.pauseAudioButton],
+    [HTMLELEMENTS.startAudioButton],
+    'd-none'
+  );
 }
 
 function _enableButton(): void {
@@ -125,7 +146,9 @@ async function _displayStoryBox(): Promise<void> {
 }
 
 function _getPlayerName(): string {
-  return HTMLELEMENTS.formInput ? HTMLELEMENTS.formInput.value : 'default';
+  return HTMLELEMENTS.formInput.value
+    ? HTMLELEMENTS.formInput.value
+    : 'default';
 }
 
 function _resetNameInput(): void {
@@ -149,7 +172,7 @@ function _endGame(): void {
   _resetStoryBox();
 }
 
-export function updateProgressBar(maxHealth: number, health: number): void {
+export function updateHealthBar(maxHealth: number, health: number): void {
   let healthPercent = Math.round((100 / maxHealth) * health);
 
   if (healthPercent < 0) {
@@ -158,8 +181,17 @@ export function updateProgressBar(maxHealth: number, health: number): void {
   if (healthPercent > 100) {
     healthPercent = 100;
   }
-  HTMLELEMENTS.progressBarFill.style.width = `${healthPercent}%`;
-  HTMLELEMENTS.progressBarText.textContent = `${healthPercent}%`;
+  HTMLELEMENTS.healthBarFill.style.width = `${healthPercent}%`;
+  HTMLELEMENTS.healthBarText.textContent = `${healthPercent}%`;
+}
+
+export function updateExperienceBar(currentExp: number): void {
+  let experiencePercent = Math.round(currentExp);
+  if (experiencePercent > 100) {
+    experiencePercent = 99;
+  }
+  HTMLELEMENTS.experienceBarFill.style.width = `${experiencePercent}%`;
+  HTMLELEMENTS.experienceBarText.textContent = `${experiencePercent}%`;
 }
 
 export function exitOnDeath(): void {
@@ -173,6 +205,26 @@ export function displayLoadingScreen(duration: number) {
   setTimeout(() => {
     _toggleClass([HTMLELEMENTS.app], [HTMLELEMENTS.loadingScreen], 'd-none');
   }, duration);
+}
+
+export function displayLevelUpMsg(duration: number): void {
+  HTMLELEMENTS.levelUpMsg.classList.remove('d-none');
+  setTimeout(() => {
+    HTMLELEMENTS.levelUpMsg.classList.add('d-none');
+  }, duration);
+}
+
+function _setHUDPlayerInfo(): void {
+  HTMLELEMENTS.hudPlayerName.innerHTML = _getPlayerName();
+  HTMLELEMENTS.hudPlayerLevel.innerHTML = '1';
+  HTMLELEMENTS.hudDungeonFloor.innerHTML = '1';
+}
+
+export function updateHUDPlayerLevel(playerLevel: number): void {
+  HTMLELEMENTS.hudPlayerLevel.innerHTML = playerLevel.toString();
+}
+export function updateHUDDungeonFloor(dungeonFloor: number): void {
+  HTMLELEMENTS.hudDungeonFloor.innerHTML = dungeonFloor.toString();
 }
 
 function _backToStartScreen(): void {

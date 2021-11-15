@@ -15,7 +15,12 @@ import { Enemy } from './enemy';
 import { AStarFinder } from 'astar-typescript';
 import { DIRECTION } from './helper/direction';
 import { DamageText } from './damage-text';
-import { displayLoadingScreen, updateProgressBar } from './dom-controller';
+import {
+  displayLoadingScreen,
+  updateHUDDungeonFloor,
+  updateHUDPlayerLevel,
+  updateHealthBar,
+} from './dom-controller';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { ENEMY_TYPE_LIST } from './helper/enemy';
 import { EnemyFileLoader } from './helper/enemy-file-loader';
@@ -99,8 +104,8 @@ export class Game {
     this._player = new Player();
 
     // axes helper
-    const axesHelper = new THREE.AxesHelper(10);
-    this._scene.add(axesHelper);
+    // const axesHelper = new THREE.AxesHelper(10);
+    // this._scene.add(axesHelper);
 
     // Spotlight symbolizing a torch carried by the player
     this._spotLight = new THREE.SpotLight(
@@ -134,7 +139,19 @@ export class Game {
     // controls.target.set(0, 0, 0);
     // controls.update();
 
-    updateProgressBar(this._player.getMaxHealth(), this._player.health);
+    updateHealthBar(this._player.getMaxHealth(), this._player.health);
+  }
+
+  startAudio() {
+    this._sound.play();
+  }
+
+  pauseAudio() {
+    this._sound.pause();
+  }
+
+  stopAudio() {
+    this._sound.stop();
   }
 
   _addGround(): void {
@@ -310,6 +327,7 @@ export class Game {
   private async _generateNewLevel(): Promise<void> {
     displayLoadingScreen(5000);
     this._level += 1;
+    updateHUDDungeonFloor(this._level);
     this._updateEnemyDistribution();
     this._cleanScene();
     this._addDungeonToScene();

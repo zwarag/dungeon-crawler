@@ -11,7 +11,13 @@ import { randomRange } from './helper/random';
 import { CharacterBase } from './character';
 import initialPlayerStats from '../public/txt/initialPlayerStats.json';
 import { ELEMENTS } from './helper/elements';
-import { exitOnDeath, updateProgressBar } from './dom-controller';
+import {
+  displayLevelUpMsg,
+  exitOnDeath,
+  updateHUDPlayerLevel,
+  updateHealthBar,
+  updateExperienceBar,
+} from './dom-controller';
 import { loadGltf } from './helper/file-loader';
 import playerJson from '../public/txt/initialPlayerStats.json';
 import { CharacterFsm } from './character-fsm';
@@ -201,7 +207,7 @@ export class Player extends CharacterBase {
 
   takeHit(damage: number): void {
     this._health -= damage;
-    updateProgressBar(this.getMaxHealth(), this._health);
+    updateHealthBar(this.getMaxHealth(), this._health);
     console.log(`The player has ${this._health} left`);
   }
 
@@ -234,18 +240,22 @@ export class Player extends CharacterBase {
 
   increaseExperience(exp: number): void {
     this._experience += exp;
+    updateExperienceBar(this._experience);
     console.log(
       `You've gained ${exp} experience, which is now in total ${this._experience}`
     );
     // level up the player if he gathered enough experience
     if (this._experience >= this._requiredExperience) {
       this._levelUp();
-      updateProgressBar(this.getMaxHealth(), this._health);
+      updateHealthBar(this.getMaxHealth(), this._health);
     }
   }
 
   private _levelUp(): void {
     this._level += 1;
+    updateHUDPlayerLevel(this._level);
+    updateExperienceBar(0);
+    displayLevelUpMsg(2000);
     console.log(`You've leveled up to level ${this._level}`);
     this._experience = this._experience - this._requiredExperience;
     // stats are increased by 5 percent per level up
