@@ -6,7 +6,7 @@ import {
   PROPERTIES,
 } from './helper/const';
 import * as THREE from 'three';
-import { Camera, Group, SpotLight, Vector3 } from 'three';
+import { Camera, Group, SpotLight, Texture, Vector3 } from 'three';
 import { Player } from './player';
 import { millisecondsToSeconds } from './helper/time';
 import { Dungeon } from './dungeon';
@@ -308,7 +308,7 @@ export class Game {
   }
 
   private async _generateNewLevel(): Promise<void> {
-    displayLoadingScreen(10000);
+    displayLoadingScreen(5000);
     this._level += 1;
     this._updateEnemyDistribution();
     this._cleanScene();
@@ -348,9 +348,7 @@ export class Game {
     this._enemies = [];
   }
 
-  private _textureCube(imgPath: string): THREE.Mesh {
-    const textureLoader = new THREE.TextureLoader();
-    const texture = textureLoader.load(imgPath);
+  private _textureCube(texture: Texture): THREE.Mesh {
     const geometry = new THREE.BoxGeometry(1, 1.5, 1);
     const material = new THREE.MeshPhongMaterial({
       map: texture,
@@ -361,11 +359,17 @@ export class Game {
   }
 
   private _addDungeonToScene(): void {
-    this._dungeon = new Dungeon();
+    while (this._dungeon === undefined || this._dungeon.rooms.length < 2) {
+      this._dungeon = new Dungeon();
+    }
+
+    const textureLoader = new THREE.TextureLoader();
+    const texture = textureLoader.load('./img/brick-lion.jpg');
+
     for (let height = 0; height < this._dungeon.grid.length; height++) {
       for (let width = 0; width < this._dungeon.grid[height].length; width++) {
         if (this._dungeon.grid[height][width] == ELEMENTS.WALL) {
-          const wallCube = this._textureCube('./img/brick-lion.jpg');
+          const wallCube = this._textureCube(texture);
           wallCube.receiveShadow = true;
           wallCube.name = ELEMENTS.WALL;
           // offset by half the size of the grid, since 0,0,0 is in the center of it. Furthermore offset by 0.5, as otherwise the center of each box is used and not the corner.
